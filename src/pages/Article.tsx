@@ -1,14 +1,21 @@
+import { useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
+import Footer from "@/components/Footer";
+import BookReadingMode from "@/components/BookReadingMode";
+import TornPaperEdge from "@/components/TornPaperEdge";
 import { getArticleById, getRelatedArticles } from "@/data/articles";
-import { Facebook, Twitter, Linkedin, Link2, ArrowLeft } from "lucide-react";
+import { Facebook, Twitter, Linkedin, Link2, ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { usePaperSound } from "@/hooks/usePaperSound";
 
 const Article = () => {
   const { id } = useParams<{ id: string }>();
   const article = id ? getArticleById(id) : undefined;
+  const [isReadingMode, setIsReadingMode] = useState(false);
+  const { playRustle } = usePaperSound();
   
   if (!article) {
     return <Navigate to="/404" replace />;
@@ -19,6 +26,11 @@ const Article = () => {
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     toast.success("Link copied to clipboard!");
+  };
+
+  const handleOpenReadingMode = () => {
+    playRustle();
+    setIsReadingMode(true);
   };
 
   const getCategoryClass = (cat: string) => {
@@ -34,22 +46,41 @@ const Article = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
+    <div className="min-h-screen bg-background animate-fade-in paper-page">
       <Header />
+      
+      {/* Book Reading Mode */}
+      <BookReadingMode 
+        article={article} 
+        isOpen={isReadingMode} 
+        onClose={() => setIsReadingMode(false)} 
+      />
       
       <main>
         {/* Back Navigation */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <a
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to articles
-          </a>
+          <div className="flex items-center justify-between">
+            <a
+              href="/"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to articles
+            </a>
+            
+            {/* Reading Mode Button */}
+            <Button 
+              onClick={handleOpenReadingMode}
+              variant="outline" 
+              className="gap-2 paper-shadow hover:bg-[hsl(var(--paper-aged))]"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span className="hidden sm:inline">Reading Mode</span>
+            </Button>
+          </div>
         </div>
 
-        {/* Hero Image */}
+        {/* Hero Image with torn edge */}
         <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] mb-12">
           <img
             src={article.image}
@@ -57,6 +88,9 @@ const Article = () => {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+          
+          {/* Torn paper edge at bottom of hero */}
+          <TornPaperEdge position="bottom" variant="rough" />
         </div>
 
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10">
@@ -220,8 +254,10 @@ const Article = () => {
           </div>
         </article>
 
-        {/* Related Articles */}
-        <section className="bg-muted py-16 animate-fade-in">
+        {/* Related Articles - with torn edge */}
+        <section className="relative bg-muted py-16 animate-fade-in">
+          <TornPaperEdge position="top" variant="jagged" />
+          
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold mb-8 animate-slide-up">You might also like</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -232,8 +268,12 @@ const Article = () => {
               ))}
             </div>
           </div>
+          
+          <TornPaperEdge position="bottom" variant="smooth" />
         </section>
       </main>
+      
+      <Footer />
     </div>
   );
 };
