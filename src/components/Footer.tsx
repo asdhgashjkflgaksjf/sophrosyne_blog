@@ -34,26 +34,26 @@ const Footer = () => {
           {/* Navigation Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
             <div className="paper-note">
-              <h3 className="font-caps text-xs tracking-widest mb-4 text-foreground">Explore</h3>
+              <h3 className="font-caps text-xs tracking-widest mb-4 text-foreground">Jelajahi</h3>
               <ul className="space-y-3 text-sm font-body text-muted-foreground">
                 <li>
-                  <a href="/wellness" className="hover:text-accent transition-colors inline-block paper-link">
-                    Wellness
-                  </a>
-                </li>
-                <li>
-                  <a href="/travel" className="hover:text-accent transition-colors inline-block paper-link">
-                    Travel
-                  </a>
-                </li>
-                <li>
                   <a href="/creativity" className="hover:text-accent transition-colors inline-block paper-link">
-                    Creativity
+                    Filsafat
                   </a>
                 </li>
                 <li>
                   <a href="/growth" className="hover:text-accent transition-colors inline-block paper-link">
-                    Growth
+                    Book Review
+                  </a>
+                </li>
+                <li>
+                  <a href="/wellness" className="hover:text-accent transition-colors inline-block paper-link">
+                    Refleksi
+                  </a>
+                </li>
+                <li>
+                  <a href="/travel" className="hover:text-accent transition-colors inline-block paper-link">
+                    Stoikisme
                   </a>
                 </li>
               </ul>

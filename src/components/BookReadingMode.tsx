@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, BookOpen, ChevronLeft, ChevronRight, Bookmark, MessageSquare } from "lucide-react";
+import { X, BookOpen, ChevronLeft, ChevronRight, Bookmark, MessageSquare, Highlighter } from "lucide-react";
 import { Article } from "@/data/articles";
+import PageCurl from "./PageCurl";
+import { Highlight, HIGHLIGHT_COLORS, HighlightList } from "./TextHighlighter";
 
 interface BookReadingModeProps {
   article: Article;
@@ -59,6 +61,10 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [noteInput, setNoteInput] = useState("");
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [highlights, setHighlights] = useState<Highlight[]>([]);
+  const [isHighlighting, setIsHighlighting] = useState(false);
+  const [highlightColor, setHighlightColor] = useState(HIGHLIGHT_COLORS[0].value);
+  const [showHighlights, setShowHighlights] = useState(false);
 
   // Split content into pages
   const pages = [
@@ -108,6 +114,25 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
   };
 
   const currentPageNotes = marginNotes.filter(note => note.pageIndex === currentPage);
+
+  // Handle text highlighting
+  const handleAddHighlight = useCallback((highlightData: Omit<Highlight, 'id' | 'createdAt'>) => {
+    const newHighlight: Highlight = {
+      ...highlightData,
+      id: Date.now().toString(),
+      createdAt: new Date(),
+    };
+    setHighlights(prev => [...prev, newHighlight]);
+  }, []);
+
+  const handleRemoveHighlight = (id: string) => {
+    setHighlights(prev => prev.filter(h => h.id !== id));
+  };
+
+  const goToHighlightPage = (pageIndex: number) => {
+    setCurrentPage(pageIndex);
+    setShowHighlights(false);
+  };
 
   // Keyboard navigation
   useEffect(() => {
@@ -255,12 +280,10 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                   }}
                 />
                 
-                {/* Page curl effect */}
-                <div className="absolute top-0 right-0 w-10 h-10 pointer-events-none"
-                  style={{
-                    background: `linear-gradient(225deg, hsl(var(--paper-aged)) 0%, hsl(var(--paper-aged)) 50%, transparent 50%)`,
-                    boxShadow: "-2px 2px 4px hsl(var(--paper-shadow)/0.2)",
-                  }}
+                {/* Page curl effect - interactive */}
+                <PageCurl 
+                  onFlip={goToNextPage}
+                  isLastPage={currentPage === totalPages - 1}
                 />
                 
                 {/* Content area */}
@@ -360,6 +383,81 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
             
             {/* Top controls */}
             <div className="absolute -top-16 right-0 flex items-center gap-3 z-30">
+              {/* Highlight toggle with color picker */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsHighlighting(!isHighlighting);
+                  }}
+                  className={`w-11 h-11 rounded-full border-2 flex items-center justify-center transition-all shadow-lg cursor-pointer ${
+                    isHighlighting
+                      ? 'bg-[hsl(var(--accent))] border-[hsl(var(--accent))] text-white'
+                      : 'bg-[hsl(var(--paper-cream))] border-border hover:bg-[hsl(var(--paper-aged))]'
+                  }`}
+                  title="Toggle text highlighting"
+                >
+                  <Highlighter className="w-5 h-5" />
+                </button>
+                
+                {/* Color picker */}
+                <AnimatePresence>
+                  {isHighlighting && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute top-14 right-0 bg-[hsl(var(--paper-cream))] border-2 border-border rounded-lg p-2 shadow-xl"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex gap-2 mb-2">
+                        {HIGHLIGHT_COLORS.map((color) => (
+                          <button
+                            key={color.name}
+                            type="button"
+                            onClick={() => setHighlightColor(color.value)}
+                            className={`w-6 h-6 rounded-full transition-transform hover:scale-110 ${
+                              highlightColor === color.value ? 'ring-2 ring-offset-1 ring-[hsl(var(--primary))]' : ''
+                            }`}
+                            style={{ backgroundColor: color.value }}
+                            title={color.name}
+                          />
+                        ))}
+                      </div>
+                      {highlights.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setShowHighlights(!showHighlights)}
+                          className="text-[10px] font-caps text-muted-foreground hover:text-foreground"
+                        >
+                          View highlights ({highlights.length})
+                        </button>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                
+                {/* Highlights list popup */}
+                <AnimatePresence>
+                  {showHighlights && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute top-28 right-0 w-64 bg-[hsl(var(--paper-cream))] border-2 border-border rounded-lg p-3 shadow-xl"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <HighlightList
+                        highlights={highlights}
+                        onRemove={handleRemoveHighlight}
+                        onGoToPage={goToHighlightPage}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               <button
                 type="button"
                 onClick={(e) => {
