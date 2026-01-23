@@ -2,7 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import PageTransition from "./components/PageTransition";
+import ParallaxPaper from "./components/ParallaxPaper";
 import Index from "./pages/Index";
 import Article from "./pages/Article";
 import Wellness from "./pages/Wellness";
@@ -19,13 +21,13 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
+const AppRoutes = () => {
+  const location = useLocation();
+  
+  return (
+    <ParallaxPaper>
+      <PageTransition>
+        <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Index />} />
           <Route path="/article/:id" element={<Article />} />
           <Route path="/wellness" element={<Wellness />} />
@@ -41,6 +43,18 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+      </PageTransition>
+    </ParallaxPaper>
+  );
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <AppRoutes />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
