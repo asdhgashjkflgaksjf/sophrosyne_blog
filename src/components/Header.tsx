@@ -57,16 +57,16 @@ const Header = () => {
               Home
             </a>
             <a href="/#articles" className="text-sm font-body font-medium hover:bg-muted/60 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary">
-              Articles
+              Artikel
             </a>
-            <a href="/wellness" className="text-sm font-body font-medium hover:bg-muted/60 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary">
-              Wellness
+            <a href="/creativity" className="text-sm font-body font-medium hover:bg-muted/60 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary">
+              Filsafat
             </a>
-            <a href="/travel" className="text-sm font-body font-medium hover:bg-muted/60 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary">
-              Travel
+            <a href="/growth" className="text-sm font-body font-medium hover:bg-muted/60 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary">
+              Book Review
             </a>
-            <a href="/about" className="text-sm font-body font-medium hover:bg-muted/60 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary">
-              About
+            <a href="/authors" className="text-sm font-body font-medium hover:bg-muted/60 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary">
+              Penulis
             </a>
           </nav>
 
@@ -107,16 +107,16 @@ const Header = () => {
                 Home
               </a>
               <a href="/#articles" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
-                Articles
+                Artikel
               </a>
-              <a href="/wellness" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
-                Wellness
+              <a href="/creativity" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
+                Filsafat
               </a>
-              <a href="/travel" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
-                Travel
+              <a href="/growth" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
+                Book Review
               </a>
-              <a href="/about" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
-                About
+              <a href="/authors" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
+                Penulis
               </a>
               <div className="pt-4 px-4">
                 <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full font-body font-medium paper-shadow">

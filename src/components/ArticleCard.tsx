@@ -16,7 +16,8 @@ const ArticleCard = ({ id, title, category, date, image, size = "small" }: Artic
     if (normalized.includes("lifestyle")) return "tag-lifestyle";
     if (normalized.includes("community")) return "tag-community";
     if (normalized.includes("wellness")) return "tag-wellness";
-    if (normalized.includes("travel")) return "tag-travel";
+    if (normalized.includes("filsafat") || normalized.includes("philosophy")) return "tag-philosophy";
+    if (normalized.includes("book review")) return "tag-book-review";
     if (normalized.includes("creativ")) return "tag-creativity";
     if (normalized.includes("growth")) return "tag-growth";
     return "tag-lifestyle";

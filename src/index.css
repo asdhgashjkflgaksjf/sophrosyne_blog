@@ -59,7 +59,8 @@
     --tag-lifestyle: 140 15% 65%;
     --tag-community: 25 30% 55%;
     --tag-wellness: 280 20% 70%;
-    --tag-travel: 195 30% 65%;
+    --tag-philosophy: 270 30% 65%;
+    --tag-book-review: 45 40% 60%;
     --tag-creativity: 330 25% 70%;
     --tag-growth: 45 35% 65%;
 
@@ -70,59 +71,64 @@
   }
 
   .dark {
-    /* Dark mode - aged parchment at night */
-    --background: 30 20% 10%;
-    --foreground: 38 30% 88%;
+    /* Dark mode - Candlelit Parchment at Night */
+    --background: 28 18% 8%;
+    --foreground: 40 35% 90%;
 
-    --card: 28 18% 14%;
-    --card-foreground: 38 30% 88%;
+    --card: 30 15% 12%;
+    --card-foreground: 40 35% 90%;
 
-    --popover: 30 20% 12%;
-    --popover-foreground: 38 30% 88%;
+    --popover: 28 18% 10%;
+    --popover-foreground: 40 35% 90%;
 
-    --primary: 38 35% 85%;
-    --primary-foreground: 30 20% 10%;
+    --primary: 40 45% 80%;
+    --primary-foreground: 28 18% 8%;
 
-    --secondary: 30 15% 25%;
-    --secondary-foreground: 38 30% 88%;
+    --secondary: 30 12% 18%;
+    --secondary-foreground: 40 35% 90%;
 
-    --muted: 28 12% 22%;
-    --muted-foreground: 35 20% 55%;
+    --muted: 28 10% 16%;
+    --muted-foreground: 38 20% 60%;
 
-    --accent: 15 55% 50%;
-    --accent-foreground: 30 20% 10%;
+    --accent: 35 70% 55%;
+    --accent-foreground: 28 18% 8%;
 
-    --destructive: 0 55% 45%;
-    --destructive-foreground: 38 30% 88%;
+    --destructive: 0 50% 40%;
+    --destructive-foreground: 40 35% 90%;
 
-    --border: 30 15% 25%;
-    --input: 30 15% 25%;
-    --ring: 38 35% 85%;
+    --border: 32 12% 22%;
+    --input: 32 12% 22%;
+    --ring: 40 45% 80%;
 
-    /* Dark paper tokens */
-    --paper-cream: 30 15% 18%;
-    --paper-aged: 28 12% 22%;
-    --paper-shadow: 25 20% 8%;
-    --sepia: 35 30% 50%;
-    --sepia-light: 35 25% 35%;
-    --ink-dark: 38 30% 88%;
-    --ink-red: 5 55% 55%;
-    --ink-blue: 210 30% 55%;
+    /* Dark paper tokens - aged parchment by candlelight */
+    --paper-cream: 30 12% 14%;
+    --paper-aged: 28 10% 18%;
+    --paper-shadow: 25 15% 5%;
+    --sepia: 38 40% 60%;
+    --sepia-light: 35 25% 30%;
+    --ink-dark: 40 35% 90%;
+    --ink-red: 8 55% 60%;
+    --ink-blue: 210 35% 60%;
     
-    --torn-edge: 30 15% 25%;
-    --torn-shadow: 28 12% 18%;
+    /* Candle glow effect */
+    --candle-glow: 38 70% 50%;
+    --candle-warm: 30 60% 40%;
+    
+    --torn-edge: 30 12% 20%;
+    --torn-shadow: 28 10% 12%;
 
-    /* Dark mode tag colors */
-    --tag-financing: 210 25% 40%;
-    --tag-lifestyle: 140 15% 38%;
-    --tag-community: 25 25% 38%;
-    --tag-wellness: 280 18% 42%;
-    --tag-travel: 195 25% 40%;
-    --tag-creativity: 330 22% 42%;
-    --tag-growth: 45 30% 40%;
+    /* Dark mode tag colors - muted candlelit */
+    --tag-financing: 210 20% 35%;
+    --tag-lifestyle: 140 12% 32%;
+    --tag-community: 25 20% 32%;
+    --tag-wellness: 280 15% 35%;
+    --tag-philosophy: 270 25% 40%;
+    --tag-book-review: 45 30% 35%;
+    --tag-creativity: 330 18% 35%;
+    --tag-growth: 45 25% 35%;
 
-    --surface-elevated: 28 15% 16%;
-    --shadow-soft: 25 20% 5%;
+    --surface-elevated: 30 12% 14%;
+    --shadow-soft: 25 15% 3%;
   }
 }
 

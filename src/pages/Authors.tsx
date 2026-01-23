@@ -1,115 +1,176 @@
 import Header from "@/components/Header";
-import { Mail, Instagram, Twitter } from "lucide-react";
+import Footer from "@/components/Footer";
+import { Mail, Instagram, Twitter, BookOpen, Feather, Quote } from "lucide-react";
 
 const Authors = () => {
-  const authors = [
-    {
-      name: "Emma Thompson",
-      role: "Wellness Editor",
-      bio: "Emma is a certified wellness coach and nutritionist with over 10 years of experience helping people create sustainable self-care practices. She believes in holistic approaches to health that honor both body and mind.",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80",
-      articles: 24,
-    },
-    {
-      name: "Marcus Chen",
-      role: "Travel Writer",
-      bio: "Having visited over 60 countries, Marcus specializes in slow travel and cultural immersion. His writing explores how travel can be both transformative and sustainable, emphasizing meaningful connection over tourist checklists.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
-      articles: 31,
-    },
-    {
-      name: "Sofia Rodriguez",
-      role: "Creativity Columnist",
-      bio: "Sofia is a multidisciplinary artist and creative consultant who helps individuals and teams unlock their creative potential. She's passionate about making creativity accessible to everyone, not just 'artists.'",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=80",
-      articles: 19,
-    },
-    {
-      name: "David Kim",
-      role: "Personal Growth Writer",
-      bio: "David combines insights from psychology, philosophy, and personal experience to explore what it means to live intentionally. His thoughtful approach to growth emphasizes progress over perfection.",
-      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80",
-      articles: 27,
-    },
-  ];
+  const author = {
+    name: "Farhan",
+    role: "Penulis & Pemikir",
+    bio: "Seorang pencari makna yang menemukan ketenangan dalam filsafat dan kebijaksanaan dalam halaman-halaman buku. Melalui tulisan, saya berbagi refleksi tentang kehidupan, stoikisme, dan pelajaran dari karya-karya besar yang telah membentuk cara saya memandang dunia.",
+    longBio: "Perjalanan saya dimulai dari rasa ingin tahu yang sederhana—mengapa kita ada di sini, dan bagaimana seharusnya kita hidup? Pertanyaan-pertanyaan ini membawa saya menyelami filsafat Yunani kuno, kebijaksanaan Stoik, dan pemikiran-pemikiran eksistensialis. Setiap buku yang saya baca menjadi percakapan dengan pemikir-pemikir besar lintas zaman. Di Sophrosyne, saya ingin berbagi percakapan-percakapan itu dengan Anda—bukan sebagai guru, tetapi sebagai sesama pencari yang berjalan di jalan yang sama.",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&q=80",
+    expertise: ["Filsafat", "Book Review", "Refleksi", "Stoikisme"],
+    favoriteQuote: "Kita tidak bisa mengontrol apa yang terjadi pada kita, tapi kita bisa mengontrol bagaimana kita merespons.",
+    quoteAuthor: "Epictetus",
+    articles: 47,
+    booksReviewed: 156,
+  };
 
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
+    <div className="min-h-screen paper-page animate-fade-in">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
-        <div className="mb-16 text-center space-y-6">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-slide-down">
-            Meet Our Authors
+        <section className="text-center mb-16 animate-slide-down">
+          <div className="ornament-divider justify-center mb-6">
+            <span className="font-script text-2xl text-accent">✦</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight mb-4">
+            Tentang Penulis
           </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-slide-up stagger-1">
-            The voices behind Perspective—experienced writers, practitioners, and thoughtful explorers 
-            who bring diverse perspectives and genuine insights to every article.
+          <p className="text-lg text-muted-foreground font-editorial italic max-w-2xl mx-auto">
+            Di balik setiap kata, ada jiwa yang mencari dan berbagi
           </p>
-        </div>
+        </section>
 
-        {/* Authors Grid */}
-        <section className="grid md:grid-cols-2 gap-8 mb-16">
-          {authors.map((author, index) => (
-            <div key={author.name} className={`rounded-2xl bg-card p-8 hover:shadow-xl transition-all duration-300 animate-slide-up stagger-${Math.min(index + 2, 6)}`}>
-              <div className="flex items-start gap-6 mb-6">
+        {/* Author Card */}
+        <section className="paper-section paper-shadow p-8 md:p-12 mb-16 animate-scale-in">
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+            {/* Photo */}
+            <div className="flex-shrink-0 mx-auto lg:mx-0">
+              <div className="relative">
                 <img
                   src={author.image}
                   alt={author.name}
-                  className="w-24 h-24 rounded-full object-cover"
+                  className="w-48 h-48 md:w-56 md:h-56 rounded-sm object-cover border-4 border-border paper-shadow"
                 />
-                <div className="flex-1">
-                  <h3 className="text-2xl font-bold mb-1">{author.name}</h3>
-                  <p className="text-accent font-medium mb-3">{author.role}</p>
-                  <p className="text-sm text-muted-foreground">{author.articles} articles published</p>
+                <div className="absolute -bottom-3 -right-3 w-12 h-12 bg-primary flex items-center justify-center paper-shadow">
+                  <Feather className="w-6 h-6 text-primary-foreground" />
                 </div>
               </div>
-              <p className="text-muted-foreground mb-6 leading-relaxed">
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 text-center lg:text-left">
+              <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">{author.name}</h2>
+              <p className="font-editorial text-xl text-accent italic mb-4">{author.role}</p>
+              
+              {/* Stats */}
+              <div className="flex flex-wrap justify-center lg:justify-start gap-6 mb-6">
+                <div className="flex items-center gap-2">
+                  <Feather className="w-4 h-4 text-muted-foreground" />
+                  <span className="font-body text-sm">
+                    <strong className="text-foreground">{author.articles}</strong> artikel
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-muted-foreground" />
+                  <span className="font-body text-sm">
+                    <strong className="text-foreground">{author.booksReviewed}</strong> buku direview
+                  </span>
+                </div>
+              </div>
+
+              {/* Expertise tags */}
+              <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-6">
+                {author.expertise.map((skill) => (
+                  <span
+                    key={skill}
+                    className="px-3 py-1 text-xs font-caps tracking-wider bg-[hsl(var(--paper-aged))] border border-border"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+
+              {/* Bio */}
+              <p className="font-body text-muted-foreground leading-relaxed mb-4">
                 {author.bio}
               </p>
-              <div className="flex items-center gap-3">
+
+              {/* Social links */}
+              <div className="flex justify-center lg:justify-start gap-3 mt-6">
                 <a
-                  href="#email"
-                  className="w-10 h-10 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center"
+                  href="mailto:farhan@sophrosyne.id"
+                  className="floating-button w-10 h-10"
                   aria-label="Email"
                 >
                   <Mail className="w-4 h-4" />
                 </a>
                 <a
                   href="#twitter"
-                  className="w-10 h-10 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center"
+                  className="floating-button w-10 h-10"
                   aria-label="Twitter"
                 >
                   <Twitter className="w-4 h-4" />
                 </a>
                 <a
                   href="#instagram"
-                  className="w-10 h-10 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center"
+                  className="floating-button w-10 h-10"
                   aria-label="Instagram"
                 >
                   <Instagram className="w-4 h-4" />
                 </a>
               </div>
             </div>
-          ))}
+          </div>
         </section>
 
-        {/* Join Section */}
-        <section className="text-center py-12 rounded-2xl bg-muted">
-          <h2 className="text-3xl font-bold mb-4">Want to Contribute?</h2>
-          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            We're always looking for thoughtful voices to join our community. If you have insights 
-            to share on wellness, travel, creativity, or personal growth, we'd love to hear from you.
+        {/* Quote Section */}
+        <section className="paper-note p-8 md:p-12 text-center mb-16 animate-slide-up stagger-2">
+          <Quote className="w-10 h-10 text-accent/40 mx-auto mb-4" />
+          <blockquote className="font-editorial text-xl md:text-2xl italic text-[hsl(var(--sepia))] leading-relaxed max-w-3xl mx-auto mb-4">
+            "{author.favoriteQuote}"
+          </blockquote>
+          <cite className="font-caps text-sm tracking-wider text-muted-foreground">
+            — {author.quoteAuthor}
+          </cite>
+        </section>
+
+        {/* Extended Bio */}
+        <section className="paper-section paper-shadow p-8 md:p-12 mb-16 animate-slide-up stagger-3">
+          <h3 className="font-display text-2xl font-bold mb-6 text-center">Perjalanan Saya</h3>
+          <div className="prose prose-lg max-w-none">
+            <p className="font-body text-muted-foreground leading-relaxed text-center max-w-3xl mx-auto">
+              {author.longBio}
+            </p>
+          </div>
+        </section>
+
+        {/* Topics Section */}
+        <section className="grid md:grid-cols-2 gap-6 mb-16">
+          <div className="paper-note p-6 animate-slide-up stagger-4">
+            <h4 className="font-caps text-xs tracking-widest text-muted-foreground mb-3">Filsafat</h4>
+            <p className="font-body text-sm leading-relaxed">
+              Eksplorasi mendalam tentang stoikisme, eksistensialisme, dan kebijaksanaan kuno yang relevan untuk kehidupan modern.
+            </p>
+          </div>
+          <div className="paper-note p-6 animate-slide-up stagger-5">
+            <h4 className="font-caps text-xs tracking-widest text-muted-foreground mb-3">Book Review</h4>
+            <p className="font-body text-sm leading-relaxed">
+              Ulasan jujur dan reflektif tentang buku-buku yang telah mengubah cara saya berpikir dan hidup.
+            </p>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="text-center py-12 paper-section paper-shadow animate-scale-in">
+          <h2 className="text-2xl md:text-3xl font-display font-bold mb-4">Mari Berdiskusi</h2>
+          <p className="text-muted-foreground mb-8 max-w-xl mx-auto font-body">
+            Punya pertanyaan tentang filsafat, rekomendasi buku, atau sekadar ingin berbagi pemikiran? 
+            Saya selalu senang mendengar dari pembaca.
           </p>
           <a
             href="/contact"
-            className="inline-block px-8 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
+            className="inline-block px-8 py-3 bg-primary text-primary-foreground font-body font-medium paper-shadow hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
           >
-            Get in Touch
+            Hubungi Saya
           </a>
         </section>
       </main>
+
+      <Footer />
     </div>
   );
 };
