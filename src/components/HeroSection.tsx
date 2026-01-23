@@ -1,7 +1,24 @@
+import { useState, useEffect } from "react";
 import { Instagram, Facebook, Linkedin, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import HandwritingText, { HandwritingLine, InkDrop } from "./HandwritingText";
 
 const HeroSection = () => {
+  const [showMainText, setShowMainText] = useState(false);
+  const [showParagraph, setShowParagraph] = useState(false);
+
+  useEffect(() => {
+    // Start main text after welcome animation
+    const timer1 = setTimeout(() => setShowMainText(true), 800);
+    const timer2 = setTimeout(() => setShowParagraph(true), 1500);
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, []);
+
   return (
     <section className="relative my-8 md:my-12 animate-fade-in">
       {/* Paper texture background */}
@@ -30,30 +47,77 @@ const HeroSection = () => {
 
           {/* Right side - Content */}
           <div className="flex flex-col justify-center space-y-6 md:space-y-8">
-            {/* Editorial header */}
-            <div className="space-y-2 animate-slide-down">
-              <span className="font-script text-2xl md:text-3xl text-accent">
-                Welcome to
+            {/* Editorial header with handwriting effect */}
+            <div className="space-y-2">
+              <span className="font-script text-2xl md:text-3xl text-accent block">
+                <HandwritingText 
+                  text="Welcome to" 
+                  speed={80}
+                  onComplete={() => setShowMainText(true)}
+                />
               </span>
             </div>
             
             <div className="space-y-4 md:space-y-6">
-              <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-black leading-[0.95] tracking-tight animate-slide-down">
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: showMainText ? 1 : 0, y: showMainText ? 0 : 20 }}
+                transition={{ duration: 0.6 }}
+                className="text-4xl md:text-5xl lg:text-7xl font-display font-black leading-[0.95] tracking-tight"
+              >
                 <span className="block">The Art of</span>
-                <span className="block text-accent">Balanced</span>
+                <span className="block text-accent relative">
+                  Balanced
+                  {/* Decorative underline that draws in */}
+                  <motion.span 
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: showMainText ? 1 : 0 }}
+                    transition={{ delay: 0.5, duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+                    className="absolute -bottom-1 left-0 right-0 h-1 bg-[hsl(var(--accent)/0.3)] origin-left"
+                  />
+                </span>
                 <span className="block">Living</span>
-              </h1>
+              </motion.h1>
               
-              <div className="ornament-divider text-2xl animate-fade-in stagger-1">✦</div>
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: showMainText ? 1 : 0 }}
+                transition={{ delay: 0.3 }}
+                className="ornament-divider text-2xl"
+              >
+                ✦
+              </motion.div>
               
-              <p className="font-body text-muted-foreground text-lg md:text-xl leading-relaxed max-w-xl animate-slide-up stagger-2">
-                <span className="drop-cap">S</span>ophrosyne invites you to explore the intersection of wisdom and wonder. 
-                Here, words are carefully crafted like fine paper, each fold revealing new perspectives 
-                on mindful living, creative expression, and the beautiful complexity of human experience.
-              </p>
+              {/* Paragraph with typing effect */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: showParagraph ? 1 : 0 }}
+                transition={{ duration: 0.5 }}
+                className="relative"
+              >
+                {/* Ink drops for decoration */}
+                <InkDrop x={95} y={10} delay={2} size={4} />
+                <InkDrop x={98} y={25} delay={2.2} size={3} />
+                
+                <p className="font-body text-muted-foreground text-lg md:text-xl leading-relaxed max-w-xl">
+                  <span className="drop-cap">S</span>ophrosyne invites you to explore the intersection of wisdom and wonder. 
+                  Here, words are carefully crafted like fine paper, each fold revealing new perspectives 
+                  on mindful living, creative expression, and the beautiful complexity of human experience.
+                </p>
+                
+                {/* Handwriting flourish line */}
+                <div className="mt-4 text-[hsl(var(--sepia)/0.4)] w-32">
+                  <HandwritingLine delay={2.5} duration={0.8} />
+                </div>
+              </motion.div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 pt-4 animate-slide-up stagger-3">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: showParagraph ? 1 : 0, y: showParagraph ? 0 : 20 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 pt-4"
+            >
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 md:px-10 md:py-6 text-base font-body font-medium paper-shadow hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all w-full sm:w-auto group">
                 <BookOpen className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
                 Begin Reading
@@ -82,12 +146,23 @@ const HeroSection = () => {
                   <Linkedin className="w-5 h-5" />
                 </a>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Decorative quote */}
-            <blockquote className="pull-quote animate-fade-in stagger-4 hidden lg:block">
-              "Σωφροσύνη — the ancient Greek ideal of sound mind and excellent character"
-            </blockquote>
+            {/* Decorative quote with handwriting */}
+            <motion.blockquote 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: showParagraph ? 1 : 0 }}
+              transition={{ delay: 0.5 }}
+              className="pull-quote hidden lg:block"
+            >
+              <span className="font-script text-xl">
+                <HandwritingText 
+                  text='"Where every word is a brushstroke on the canvas of understanding"' 
+                  delay={3000}
+                  speed={40}
+                />
+              </span>
+            </motion.blockquote>
           </div>
         </div>
 

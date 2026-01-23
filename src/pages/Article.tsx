@@ -5,6 +5,7 @@ import ArticleCard from "@/components/ArticleCard";
 import Footer from "@/components/Footer";
 import BookReadingMode from "@/components/BookReadingMode";
 import TornPaperEdge from "@/components/TornPaperEdge";
+import ArticleTOC from "@/components/ArticleTOC";
 import { getArticleById, getRelatedArticles } from "@/data/articles";
 import { Facebook, Twitter, Linkedin, Link2, ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,9 @@ const Article = () => {
   return (
     <div className="min-h-screen bg-background animate-fade-in paper-page">
       <Header />
+      
+      {/* Table of Contents Sidebar */}
+      <ArticleTOC article={article} />
       
       {/* Book Reading Mode */}
       <BookReadingMode 
@@ -167,14 +171,16 @@ const Article = () => {
             </div>
           </div>
 
-          {/* Article Content */}
+          {/* Article Content with section IDs for TOC */}
           <div className="prose prose-lg max-w-none mb-16 animate-slide-up stagger-2">
-            <p className="text-lg leading-relaxed text-muted-foreground mb-8">
-              {article.content.introduction}
-            </p>
+            <div id="intro">
+              <p className="text-lg leading-relaxed text-muted-foreground mb-8">
+                {article.content.introduction}
+              </p>
+            </div>
 
             {article.content.sections.map((section, index) => (
-              <div key={index} className="mb-10">
+              <div key={index} id={`section-${index}`} className="mb-10 scroll-mt-24">
                 <h2 className="text-3xl font-bold mb-4">{section.heading}</h2>
                 <p className="text-lg leading-relaxed text-muted-foreground">
                   {section.content}
@@ -182,7 +188,7 @@ const Article = () => {
               </div>
             ))}
 
-            <div className="mt-12 p-6 rounded-2xl bg-muted border-l-4 border-accent">
+            <div id="conclusion" className="mt-12 p-6 rounded-2xl bg-muted border-l-4 border-accent scroll-mt-24">
               <p className="text-lg leading-relaxed italic text-foreground">
                 {article.content.conclusion}
               </p>
