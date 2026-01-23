@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, BookOpen, ChevronLeft, ChevronRight, Bookmark, MessageSquare } from "lucide-react";
 import { Article } from "@/data/articles";
@@ -13,7 +13,7 @@ interface MarginNote {
   id: string;
   pageIndex: number;
   content: string;
-  position: number; // percentage from top
+  position: number;
 }
 
 // Paper sound effects
@@ -59,55 +59,39 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [noteInput, setNoteInput] = useState("");
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const bookRef = useRef<HTMLDivElement>(null);
 
   // Split content into pages
   const pages = [
-    // Title page
-    {
-      type: 'title',
-      content: article.title,
-      subtitle: article.subtitle,
-    },
-    // Introduction
-    {
-      type: 'content',
-      heading: 'Introduction',
-      content: article.content.introduction,
-    },
-    // Article sections
+    { type: 'title' as const, content: article.title, subtitle: article.subtitle, heading: '' },
+    { type: 'content' as const, heading: 'Introduction', content: article.content.introduction },
     ...article.content.sections.map(section => ({
-      type: 'content',
+      type: 'content' as const,
       heading: section.heading,
       content: section.content,
     })),
-    // Conclusion
-    {
-      type: 'conclusion',
-      content: article.content.conclusion,
-    },
+    { type: 'conclusion' as const, content: article.content.conclusion, heading: '' },
   ];
 
   const totalPages = pages.length;
 
-  const goToNextPage = () => {
+  const goToNextPage = useCallback(() => {
     if (currentPage < totalPages - 1) {
       playPaperSound('turn');
       setCurrentPage(prev => prev + 1);
     }
-  };
+  }, [currentPage, totalPages]);
 
-  const goToPrevPage = () => {
+  const goToPrevPage = useCallback(() => {
     if (currentPage > 0) {
       playPaperSound('turn');
       setCurrentPage(prev => prev - 1);
     }
-  };
+  }, [currentPage]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     playPaperSound('close');
     onClose();
-  };
+  }, [onClose]);
 
   const addMarginNote = () => {
     if (noteInput.trim()) {
@@ -115,7 +99,7 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
         id: Date.now().toString(),
         pageIndex: currentPage,
         content: noteInput,
-        position: 30 + Math.random() * 40, // Random position
+        position: 30 + Math.random() * 40,
       };
       setMarginNotes([...marginNotes, newNote]);
       setNoteInput("");
@@ -127,22 +111,46 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
 
   // Keyboard navigation
   useEffect(() => {
+    if (!isOpen) return;
+    
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
-      if (e.key === 'ArrowRight' || e.key === ' ') goToNextPage();
-      if (e.key === 'ArrowLeft') goToPrevPage();
-      if (e.key === 'Escape') handleClose();
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        goToNextPage();
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goToPrevPage();
+      }
+      if (e.key === 'Escape') {
+        handleClose();
+      }
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, currentPage]);
+  }, [isOpen, goToNextPage, goToPrevPage, handleClose]);
 
   useEffect(() => {
     if (isOpen) {
       playPaperSound('rustle');
+      setCurrentPage(0);
     }
   }, [isOpen]);
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   return (
     <AnimatePresence>
@@ -151,29 +159,28 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-[hsl(var(--paper-shadow)/0.8)] backdrop-blur-sm"
-          onClick={handleClose}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-[hsl(var(--paper-shadow)/0.85)] backdrop-blur-sm"
         >
+          {/* Click outside to close */}
+          <div className="absolute inset-0" onClick={handleClose} />
+          
           {/* Book Container */}
           <motion.div
-            ref={bookRef}
             initial={{ scale: 0.8, rotateY: -30 }}
             animate={{ scale: 1, rotateY: 0 }}
             exit={{ scale: 0.8, rotateY: 30 }}
             transition={{ type: "spring", damping: 20, stiffness: 100 }}
-            className="relative w-[95vw] max-w-5xl h-[85vh] perspective-[2000px]"
-            onClick={(e) => e.stopPropagation()}
-            style={{ transformStyle: "preserve-3d" }}
+            className="relative w-[95vw] max-w-5xl h-[80vh] max-h-[700px]"
+            style={{ perspective: "2000px" }}
           >
             {/* Book Spine */}
-            <div className="absolute left-1/2 top-0 bottom-0 w-8 -ml-4 bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(var(--primary)/0.9)] to-[hsl(var(--primary))] rounded-sm shadow-xl z-10" />
+            <div className="absolute left-1/2 top-0 bottom-0 w-6 -ml-3 bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(var(--primary)/0.9)] to-[hsl(var(--primary))] rounded-sm shadow-xl z-20" />
             
-            {/* Left Page (Previous content or margin notes) */}
-            <motion.div
-              className="absolute left-0 top-0 bottom-0 w-[calc(50%-1rem)] bg-[hsl(var(--paper-cream))] rounded-l-sm overflow-hidden"
+            {/* Left Page */}
+            <div
+              className="absolute left-0 top-0 bottom-0 w-[calc(50%-0.75rem)] bg-[hsl(var(--paper-cream))] rounded-l-sm overflow-hidden"
               style={{
                 boxShadow: "inset -20px 0 30px -15px hsl(var(--paper-shadow)/0.2), -5px 5px 20px hsl(var(--paper-shadow)/0.3)",
-                transformOrigin: "right center",
               }}
             >
               {/* Paper texture */}
@@ -184,13 +191,12 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
               />
               
               {/* Margin notes area */}
-              <div className="absolute left-0 top-0 bottom-0 w-16 bg-[hsl(var(--paper-aged)/0.3)] border-r border-[hsl(var(--sepia)/0.2)]">
-                <div className="absolute inset-0 flex flex-col gap-4 p-2 pt-8">
+              <div className="absolute left-0 top-0 bottom-0 w-14 bg-[hsl(var(--paper-aged)/0.3)] border-r border-[hsl(var(--sepia)/0.2)]">
+                <div className="flex flex-col gap-3 p-2 pt-6">
                   {currentPageNotes.map((note) => (
                     <div
                       key={note.id}
-                      className="text-[8px] font-script text-[hsl(var(--ink-blue))] leading-tight p-1 bg-[hsl(var(--paper-cream)/0.5)] rounded border border-[hsl(var(--sepia)/0.2)]"
-                      style={{ top: `${note.position}%` }}
+                      className="text-[7px] font-script text-[hsl(var(--ink-blue))] leading-tight p-1 bg-[hsl(var(--paper-cream)/0.5)] rounded border border-[hsl(var(--sepia)/0.2)]"
                     >
                       {note.content}
                     </div>
@@ -198,28 +204,34 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                 </div>
               </div>
               
-              {/* Left page content - Previous page preview */}
-              <div className="absolute left-20 right-8 top-12 bottom-12 overflow-hidden">
+              {/* Left page content */}
+              <div className="absolute left-16 right-6 top-10 bottom-10 overflow-hidden">
                 {currentPage > 0 && (
-                  <div className="opacity-60">
-                    <p className="text-xs font-caps text-muted-foreground mb-2">Previous</p>
-                    <p className="text-sm font-body text-muted-foreground line-clamp-6">
+                  <div className="opacity-50">
+                    <p className="text-[10px] font-caps text-muted-foreground mb-2 tracking-wider">Previous</p>
+                    <p className="text-xs font-body text-muted-foreground line-clamp-[12]">
                       {pages[currentPage - 1].type === 'title' 
                         ? pages[currentPage - 1].content 
-                        : pages[currentPage - 1].content?.substring(0, 200) + '...'}
+                        : pages[currentPage - 1].content?.substring(0, 300) + '...'}
                     </p>
                   </div>
                 )}
                 
-                {/* Page crease line */}
-                <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[hsl(var(--sepia)/0.3)] to-transparent" />
+                {currentPage === 0 && (
+                  <div className="h-full flex flex-col items-center justify-center text-center opacity-60">
+                    <div className="ornament-divider mb-4 text-lg">✦</div>
+                    <p className="font-script text-lg text-muted-foreground">A Publication by</p>
+                    <p className="font-display text-xl font-bold mt-2">Sophrosyne</p>
+                    <div className="ornament-divider mt-4 text-lg">✦</div>
+                  </div>
+                )}
               </div>
               
               {/* Page number */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 font-caps text-xs text-muted-foreground">
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 font-caps text-[10px] text-muted-foreground">
                 {currentPage > 0 ? currentPage : '—'}
               </div>
-            </motion.div>
+            </div>
             
             {/* Right Page (Current content) */}
             <AnimatePresence mode="wait">
@@ -228,8 +240,8 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                 initial={{ rotateY: -90, opacity: 0 }}
                 animate={{ rotateY: 0, opacity: 1 }}
                 exit={{ rotateY: 90, opacity: 0 }}
-                transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-                className="absolute right-0 top-0 bottom-0 w-[calc(50%-1rem)] bg-[hsl(var(--paper-cream))] rounded-r-sm overflow-hidden"
+                transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                className="absolute right-0 top-0 bottom-0 w-[calc(50%-0.75rem)] bg-[hsl(var(--paper-cream))] rounded-r-sm overflow-hidden"
                 style={{
                   boxShadow: "inset 20px 0 30px -15px hsl(var(--paper-shadow)/0.15), 5px 5px 20px hsl(var(--paper-shadow)/0.3)",
                   transformOrigin: "left center",
@@ -244,58 +256,55 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                 />
                 
                 {/* Page curl effect */}
-                <div className="absolute top-0 right-0 w-12 h-12 pointer-events-none"
+                <div className="absolute top-0 right-0 w-10 h-10 pointer-events-none"
                   style={{
                     background: `linear-gradient(225deg, hsl(var(--paper-aged)) 0%, hsl(var(--paper-aged)) 50%, transparent 50%)`,
-                    boxShadow: "-2px 2px 5px hsl(var(--paper-shadow)/0.2)",
+                    boxShadow: "-2px 2px 4px hsl(var(--paper-shadow)/0.2)",
                   }}
                 />
                 
                 {/* Content area */}
-                <div className="absolute left-8 right-12 top-12 bottom-16 overflow-y-auto scrollbar-hide">
+                <div className="absolute left-6 right-10 top-10 bottom-14 overflow-y-auto scrollbar-hide">
                   {pages[currentPage].type === 'title' ? (
-                    // Title page layout
-                    <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                      <div className="ornament-divider mb-8 w-24">✦</div>
-                      <h1 className="font-display text-3xl md:text-4xl font-bold mb-6 leading-tight">
+                    <div className="flex flex-col items-center justify-center h-full text-center px-2">
+                      <div className="ornament-divider mb-6 w-20 text-sm">✦</div>
+                      <h1 className="font-display text-2xl md:text-3xl font-bold mb-4 leading-tight">
                         {pages[currentPage].content}
                       </h1>
-                      <p className="font-editorial text-lg text-muted-foreground italic mb-8">
+                      <p className="font-editorial text-base text-muted-foreground italic mb-6">
                         {pages[currentPage].subtitle}
                       </p>
-                      <div className="flex items-center gap-4 mt-8">
+                      <div className="flex items-center gap-3 mt-4">
                         <img 
                           src={article.author.avatar} 
                           alt={article.author.name}
-                          className="w-12 h-12 rounded-full object-cover border-2 border-border"
+                          className="w-10 h-10 rounded-full object-cover border-2 border-border"
                         />
                         <div className="text-left">
                           <p className="font-body font-semibold text-sm">{article.author.name}</p>
-                          <p className="text-xs text-muted-foreground">{article.date}</p>
+                          <p className="text-[10px] text-muted-foreground">{article.date}</p>
                         </div>
                       </div>
-                      <div className="ornament-divider mt-8 w-24">✦</div>
+                      <div className="ornament-divider mt-6 w-20 text-sm">✦</div>
                     </div>
                   ) : pages[currentPage].type === 'conclusion' ? (
-                    // Conclusion page
-                    <div className="py-8">
-                      <div className="ornament-divider mb-6">✦</div>
-                      <blockquote className="font-editorial text-xl italic text-center px-4 text-[hsl(var(--sepia))]">
+                    <div className="py-6 flex flex-col items-center justify-center h-full">
+                      <div className="ornament-divider mb-4 text-sm">✦</div>
+                      <blockquote className="font-editorial text-lg italic text-center px-2 text-[hsl(var(--sepia))]">
                         {pages[currentPage].content}
                       </blockquote>
-                      <div className="ornament-divider mt-6">✦</div>
-                      <div className="mt-12 text-center">
-                        <p className="font-script text-2xl text-muted-foreground">The End</p>
+                      <div className="ornament-divider mt-4 text-sm">✦</div>
+                      <div className="mt-8 text-center">
+                        <p className="font-script text-xl text-muted-foreground">The End</p>
                       </div>
                     </div>
                   ) : (
-                    // Regular content page
-                    <div className="py-4">
-                      <h2 className="font-editorial text-2xl font-semibold mb-6 text-[hsl(var(--primary))]">
+                    <div className="py-2">
+                      <h2 className="font-editorial text-xl font-semibold mb-4 text-[hsl(var(--primary))]">
                         {pages[currentPage].heading}
                       </h2>
                       <div className="article-body">
-                        <p className="font-body text-base leading-relaxed text-foreground">
+                        <p className="font-body text-sm leading-relaxed text-foreground">
                           {pages[currentPage].content}
                         </p>
                       </div>
@@ -304,67 +313,94 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                 </div>
                 
                 {/* Page number */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 font-caps text-xs text-muted-foreground">
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 font-caps text-[10px] text-muted-foreground">
                   {currentPage + 1}
                 </div>
                 
                 {/* Decorative footer line */}
-                <div className="absolute bottom-10 left-8 right-12 h-px bg-gradient-to-r from-transparent via-[hsl(var(--border))] to-transparent" />
+                <div className="absolute bottom-8 left-6 right-10 h-px bg-gradient-to-r from-transparent via-[hsl(var(--border))] to-transparent" />
               </motion.div>
             </AnimatePresence>
             
-            {/* Controls */}
-            <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-6">
+            {/* Navigation Controls - Below book */}
+            <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-4 z-30">
               <button
-                onClick={goToPrevPage}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  goToPrevPage();
+                }}
                 disabled={currentPage === 0}
-                className="w-12 h-12 rounded-full bg-[hsl(var(--paper-cream))] border border-border flex items-center justify-center disabled:opacity-30 hover:bg-[hsl(var(--paper-aged))] transition-colors shadow-lg"
+                className="w-14 h-14 rounded-full bg-[hsl(var(--paper-cream))] border-2 border-border flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[hsl(var(--paper-aged))] hover:scale-105 active:scale-95 transition-all shadow-lg cursor-pointer"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-6 h-6" />
               </button>
               
-              <div className="flex items-center gap-2 px-4 py-2 bg-[hsl(var(--paper-cream))] rounded-full border border-border shadow-lg">
+              <div className="flex items-center gap-2 px-5 py-3 bg-[hsl(var(--paper-cream))] rounded-full border-2 border-border shadow-lg">
                 <BookOpen className="w-4 h-4 text-muted-foreground" />
-                <span className="font-caps text-sm">
+                <span className="font-caps text-sm font-medium">
                   {currentPage + 1} / {totalPages}
                 </span>
               </div>
               
               <button
-                onClick={goToNextPage}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  goToNextPage();
+                }}
                 disabled={currentPage === totalPages - 1}
-                className="w-12 h-12 rounded-full bg-[hsl(var(--paper-cream))] border border-border flex items-center justify-center disabled:opacity-30 hover:bg-[hsl(var(--paper-aged))] transition-colors shadow-lg"
+                className="w-14 h-14 rounded-full bg-[hsl(var(--paper-cream))] border-2 border-border flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[hsl(var(--paper-aged))] hover:scale-105 active:scale-95 transition-all shadow-lg cursor-pointer"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-6 h-6" />
               </button>
             </div>
             
             {/* Top controls */}
-            <div className="absolute -top-14 right-0 flex items-center gap-3">
+            <div className="absolute -top-16 right-0 flex items-center gap-3 z-30">
               <button
-                onClick={() => setIsBookmarked(!isBookmarked)}
-                className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all shadow-lg ${
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsBookmarked(!isBookmarked);
+                }}
+                className={`w-11 h-11 rounded-full border-2 flex items-center justify-center transition-all shadow-lg cursor-pointer ${
                   isBookmarked 
                     ? 'bg-[hsl(var(--accent))] border-[hsl(var(--accent))] text-white' 
                     : 'bg-[hsl(var(--paper-cream))] border-border hover:bg-[hsl(var(--paper-aged))]'
                 }`}
               >
-                <Bookmark className="w-4 h-4" />
+                <Bookmark className="w-5 h-5" />
               </button>
               
               <button
-                onClick={() => setIsAddingNote(!isAddingNote)}
-                className="w-10 h-10 rounded-full bg-[hsl(var(--paper-cream))] border border-border flex items-center justify-center hover:bg-[hsl(var(--paper-aged))] transition-colors shadow-lg"
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsAddingNote(!isAddingNote);
+                }}
+                className="w-11 h-11 rounded-full bg-[hsl(var(--paper-cream))] border-2 border-border flex items-center justify-center hover:bg-[hsl(var(--paper-aged))] transition-colors shadow-lg cursor-pointer"
               >
-                <MessageSquare className="w-4 h-4" />
+                <MessageSquare className="w-5 h-5" />
               </button>
               
               <button
-                onClick={handleClose}
-                className="w-10 h-10 rounded-full bg-[hsl(var(--paper-cream))] border border-border flex items-center justify-center hover:bg-[hsl(var(--destructive))] hover:text-white hover:border-[hsl(var(--destructive))] transition-colors shadow-lg"
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClose();
+                }}
+                className="w-11 h-11 rounded-full bg-[hsl(var(--paper-cream))] border-2 border-border flex items-center justify-center hover:bg-[hsl(var(--destructive))] hover:text-white hover:border-[hsl(var(--destructive))] transition-colors shadow-lg cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
+            </div>
+            
+            {/* Keyboard hint */}
+            <div className="absolute -bottom-20 left-0 text-[10px] font-caps text-muted-foreground/60 z-30">
+              Use ← → arrows or click buttons to navigate
             </div>
             
             {/* Note input modal */}
@@ -374,7 +410,8 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
-                  className="absolute -top-32 right-0 w-64 p-4 bg-[hsl(var(--paper-cream))] rounded-lg border border-border shadow-xl"
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute -top-36 right-0 w-64 p-4 bg-[hsl(var(--paper-cream))] rounded-lg border-2 border-border shadow-xl z-40"
                 >
                   <p className="text-sm font-caps mb-2">Add Margin Note</p>
                   <textarea
@@ -382,17 +419,20 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                     onChange={(e) => setNoteInput(e.target.value)}
                     placeholder="Write your note..."
                     className="w-full h-20 p-2 text-sm bg-[hsl(var(--background))] border border-border rounded resize-none focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))]"
+                    onClick={(e) => e.stopPropagation()}
                   />
                   <div className="flex gap-2 mt-2">
                     <button
+                      type="button"
                       onClick={() => setIsAddingNote(false)}
-                      className="flex-1 py-1 text-sm border border-border rounded hover:bg-[hsl(var(--muted))]"
+                      className="flex-1 py-2 text-sm border border-border rounded hover:bg-[hsl(var(--muted))] cursor-pointer"
                     >
                       Cancel
                     </button>
                     <button
+                      type="button"
                       onClick={addMarginNote}
-                      className="flex-1 py-1 text-sm bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded"
+                      className="flex-1 py-2 text-sm bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded cursor-pointer"
                     >
                       Add
                     </button>
