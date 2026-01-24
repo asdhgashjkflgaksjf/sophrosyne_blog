@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { X, BookOpen, ChevronLeft, ChevronRight, Bookmark, MessageSquare, Highlighter } from "lucide-react";
 import { Article } from "@/data/articles";
 import PageCurl from "./PageCurl";
 import { Highlight, HIGHLIGHT_COLORS, HighlightList } from "./TextHighlighter";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface BookReadingModeProps {
   article: Article;
@@ -56,6 +57,7 @@ const playPaperSound = (type: 'turn' | 'rustle' | 'close') => {
 };
 
 const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => {
+  const isMobile = useIsMobile();
   const [currentPage, setCurrentPage] = useState(0);
   const [marginNotes, setMarginNotes] = useState<MarginNote[]>([]);
   const [isAddingNote, setIsAddingNote] = useState(false);
@@ -65,6 +67,7 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
   const [isHighlighting, setIsHighlighting] = useState(false);
   const [highlightColor, setHighlightColor] = useState(HIGHLIGHT_COLORS[0].value);
   const [showHighlights, setShowHighlights] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Split content into pages
   const pages = [
@@ -134,6 +137,16 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
     setShowHighlights(false);
   };
 
+  // Swipe gesture handling for mobile
+  const handleDragEnd = (event: any, info: PanInfo) => {
+    const threshold = 50;
+    if (info.offset.x < -threshold && currentPage < totalPages - 1) {
+      goToNextPage();
+    } else if (info.offset.x > threshold && currentPage > 0) {
+      goToPrevPage();
+    }
+  };
+
   // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
@@ -177,6 +190,160 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
 
   if (!isOpen) return null;
 
+  // Mobile Single-Page Layout
+  if (isMobile) {
+    return (
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex flex-col bg-[hsl(var(--paper-cream))]"
+          >
+            {/* Mobile Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border bg-[hsl(var(--paper-cream))]">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-muted-foreground" />
+                <span className="font-caps text-xs tracking-wider">
+                  {currentPage + 1} / {totalPages}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsBookmarked(!isBookmarked)}
+                  className={`p-2 rounded-full transition-all ${
+                    isBookmarked 
+                      ? 'bg-accent text-white' 
+                      : 'hover:bg-muted/60'
+                  }`}
+                >
+                  <Bookmark className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="p-2 rounded-full hover:bg-muted/60 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Mobile Content - Swipeable */}
+            <motion.div
+              ref={contentRef}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={handleDragEnd}
+              className="flex-1 overflow-y-auto p-6"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentPage}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="min-h-full"
+                >
+                  {pages[currentPage].type === 'title' ? (
+                    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+                      <div className="ornament-divider mb-6 w-16 text-sm">✦</div>
+                      <h1 className="font-display text-2xl font-bold mb-4 leading-tight">
+                        {pages[currentPage].content}
+                      </h1>
+                      <p className="font-editorial text-base text-muted-foreground italic mb-6">
+                        {pages[currentPage].subtitle}
+                      </p>
+                      <div className="flex items-center gap-3 mt-4">
+                        <img 
+                          src={article.author.avatar} 
+                          alt={article.author.name}
+                          className="w-10 h-10 rounded-full object-cover border-2 border-border"
+                        />
+                        <div className="text-left">
+                          <p className="font-body font-semibold text-sm">{article.author.name}</p>
+                          <p className="text-xs text-muted-foreground">{article.date}</p>
+                        </div>
+                      </div>
+                      <div className="ornament-divider mt-6 w-16 text-sm">✦</div>
+                    </div>
+                  ) : pages[currentPage].type === 'conclusion' ? (
+                    <div className="py-6 flex flex-col items-center justify-center min-h-[60vh]">
+                      <div className="ornament-divider mb-4 text-sm">✦</div>
+                      <blockquote className="font-editorial text-lg italic text-center px-2 text-[hsl(var(--sepia))]">
+                        {pages[currentPage].content}
+                      </blockquote>
+                      <div className="ornament-divider mt-4 text-sm">✦</div>
+                      <div className="mt-8 text-center">
+                        <p className="font-script text-xl text-muted-foreground">The End</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-2">
+                      <h2 className="font-editorial text-xl font-semibold mb-4 text-[hsl(var(--primary))]">
+                        {pages[currentPage].heading}
+                      </h2>
+                      <div className="article-body">
+                        <p className="font-body text-base leading-relaxed text-foreground">
+                          {pages[currentPage].content}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+
+            {/* Mobile Bottom Navigation */}
+            <div className="flex items-center justify-between p-4 border-t border-border bg-[hsl(var(--paper-cream))] gap-4">
+              <button
+                type="button"
+                onClick={goToPrevPage}
+                disabled={currentPage === 0}
+                className="flex-1 py-3 px-4 rounded-lg bg-muted/40 flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-muted/60 transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5" />
+                <span className="font-caps text-xs">Prev</span>
+              </button>
+              
+              {/* Progress dots */}
+              <div className="flex gap-1">
+                {pages.map((_, idx) => (
+                  <div
+                    key={idx}
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                      idx === currentPage ? 'bg-accent w-3' : 'bg-muted-foreground/30'
+                    }`}
+                  />
+                ))}
+              </div>
+              
+              <button
+                type="button"
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages - 1}
+                className="flex-1 py-3 px-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
+              >
+                <span className="font-caps text-xs">Next</span>
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Swipe hint */}
+            <div className="text-center py-2 text-[10px] font-caps text-muted-foreground/60 bg-[hsl(var(--paper-cream))]">
+              ← Swipe untuk navigasi →
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  }
+
+  // Desktop Two-Page Book Layout
   return (
     <AnimatePresence>
       {isOpen && (
@@ -280,7 +447,7 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                   }}
                 />
                 
-                {/* Page curl effect - interactive */}
+                {/* Page curl effect - interactive (desktop only) */}
                 <PageCurl 
                   onFlip={goToNextPage}
                   isLastPage={currentPage === totalPages - 1}

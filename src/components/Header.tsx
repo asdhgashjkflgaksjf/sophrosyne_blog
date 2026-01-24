@@ -59,10 +59,10 @@ const Header = () => {
             <a href="/#articles" className="text-sm font-body font-medium hover:bg-muted/60 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary">
               Artikel
             </a>
-            <a href="/creativity" className="text-sm font-body font-medium hover:bg-muted/60 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary">
+            <a href="/filsafat" className="text-sm font-body font-medium hover:bg-muted/60 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary">
               Filsafat
             </a>
-            <a href="/growth" className="text-sm font-body font-medium hover:bg-muted/60 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary">
+            <a href="/book-review" className="text-sm font-body font-medium hover:bg-muted/60 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary">
               Book Review
             </a>
             <a href="/authors" className="text-sm font-body font-medium hover:bg-muted/60 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary">
@@ -109,10 +109,10 @@ const Header = () => {
               <a href="/#articles" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
                 Artikel
               </a>
-              <a href="/creativity" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
+              <a href="/filsafat" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
                 Filsafat
               </a>
-              <a href="/growth" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
+              <a href="/book-review" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
                 Book Review
               </a>
               <a href="/authors" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">

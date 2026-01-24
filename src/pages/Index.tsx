@@ -1,13 +1,21 @@
+import { useState, useCallback } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ArticleCard from "@/components/ArticleCard";
 import HeroSection from "@/components/HeroSection";
 import IntroSection from "@/components/IntroSection";
-import { articles } from "@/data/articles";
+import ArticleSearch from "@/components/ArticleSearch";
+import { articles, Article } from "@/data/articles";
 import { Send } from "lucide-react";
 
 const Index = () => {
-  const featuredArticles = articles.slice(0, 6);
+  const [filteredArticles, setFilteredArticles] = useState<Article[]>(articles);
+
+  const handleFilteredArticles = useCallback((filtered: Article[]) => {
+    setFilteredArticles(filtered);
+  }, []);
+
+  const displayedArticles = filteredArticles.slice(0, 6);
 
   return (
     <div className="min-h-screen paper-page animate-fade-in">
@@ -22,7 +30,7 @@ const Index = () => {
 
         {/* Featured Articles Grid */}
         <section id="articles" className="py-12">
-          <div className="flex items-center justify-between mb-12 animate-slide-up">
+          <div className="flex items-center justify-between mb-8 animate-slide-up">
             <div>
               <span className="font-caps text-xs tracking-widest text-muted-foreground block mb-2">Curated Reads</span>
               <h2 className="text-3xl md:text-4xl font-display font-bold tracking-tight">Featured Articles</h2>
@@ -32,13 +40,33 @@ const Index = () => {
             </a>
           </div>
 
+          {/* Search Component */}
+          <ArticleSearch onFilteredArticles={handleFilteredArticles} />
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredArticles.map((article, index) => (
+            {displayedArticles.map((article, index) => (
               <div key={article.id} className={`animate-slide-up stagger-${Math.min(index + 1, 6)}`}>
                 <ArticleCard {...article} size="small" />
               </div>
             ))}
           </div>
+
+          {displayedArticles.length === 0 && (
+            <div className="paper-section p-12 text-center">
+              <p className="font-body text-muted-foreground">Tidak ada artikel yang sesuai dengan pencarian.</p>
+            </div>
+          )}
+
+          {filteredArticles.length > 6 && (
+            <div className="text-center mt-8">
+              <a 
+                href="#all" 
+                className="inline-block px-6 py-3 border border-border hover:border-primary font-body text-sm transition-colors"
+              >
+                Lihat {filteredArticles.length - 6} artikel lainnya →
+              </a>
+            </div>
+          )}
         </section>
 
         {/* Newsletter Section with Paper Style */}
