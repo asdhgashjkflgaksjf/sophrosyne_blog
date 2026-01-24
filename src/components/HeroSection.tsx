@@ -1,12 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Instagram, Facebook, Linkedin, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import HandwritingText, { HandwritingLine, InkDrop } from "./HandwritingText";
+import { philosopherQuotes } from "@/data/philosopherQuotes";
 
 const HeroSection = () => {
   const [showMainText, setShowMainText] = useState(false);
   const [showParagraph, setShowParagraph] = useState(false);
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     // Start main text after welcome animation
@@ -18,6 +21,19 @@ const HeroSection = () => {
       clearTimeout(timer2);
     };
   }, []);
+
+  // Quote rotation
+  const goToNextQuote = useCallback(() => {
+    setQuoteIndex((prev) => (prev + 1) % philosopherQuotes.length);
+  }, []);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const timer = setInterval(goToNextQuote, 8000);
+    return () => clearInterval(timer);
+  }, [isPaused, goToNextQuote]);
+
+  const currentQuote = philosopherQuotes[quoteIndex];
 
   return (
     <section className="relative my-8 md:my-12 animate-fade-in">
@@ -148,21 +164,48 @@ const HeroSection = () => {
               </div>
             </motion.div>
 
-            {/* Decorative quote with handwriting */}
-            <motion.blockquote 
+            {/* Rotating Philosopher Quote */}
+            <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: showParagraph ? 1 : 0 }}
               transition={{ delay: 0.5 }}
-              className="pull-quote hidden lg:block"
+              className="hidden lg:block mt-8 pt-6 border-t border-border"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
             >
-              <span className="font-script text-xl">
-                <HandwritingText 
-                  text='"Where every word is a brushstroke on the canvas of understanding"' 
-                  delay={3000}
-                  speed={40}
-                />
-              </span>
-            </motion.blockquote>
+              <AnimatePresence mode="wait">
+                <motion.blockquote 
+                  key={quoteIndex}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.5 }}
+                  className="pull-quote"
+                >
+                  <span className="font-editorial text-base italic text-muted-foreground">
+                    "{currentQuote.quote}"
+                  </span>
+                  <footer className="mt-2 flex items-center gap-2">
+                    <span className="font-script text-lg text-accent">— {currentQuote.author}</span>
+                    <span className="text-[10px] font-caps text-muted-foreground/60">{currentQuote.era}</span>
+                  </footer>
+                </motion.blockquote>
+              </AnimatePresence>
+              
+              {/* Quote navigation dots */}
+              <div className="flex gap-1.5 mt-4">
+                {philosopherQuotes.slice(0, 5).map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setQuoteIndex(idx)}
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                      idx === quoteIndex % 5 ? 'bg-accent w-4' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                    }`}
+                    aria-label={`Go to quote ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </motion.div>
           </div>
         </div>
 

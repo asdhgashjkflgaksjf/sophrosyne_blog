@@ -7,8 +7,8 @@ import PageTransition from "./components/PageTransition";
 import ParallaxPaper from "./components/ParallaxPaper";
 import Index from "./pages/Index";
 import Article from "./pages/Article";
-import Wellness from "./pages/Wellness";
-import Travel from "./pages/Travel";
+import Filsafat from "./pages/Filsafat";
+import BookReview from "./pages/BookReview";
 import Creativity from "./pages/Creativity";
 import Growth from "./pages/Growth";
 import About from "./pages/About";
@@ -30,8 +30,8 @@ const AppRoutes = () => {
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Index />} />
           <Route path="/article/:id" element={<Article />} />
-          <Route path="/wellness" element={<Wellness />} />
-          <Route path="/travel" element={<Travel />} />
+          <Route path="/filsafat" element={<Filsafat />} />
+          <Route path="/book-review" element={<BookReview />} />
           <Route path="/creativity" element={<Creativity />} />
           <Route path="/growth" element={<Growth />} />
           <Route path="/about" element={<About />} />
