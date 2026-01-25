@@ -152,10 +152,10 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 py-3 sm:py-4">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Main header bar with paper style - removed overflow-hidden to allow dropdown */}
-        <div className="relative flex items-center justify-between h-14 sm:h-16 px-4 sm:px-6 bg-[hsl(var(--paper-cream))] border border-border rounded-2xl paper-shadow">
+    <header className="sticky top-0 z-50 py-3 sm:py-4 overflow-visible">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-visible">
+        {/* Main header bar with paper style - overflow-visible to allow dropdown */}
+        <div className="relative flex items-center justify-between h-14 sm:h-16 px-4 sm:px-6 bg-[hsl(var(--paper-cream))] border border-border rounded-2xl paper-shadow overflow-visible">
           {/* Paper grain overlay */}
           <div
             className="absolute inset-0 opacity-[0.02] pointer-events-none"
