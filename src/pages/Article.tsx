@@ -69,31 +69,33 @@ const Article = () => {
         onClose={() => setIsReadingMode(false)} 
       />
 
-      {/* Floating Action Button for Reading Mode */}
+      {/* Floating Action Button for Reading Mode - Bottom center */}
       <motion.button
         onClick={handleOpenReadingMode}
-        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full 
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 
+                   px-6 py-3 rounded-full 
                    bg-primary text-primary-foreground paper-shadow
-                   flex items-center justify-center
+                   flex items-center justify-center gap-2
                    hover:scale-105 active:scale-95 transition-transform"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
-        whileHover={{ scale: 1.1 }}
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.5, type: "spring", stiffness: 200, damping: 20 }}
+        whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         title="Open Reading Mode"
       >
-        <BookOpen className="w-6 h-6" />
+        <BookOpen className="w-5 h-5" />
+        <span className="text-sm font-medium">Reading Mode</span>
         
-        {/* Pulse animation ring */}
+        {/* Subtle glow effect */}
         <motion.span
-          className="absolute inset-0 rounded-full border-2 border-primary"
+          className="absolute inset-0 rounded-full bg-primary/20"
           animate={{ 
-            scale: [1, 1.3, 1], 
-            opacity: [0.6, 0, 0.6] 
+            scale: [1, 1.1, 1], 
+            opacity: [0.5, 0, 0.5] 
           }}
           transition={{ 
-            duration: 2, 
+            duration: 2.5, 
             repeat: Infinity,
             ease: "easeInOut"
           }}

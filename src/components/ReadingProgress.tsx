@@ -195,7 +195,7 @@ const ReadingProgress = ({
         )}
       </AnimatePresence>
 
-      {/* Desktop: Top-right sticky indicator */}
+      {/* Center-right sticky indicator - All devices */}
       <AnimatePresence>
         {isVisible && showPercentage && (
           <motion.div
@@ -203,124 +203,62 @@ const ReadingProgress = ({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.2 }}
-            className="fixed top-20 right-4 z-50 hidden lg:flex items-center gap-3 
-                      px-4 py-2.5 rounded-full bg-card/95 backdrop-blur-md 
+            className="fixed top-1/2 -translate-y-1/2 right-4 z-50 flex flex-col items-center gap-3 
+                      px-3 py-4 rounded-2xl bg-card/95 backdrop-blur-md 
                       paper-shadow border border-border"
           >
-            {/* Circular mini progress */}
-            <div className="relative w-8 h-8">
-              <svg className="w-8 h-8 -rotate-90" viewBox="0 0 36 36">
+            {/* Circular progress */}
+            <div className="relative w-12 h-12">
+              <svg className="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
                 <circle
-                  cx="18"
-                  cy="18"
-                  r="14"
+                  cx="24"
+                  cy="24"
+                  r="20"
                   fill="none"
                   className="stroke-muted"
                   strokeWidth="3"
                 />
                 <motion.circle
-                  cx="18"
-                  cy="18"
-                  r="14"
+                  cx="24"
+                  cy="24"
+                  r="20"
                   fill="none"
                   className="stroke-accent"
                   strokeWidth="3"
                   strokeLinecap="round"
-                  strokeDasharray={88}
-                  initial={{ strokeDashoffset: 88 }}
-                  animate={{ strokeDashoffset: 88 - (progress / 100) * 88 }}
+                  strokeDasharray={125.6}
+                  initial={{ strokeDashoffset: 125.6 }}
+                  animate={{ strokeDashoffset: 125.6 - (progress / 100) * 125.6 }}
                   transition={{ duration: 0.1, ease: "easeOut" }}
                 />
               </svg>
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold">
-                {Math.round(progress)}
+              <span className="absolute inset-0 flex items-center justify-center text-xs font-bold">
+                {Math.round(progress)}%
               </span>
             </div>
             
-            <div className="w-px h-5 bg-border" />
+            <div className="w-full h-px bg-border" />
             
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Clock className="w-3.5 h-3.5" />
-              <span>~{formatTime(remainingTime)}</span>
+            {/* Time remaining */}
+            <div className="flex flex-col items-center gap-1 text-muted-foreground">
+              <Clock className="w-4 h-4" />
+              <span className="text-[10px] font-medium whitespace-nowrap">
+                ~{formatTime(remainingTime)}
+              </span>
             </div>
-            
-            <div className="w-px h-5 bg-border" />
 
             {/* Bookmark button */}
             <button
               onClick={handleSaveBookmark}
-              className="p-1.5 rounded-full hover:bg-muted transition-colors group"
+              className="p-2 rounded-full hover:bg-muted transition-colors group"
               title="Simpan posisi baca"
             >
               {hasBookmark ? (
-                <BookmarkCheck className="w-4 h-4 text-accent" />
+                <BookmarkCheck className="w-5 h-5 text-accent" />
               ) : (
-                <Bookmark className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors" />
+                <Bookmark className="w-5 h-5 text-muted-foreground group-hover:text-accent transition-colors" />
               )}
             </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Tablet: Top-center compact indicator */}
-      <AnimatePresence>
-        {isVisible && showPercentage && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden md:flex lg:hidden
-                      items-center gap-2 px-4 py-2 rounded-full 
-                      bg-card/95 backdrop-blur-md paper-shadow border border-border"
-          >
-            <Progress value={progress} className="w-20 h-1.5" />
-            <span className="text-xs font-semibold">{Math.round(progress)}%</span>
-            <span className="text-xs text-muted-foreground">~{formatTime(remainingTime)}</span>
-            <button
-              onClick={handleSaveBookmark}
-              className="p-1 rounded-full hover:bg-muted transition-colors"
-            >
-              {hasBookmark ? (
-                <BookmarkCheck className="w-3.5 h-3.5 text-accent" />
-              ) : (
-                <Bookmark className="w-3.5 h-3.5 text-muted-foreground" />
-              )}
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Mobile: Sticky top compact bar */}
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-16 left-4 right-4 z-50 md:hidden"
-          >
-            <div className="flex items-center gap-3 px-3 py-2 rounded-full 
-                          bg-card/95 backdrop-blur-md paper-shadow border border-border">
-              <Progress value={progress} className="flex-1 h-1.5" />
-              <span className="text-xs font-semibold whitespace-nowrap">
-                {Math.round(progress)}%
-              </span>
-              <span className="text-[10px] text-muted-foreground whitespace-nowrap flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                {formatTime(remainingTime)}
-              </span>
-              <button
-                onClick={handleSaveBookmark}
-                className="p-1.5 rounded-full bg-muted/50 hover:bg-accent/20 transition-colors flex-shrink-0"
-                title="Simpan posisi baca"
-              >
-                {hasBookmark ? (
-                  <BookmarkCheck className="w-4 h-4 text-accent" />
-                ) : (
-                  <Bookmark className="w-4 h-4 text-muted-foreground" />
-                )}
-              </button>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>

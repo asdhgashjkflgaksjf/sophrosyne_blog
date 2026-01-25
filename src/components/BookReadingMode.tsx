@@ -300,7 +300,7 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
     );
   };
 
-  // Mobile Single-Page Layout with 3D Flip
+  // Mobile Single-Page Layout with 3D Flip - FIXED RESPONSIVE
   if (isMobile) {
     return (
       <AnimatePresence>
@@ -309,125 +309,138 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex flex-col bg-[hsl(var(--paper-cream))]"
-            style={{ perspective: "1200px" }}
+            className="fixed inset-0 z-[100] flex flex-col bg-[hsl(var(--paper-cream))] overflow-hidden"
           >
-            {/* Mobile Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border bg-[hsl(var(--paper-cream))]">
+            {/* Mobile Header - Compact */}
+            <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-border bg-[hsl(var(--paper-cream))] safe-area-top">
               <div className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-muted-foreground" />
-                <span className="font-caps text-xs tracking-wider">
+                <BookOpen className="w-4 h-4 text-accent" />
+                <span className="font-caps text-xs tracking-wider font-medium">
                   {currentPage + 1} / {totalPages}
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <button
                   type="button"
                   onClick={() => setIsBookmarked(!isBookmarked)}
-                  className={`p-2 rounded-full transition-all ${
+                  className={`p-2.5 rounded-full transition-all ${
                     isBookmarked 
                       ? 'bg-accent text-white' 
                       : 'hover:bg-muted/60'
                   }`}
                 >
-                  <Bookmark className="w-5 h-5" />
+                  <Bookmark className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="p-2 rounded-full hover:bg-muted/60 transition-colors"
+                  className="p-2.5 rounded-full hover:bg-muted/60 transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Mobile Content - Swipeable with 3D Flip */}
-            <div 
-              className="flex-1 overflow-hidden relative"
-              style={{ perspective: "1200px", transformStyle: "preserve-3d" }}
-            >
-              <motion.div
-                ref={contentRef}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.15}
-                onDragEnd={handleDragEnd}
-                className="absolute inset-0 p-6 overflow-y-auto"
-                style={{ transformStyle: "preserve-3d" }}
-              >
-                <AnimatePresence mode="wait" custom={direction}>
-                  <motion.div
-                    key={currentPage}
-                    custom={direction}
-                    variants={mobilePageVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    className="min-h-full bg-[hsl(var(--paper-cream))] rounded-lg paper-shadow p-4"
-                    style={{ 
-                      transformStyle: "preserve-3d",
-                      backfaceVisibility: "hidden"
-                    }}
-                  >
-                    {renderPageContent(currentPage, 'mobile')}
-                  </motion.div>
-                </AnimatePresence>
-              </motion.div>
-              
-              {/* Page curl indicator */}
-              <div className="absolute bottom-4 right-4 pointer-events-none">
+            {/* Mobile Content Area - Full height with proper scrolling */}
+            <div className="flex-1 relative overflow-hidden" style={{ perspective: "1000px" }}>
+              <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
-                  className="w-8 h-8"
-                  animate={{ opacity: [0.4, 0.8, 0.4] }}
+                  key={currentPage}
+                  ref={contentRef}
+                  custom={direction}
+                  variants={mobilePageVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.2}
+                  onDragEnd={handleDragEnd}
+                  className="absolute inset-0 overflow-y-auto overscroll-contain"
+                  style={{ 
+                    transformStyle: "preserve-3d",
+                    WebkitOverflowScrolling: "touch"
+                  }}
+                >
+                  <div className="min-h-full p-5 pb-8">
+                    <div className="bg-[hsl(var(--paper-cream))] rounded-xl paper-shadow p-5 min-h-[calc(100vh-200px)]">
+                      {/* Paper texture */}
+                      <div className="absolute inset-0 opacity-[0.04] pointer-events-none rounded-xl"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E")`,
+                        }}
+                      />
+                      {renderPageContent(currentPage, 'mobile')}
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+              
+              {/* Page curl indicator - subtle */}
+              {currentPage < totalPages - 1 && (
+                <motion.div
+                  className="absolute bottom-6 right-6 w-10 h-10 pointer-events-none"
+                  animate={{ opacity: [0.3, 0.6, 0.3], rotate: [0, 5, 0] }}
                   transition={{ duration: 2, repeat: Infinity }}
                   style={{
-                    background: `linear-gradient(225deg, hsl(var(--paper-aged)) 0%, hsl(var(--paper-aged)) 50%, transparent 50%)`,
-                    boxShadow: "-2px 2px 4px hsl(var(--paper-shadow)/0.2)",
+                    background: `linear-gradient(225deg, hsl(var(--paper-aged)) 0%, hsl(var(--paper-aged)) 45%, transparent 45%)`,
+                    boxShadow: "-2px 2px 6px hsl(var(--paper-shadow)/0.15)",
+                    borderRadius: "0 0 0 8px"
                   }}
                 />
-              </div>
+              )}
             </div>
 
-            {/* Mobile Bottom Navigation */}
-            <div className="flex items-center justify-between p-4 border-t border-border bg-[hsl(var(--paper-cream))] gap-4">
-              <button
-                type="button"
-                onClick={goToPrevPage}
-                disabled={currentPage === 0}
-                className="flex-1 py-3 px-4 rounded-lg bg-muted/40 flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-muted/60 transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-                <span className="font-caps text-xs">Prev</span>
-              </button>
-              
-              {/* Progress dots */}
-              <div className="flex gap-1.5 overflow-x-auto max-w-[120px] px-2">
-                {pages.map((_, idx) => (
-                  <motion.div
-                    key={idx}
-                    className={`flex-shrink-0 w-2 h-2 rounded-full transition-all ${
-                      idx === currentPage ? 'bg-accent' : 'bg-muted-foreground/30'
-                    }`}
-                    animate={idx === currentPage ? { scale: 1.3 } : { scale: 1 }}
-                  />
-                ))}
+            {/* Mobile Bottom Navigation - Fixed, safe area aware */}
+            <div className="flex-shrink-0 bg-[hsl(var(--paper-cream))] border-t border-border safe-area-bottom">
+              <div className="flex items-center justify-between gap-3 px-4 py-3">
+                <button
+                  type="button"
+                  onClick={goToPrevPage}
+                  disabled={currentPage === 0}
+                  className="flex-1 py-3 rounded-xl bg-muted/50 flex items-center justify-center gap-2 
+                           disabled:opacity-30 disabled:cursor-not-allowed 
+                           active:bg-muted/80 transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                  <span className="font-medium text-sm">Prev</span>
+                </button>
+                
+                {/* Progress dots - scrollable if many pages */}
+                <div className="flex gap-1.5 justify-center max-w-[100px] overflow-x-auto scrollbar-hide px-1">
+                  {pages.map((_, idx) => (
+                    <motion.button
+                      key={idx}
+                      onClick={() => {
+                        setDirection(idx > currentPage ? 1 : -1);
+                        setCurrentPage(idx);
+                        playPaperSound('turn');
+                      }}
+                      className={`flex-shrink-0 w-2 h-2 rounded-full transition-all ${
+                        idx === currentPage ? 'bg-accent' : 'bg-muted-foreground/30'
+                      }`}
+                      animate={idx === currentPage ? { scale: 1.4 } : { scale: 1 }}
+                    />
+                  ))}
+                </div>
+                
+                <button
+                  type="button"
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages - 1}
+                  className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground flex items-center justify-center gap-2 
+                           disabled:opacity-30 disabled:cursor-not-allowed 
+                           active:bg-primary/80 transition-colors"
+                >
+                  <span className="font-medium text-sm">Next</span>
+                  <ChevronRight className="w-5 h-5" />
+                </button>
               </div>
               
-              <button
-                type="button"
-                onClick={goToNextPage}
-                disabled={currentPage === totalPages - 1}
-                className="flex-1 py-3 px-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
-              >
-                <span className="font-caps text-xs">Next</span>
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Swipe hint */}
-            <div className="text-center py-2 text-[10px] font-caps text-muted-foreground/60 bg-[hsl(var(--paper-cream))]">
-              ← Swipe untuk membalik halaman →
+              {/* Swipe hint */}
+              <div className="text-center pb-2 text-[10px] font-caps text-muted-foreground/50">
+                ← Swipe untuk membalik →
+              </div>
             </div>
           </motion.div>
         )}
