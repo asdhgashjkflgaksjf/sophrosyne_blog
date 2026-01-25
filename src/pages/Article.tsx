@@ -54,16 +54,19 @@ const Article = () => {
 
   return (
     <div className="min-h-screen bg-background animate-fade-in paper-page">
-      {/* Reading Progress Indicator */}
+      {/* Reading Progress Indicator with integrated TOC */}
       <ReadingProgress 
-        articleId={article.id} 
+        articleId={article.id}
+        article={article}
         estimatedReadTime={parseInt(article.readTime) || 5}
       />
       
       <Header />
       
-      {/* Table of Contents Sidebar */}
-      <ArticleTOC article={article} />
+      {/* Table of Contents Sidebar - only visible on xl screens */}
+      <div className="hidden xl:block">
+        <ArticleTOC article={article} />
+      </div>
       
       {/* Book Reading Mode */}
       <BookReadingMode 
@@ -72,7 +75,7 @@ const Article = () => {
         onClose={() => setIsReadingMode(false)} 
       />
 
-      <FloatingReadingModeToggle onClick={handleOpenReadingMode} />
+      <FloatingReadingModeToggle onClick={handleOpenReadingMode} isActive={isReadingMode} />
       
       <main>
         {/* Back Navigation */}
