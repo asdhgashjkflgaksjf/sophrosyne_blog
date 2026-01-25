@@ -668,6 +668,13 @@
   .tag-travel { @apply bg-[hsl(var(--tag-travel))] text-[hsl(var(--ink-dark))]; }
   .tag-creativity { @apply bg-[hsl(var(--tag-creativity))] text-[hsl(var(--ink-dark))]; }
   .tag-growth { @apply bg-[hsl(var(--tag-growth))] text-[hsl(var(--ink-dark))]; }
+  .tag-philosophy { @apply bg-[hsl(var(--tag-philosophy))] text-[hsl(var(--paper-cream))]; }
+  .tag-book-review { @apply bg-[hsl(var(--tag-book-review))] text-[hsl(var(--ink-dark))]; }
+
+  /* Sepia text color utility */
+  .text-sepia {
+    color: hsl(var(--sepia));
+  }
 
   /* Editorial Layout Helpers */
   .editorial-grid {
