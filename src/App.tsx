@@ -11,6 +11,8 @@ import Filsafat from "./pages/Filsafat";
 import BookReview from "./pages/BookReview";
 import Creativity from "./pages/Creativity";
 import Growth from "./pages/Growth";
+import Travel from "./pages/Travel";
+import Wellness from "./pages/Wellness";
 import About from "./pages/About";
 import Authors from "./pages/Authors";
 import Contact from "./pages/Contact";
@@ -34,6 +36,8 @@ const AppRoutes = () => {
           <Route path="/book-review" element={<BookReview />} />
           <Route path="/creativity" element={<Creativity />} />
           <Route path="/growth" element={<Growth />} />
+          <Route path="/travel" element={<Travel />} />
+          <Route path="/wellness" element={<Wellness />} />
           <Route path="/about" element={<About />} />
           <Route path="/authors" element={<Authors />} />
           <Route path="/contact" element={<Contact />} />
