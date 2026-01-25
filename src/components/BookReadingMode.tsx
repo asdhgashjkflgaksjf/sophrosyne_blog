@@ -6,6 +6,7 @@ import { Article } from "@/data/articles";
 import PageCurl from "./PageCurl";
 import { Highlight, HIGHLIGHT_COLORS, HighlightList } from "./TextHighlighter";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
+import ReadingModeOnboarding, { hasSeenOnboarding } from "./ReadingModeOnboarding";
 
 // Paper grain SVG for reuse
 const PAPER_GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E")`;
@@ -120,6 +121,7 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
   const [highlightColor, setHighlightColor] = useState(HIGHLIGHT_COLORS[0].value);
   const [showHighlights, setShowHighlights] = useState(false);
   const [showTOC, setShowTOC] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -261,6 +263,11 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
       playPaperSound('rustle');
       setCurrentPage(0);
       setDirection(0);
+      
+      // Show onboarding if user hasn't seen it yet
+      if (!hasSeenOnboarding()) {
+        setShowOnboarding(true);
+      }
     }
   }, [isOpen]);
 
@@ -543,6 +550,12 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                 ← Swipe untuk membalik →
               </div>
             </div>
+            
+            {/* Onboarding Popup */}
+            <ReadingModeOnboarding
+              isOpen={showOnboarding}
+              onComplete={() => setShowOnboarding(false)}
+            />
           </motion.div>
         )}
       </AnimatePresence>,
@@ -739,6 +752,12 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                 Swipe atau gunakan tombol untuk navigasi
               </div>
             </motion.div>
+            
+            {/* Onboarding Popup */}
+            <ReadingModeOnboarding
+              isOpen={showOnboarding}
+              onComplete={() => setShowOnboarding(false)}
+            />
           </motion.div>
         )}
       </AnimatePresence>,
@@ -1145,6 +1164,12 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                 </motion.div>
               )}
             </AnimatePresence>
+            
+            {/* Onboarding Popup */}
+            <ReadingModeOnboarding
+              isOpen={showOnboarding}
+              onComplete={() => setShowOnboarding(false)}
+            />
           </motion.div>
         </motion.div>
       )}
