@@ -72,7 +72,7 @@ const Article = () => {
         onClose={() => setIsReadingMode(false)} 
       />
 
-      <FloatingReadingModeToggle onClick={handleOpenReadingMode} />
+      <FloatingReadingModeToggle onClick={handleOpenReadingMode} isReadingMode={isReadingMode} />
       
       <main>
         {/* Back Navigation */}
