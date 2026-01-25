@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Moon, Sun, Feather } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -72,17 +73,37 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            <button
+            {/* Animated Theme Toggle */}
+            <motion.button
               onClick={toggleTheme}
-              className="p-2 hover:bg-muted/60 transition-all border border-transparent hover:border-border"
+              className="relative p-2 hover:bg-muted/60 transition-colors border border-transparent hover:border-border rounded-lg overflow-hidden"
               aria-label="Toggle theme"
+              whileTap={{ scale: 0.9 }}
             >
-              {isDark ? (
-                <Sun className="h-4 w-4 sm:h-5 sm:w-5" />
-              ) : (
-                <Moon className="h-4 w-4 sm:h-5 sm:w-5" />
-              )}
-            </button>
+              <AnimatePresence mode="wait" initial={false}>
+                {isDark ? (
+                  <motion.div
+                    key="sun"
+                    initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
+                    animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                    exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                  >
+                    <Sun className="h-4 w-4 sm:h-5 sm:w-5 text-amber-400" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="moon"
+                    initial={{ rotate: 90, opacity: 0, scale: 0.5 }}
+                    animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                    exit={{ rotate: -90, opacity: 0, scale: 0.5 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                  >
+                    <Moon className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-500" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.button>
             
             <Button className="hidden md:flex bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 font-body font-medium paper-shadow hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
               Subscribe
@@ -100,32 +121,40 @@ const Header = () => {
         </div>
 
         {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="lg:hidden py-6 mt-2 paper-texture paper-shadow animate-unfold">
-            <nav className="flex flex-col gap-1 px-4">
-              <a href="/" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
-                Home
-              </a>
-              <a href="/#articles" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
-                Artikel
-              </a>
-              <a href="/filsafat" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
-                Filsafat
-              </a>
-              <a href="/book-review" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
-                Book Review
-              </a>
-              <a href="/authors" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
-                Penulis
-              </a>
-              <div className="pt-4 px-4">
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full font-body font-medium paper-shadow">
-                  Subscribe
-                </Button>
-              </div>
-            </nav>
-          </div>
-        )}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="lg:hidden py-6 mt-2 paper-texture paper-shadow overflow-hidden"
+            >
+              <nav className="flex flex-col gap-1 px-4">
+                <a href="/" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
+                  Home
+                </a>
+                <a href="/#articles" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
+                  Artikel
+                </a>
+                <a href="/filsafat" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
+                  Filsafat
+                </a>
+                <a href="/book-review" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
+                  Book Review
+                </a>
+                <a href="/authors" className="text-sm font-body font-medium hover:bg-muted/40 py-3 px-4 transition-all border-l-2 border-transparent hover:border-primary">
+                  Penulis
+                </a>
+                <div className="pt-4 px-4">
+                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full font-body font-medium paper-shadow">
+                    Subscribe
+                  </Button>
+                </div>
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </header>
   );

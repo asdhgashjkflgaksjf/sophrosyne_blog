@@ -13,6 +13,7 @@ import { Facebook, Twitter, Linkedin, Link2, ArrowLeft, BookOpen } from "lucide-
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { usePaperSound } from "@/hooks/usePaperSound";
+import { motion } from "framer-motion";
 
 const Article = () => {
   const { id } = useParams<{ id: string }>();
@@ -67,29 +68,48 @@ const Article = () => {
         isOpen={isReadingMode} 
         onClose={() => setIsReadingMode(false)} 
       />
+
+      {/* Floating Action Button for Reading Mode */}
+      <motion.button
+        onClick={handleOpenReadingMode}
+        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full 
+                   bg-primary text-primary-foreground paper-shadow
+                   flex items-center justify-center
+                   hover:scale-105 active:scale-95 transition-transform"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        title="Open Reading Mode"
+      >
+        <BookOpen className="w-6 h-6" />
+        
+        {/* Pulse animation ring */}
+        <motion.span
+          className="absolute inset-0 rounded-full border-2 border-primary"
+          animate={{ 
+            scale: [1, 1.3, 1], 
+            opacity: [0.6, 0, 0.6] 
+          }}
+          transition={{ 
+            duration: 2, 
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </motion.button>
       
       <main>
         {/* Back Navigation */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <a
-              href="/"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to articles
-            </a>
-            
-            {/* Reading Mode Button */}
-            <Button 
-              onClick={handleOpenReadingMode}
-              variant="outline" 
-              className="gap-2 paper-shadow hover:bg-[hsl(var(--paper-aged))]"
-            >
-              <BookOpen className="w-4 h-4" />
-              <span className="hidden sm:inline">Reading Mode</span>
-            </Button>
-          </div>
+          <a
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to articles
+          </a>
         </div>
 
         {/* Hero Image with torn edge */}

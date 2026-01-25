@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 
 interface PageCurlProps {
   onFlip: () => void;
@@ -9,21 +10,29 @@ interface PageCurlProps {
 const PageCurl = ({ onFlip, isLastPage = false }: PageCurlProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   
   // Motion values for drag
   const dragX = useMotionValue(0);
   const dragY = useMotionValue(0);
   
-  // Transform drag to curl amount (0-1)
-  const curlAmount = useTransform(dragX, [0, -150], [0, 1]);
+  // Adjust sensitivity based on device
+  const dragThreshold = isMobile ? -80 : isTablet ? -100 : -150;
   
-  // Visual transforms based on curl
-  const cornerX = useTransform(curlAmount, [0, 1], [0, -80]);
-  const cornerY = useTransform(curlAmount, [0, 1], [0, 80]);
+  // Transform drag to curl amount (0-1)
+  const curlAmount = useTransform(dragX, [0, dragThreshold], [0, 1]);
+  
+  // Visual transforms based on curl - smaller on mobile
+  const baseSize = isMobile ? 30 : isTablet ? 35 : 40;
+  const maxSize = isMobile ? 80 : isTablet ? 100 : 120;
+  
+  const cornerX = useTransform(curlAmount, [0, 1], [0, isMobile ? -50 : -80]);
+  const cornerY = useTransform(curlAmount, [0, 1], [0, isMobile ? 50 : 80]);
   const rotation = useTransform(curlAmount, [0, 1], [0, -45]);
   const shadowOpacity = useTransform(curlAmount, [0, 0.5, 1], [0, 0.3, 0.5]);
-  const peekWidth = useTransform(curlAmount, [0, 1], [40, 120]);
-  const peekHeight = useTransform(curlAmount, [0, 1], [40, 120]);
+  const peekWidth = useTransform(curlAmount, [0, 1], [baseSize, maxSize]);
+  const peekHeight = useTransform(curlAmount, [0, 1], [baseSize, maxSize]);
 
   const handleDragEnd = () => {
     setIsDragging(false);
@@ -32,7 +41,7 @@ const PageCurl = ({ onFlip, isLastPage = false }: PageCurlProps) => {
     
     if (currentCurl > 0.5 && !isLastPage) {
       // Complete the flip
-      animate(dragX, -200, {
+      animate(dragX, dragThreshold * 1.5, {
         duration: 0.3,
         onComplete: () => {
           onFlip();
@@ -47,22 +56,46 @@ const PageCurl = ({ onFlip, isLastPage = false }: PageCurlProps) => {
     }
   };
 
+  // Handle tap for tablet/touch devices
+  const handleTap = () => {
+    if ((isMobile || isTablet) && !isLastPage) {
+      // Animate a quick flip on tap
+      animate(dragX, dragThreshold, {
+        duration: 0.2,
+        onComplete: () => {
+          onFlip();
+          dragX.set(0);
+        }
+      });
+    }
+  };
+
   if (isLastPage) return null;
+
+  // Size adjustments based on device
+  const containerSize = isMobile ? 'w-16 h-16' : isTablet ? 'w-20 h-20' : 'w-24 h-24';
+  const dragHandleSize = isMobile ? 'w-12 h-12' : isTablet ? 'w-14 h-14' : 'w-16 h-16';
 
   return (
     <div 
       ref={containerRef}
-      className="absolute bottom-0 right-0 w-24 h-24 z-10 cursor-grab active:cursor-grabbing"
+      className={`absolute bottom-0 right-0 ${containerSize} z-10 cursor-grab active:cursor-grabbing`}
       style={{ touchAction: 'none' }}
     >
       {/* Drag handle - invisible but interactive */}
       <motion.div
-        className="absolute bottom-0 right-0 w-16 h-16"
+        className={`absolute bottom-0 right-0 ${dragHandleSize}`}
         drag
-        dragConstraints={{ left: -150, right: 0, top: 0, bottom: 100 }}
+        dragConstraints={{ 
+          left: dragThreshold, 
+          right: 0, 
+          top: 0, 
+          bottom: isMobile ? 60 : 100 
+        }}
         dragElastic={0.1}
         onDragStart={() => setIsDragging(true)}
         onDragEnd={handleDragEnd}
+        onTap={handleTap}
         style={{ x: dragX, y: dragY }}
       />
 
@@ -110,7 +143,7 @@ const PageCurl = ({ onFlip, isLastPage = false }: PageCurlProps) => {
       {/* Static corner hint when not dragging */}
       {!isDragging && (
         <motion.div
-          className="absolute bottom-0 right-0 w-10 h-10"
+          className={`absolute bottom-0 right-0 ${isMobile ? 'w-8 h-8' : isTablet ? 'w-9 h-9' : 'w-10 h-10'}`}
           initial={{ opacity: 0.6 }}
           animate={{ opacity: [0.6, 0.9, 0.6] }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -126,8 +159,8 @@ const PageCurl = ({ onFlip, isLastPage = false }: PageCurlProps) => {
         />
       )}
 
-      {/* Hint text */}
-      {!isDragging && (
+      {/* Hint text - desktop only */}
+      {!isDragging && !isMobile && !isTablet && (
         <motion.span
           className="absolute bottom-2 right-12 text-[9px] font-caps text-muted-foreground/60 whitespace-nowrap"
           initial={{ opacity: 0 }}
@@ -135,6 +168,18 @@ const PageCurl = ({ onFlip, isLastPage = false }: PageCurlProps) => {
           transition={{ delay: 1 }}
         >
           Drag to turn →
+        </motion.span>
+      )}
+      
+      {/* Touch hint for tablet */}
+      {!isDragging && isTablet && (
+        <motion.span
+          className="absolute bottom-1 right-10 text-[8px] font-caps text-muted-foreground/60 whitespace-nowrap"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+        >
+          Tap or drag
         </motion.span>
       )}
     </div>
