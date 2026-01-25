@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
@@ -20,7 +20,6 @@ const Article = () => {
   const article = id ? getArticleById(id) : undefined;
   const [isReadingMode, setIsReadingMode] = useState(false);
   const { playRustle } = usePaperSound();
-  const readingModeRef = useRef<HTMLDivElement>(null);
   
   if (!article) {
     return <Navigate to="/404" replace />;
@@ -33,11 +32,26 @@ const Article = () => {
     toast.success("Link copied to clipboard!");
   };
 
-  const handleOpenReadingMode = () => {
+  const handleToggleReadingMode = () => {
+    // If already open, treat this as an Exit button.
+    if (isReadingMode) {
+      playRustle();
+      setIsReadingMode(false);
+      return;
+    }
+
+    // IMPORTANT: scroll FIRST (no smooth) to avoid iOS/body-lock issues.
     playRustle();
-    setIsReadingMode(true);
-    // Scroll to top smoothly so reading mode is visible
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    } catch {
+      // noop
+    }
+
+    // Open next frame so the scroll position is applied before the modal locks body scroll.
+    requestAnimationFrame(() => setIsReadingMode(true));
   };
 
   const getCategoryClass = (cat: string) => {
@@ -75,7 +89,12 @@ const Article = () => {
         onClose={() => setIsReadingMode(false)} 
       />
 
-      <FloatingReadingModeToggle onClick={handleOpenReadingMode} isActive={isReadingMode} />
+      <FloatingReadingModeToggle
+        onClick={handleToggleReadingMode}
+        isActive={isReadingMode}
+        label="Mode Baca"
+        exitLabel="Keluar"
+      />
       
       <main>
         {/* Back Navigation */}
