@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Safe area for mobile devices */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0);
+}
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Sophrosyne - Advanced Paper Style Design System
    Cream & Sepia tones with Mixed Editorial typography
    All colors MUST be HSL.
