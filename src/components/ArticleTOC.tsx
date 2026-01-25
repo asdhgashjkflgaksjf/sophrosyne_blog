@@ -79,7 +79,7 @@ const ArticleTOC = ({ article }: ArticleTOCProps) => {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         onClick={() => setIsMinimized(false)}
-        className="fixed left-4 top-1/2 -translate-y-1/2 z-40 hidden lg:flex
+        className="fixed left-4 top-1/2 -translate-y-1/2 z-40 hidden xl:flex
                    w-10 h-10 items-center justify-center rounded-full
                    bg-card/90 backdrop-blur-sm paper-shadow border border-border
                    hover:bg-muted transition-colors"
@@ -100,7 +100,7 @@ const ArticleTOC = ({ article }: ArticleTOCProps) => {
         pointerEvents: isVisible ? "auto" : "none"
       }}
       transition={{ duration: 0.3, delay: 0.5 }}
-      className="fixed left-4 top-1/2 -translate-y-1/2 z-40 hidden lg:block"
+      className="fixed left-4 top-1/2 -translate-y-1/2 z-40 hidden xl:block"
     >
       <div className="relative paper-texture paper-shadow rounded-sm overflow-hidden max-w-[200px]">
         {/* Paper grain overlay */}

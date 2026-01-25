@@ -309,10 +309,10 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex flex-col bg-background overflow-hidden"
+            className="fixed inset-0 z-[100] flex flex-col bg-[hsl(var(--paper-cream))] overflow-hidden"
           >
             {/* Mobile Header - Compact */}
-            <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-border bg-background safe-area-top">
+            <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-border bg-[hsl(var(--paper-cream))] safe-area-top">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4 text-accent" />
                 <span className="font-caps text-xs tracking-wider font-medium">
@@ -325,7 +325,7 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                   onClick={() => setIsBookmarked(!isBookmarked)}
                   className={`p-2.5 rounded-full transition-all ${
                     isBookmarked 
-                      ? 'bg-accent text-accent-foreground' 
+                      ? 'bg-accent text-white' 
                       : 'hover:bg-muted/60'
                   }`}
                 >
@@ -342,7 +342,7 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
             </div>
 
             {/* Mobile Content Area - Full height with proper scrolling */}
-            <div className="flex-1 relative overflow-hidden bg-card" style={{ perspective: "1000px" }}>
+            <div className="flex-1 relative overflow-hidden" style={{ perspective: "1000px" }}>
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
                   key={currentPage}
@@ -356,23 +356,21 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                   dragConstraints={{ left: 0, right: 0 }}
                   dragElastic={0.2}
                   onDragEnd={handleDragEnd}
-                  className="absolute inset-0 overflow-y-auto overscroll-contain bg-card"
+                  className="absolute inset-0 overflow-y-auto overscroll-contain"
                   style={{ 
                     transformStyle: "preserve-3d",
                     WebkitOverflowScrolling: "touch"
                   }}
                 >
-                  <div className="min-h-full p-4 pb-8">
-                    <div className="bg-card rounded-xl shadow-md p-5 min-h-[calc(100vh-200px)] relative">
+                  <div className="min-h-full p-5 pb-8">
+                    <div className="bg-[hsl(var(--paper-cream))] rounded-xl paper-shadow p-5 min-h-[calc(100vh-200px)]">
                       {/* Paper texture */}
                       <div className="absolute inset-0 opacity-[0.04] pointer-events-none rounded-xl"
                         style={{
                           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E")`,
                         }}
                       />
-                      <div className="relative z-10">
-                        {renderPageContent(currentPage, 'mobile')}
-                      </div>
+                      {renderPageContent(currentPage, 'mobile')}
                     </div>
                   </div>
                 </motion.div>
@@ -385,8 +383,8 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                   animate={{ opacity: [0.3, 0.6, 0.3], rotate: [0, 5, 0] }}
                   transition={{ duration: 2, repeat: Infinity }}
                   style={{
-                    background: `linear-gradient(225deg, hsl(var(--muted)) 0%, hsl(var(--muted)) 45%, transparent 45%)`,
-                    boxShadow: "-2px 2px 6px hsl(var(--border))",
+                    background: `linear-gradient(225deg, hsl(var(--paper-aged)) 0%, hsl(var(--paper-aged)) 45%, transparent 45%)`,
+                    boxShadow: "-2px 2px 6px hsl(var(--paper-shadow)/0.15)",
                     borderRadius: "0 0 0 8px"
                   }}
                 />
@@ -394,13 +392,13 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
             </div>
 
             {/* Mobile Bottom Navigation - Fixed, safe area aware */}
-            <div className="flex-shrink-0 bg-background border-t border-border safe-area-bottom">
+            <div className="flex-shrink-0 bg-[hsl(var(--paper-cream))] border-t border-border safe-area-bottom">
               <div className="flex items-center justify-between gap-3 px-4 py-3">
                 <button
                   type="button"
                   onClick={goToPrevPage}
                   disabled={currentPage === 0}
-                  className="flex-1 py-3 rounded-xl bg-muted flex items-center justify-center gap-2 
+                  className="flex-1 py-3 rounded-xl bg-muted/50 flex items-center justify-center gap-2 
                            disabled:opacity-30 disabled:cursor-not-allowed 
                            active:bg-muted/80 transition-colors"
                 >

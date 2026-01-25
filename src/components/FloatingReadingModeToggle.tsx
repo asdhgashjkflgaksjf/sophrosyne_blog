@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { BookOpen } from "lucide-react";
 
 interface FloatingReadingModeToggleProps {
   onClick: () => void;
-  isReadingMode?: boolean;
   label?: string;
 }
 
 const FloatingReadingModeToggle = ({
   onClick,
-  isReadingMode = false,
   label = "Reading Mode",
 }: FloatingReadingModeToggleProps) => {
   const [mounted, setMounted] = useState(false);
@@ -19,9 +17,6 @@ const FloatingReadingModeToggle = ({
   useEffect(() => setMounted(true), []);
 
   if (!mounted) return null;
-
-  // Don't show when in reading mode (reading mode has its own close button)
-  if (isReadingMode) return null;
 
   return createPortal(
     <motion.button
