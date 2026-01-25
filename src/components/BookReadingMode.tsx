@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { X, BookOpen, ChevronLeft, ChevronRight, Bookmark, MessageSquare, Highlighter } from "lucide-react";
 import { Article } from "@/data/articles";
@@ -103,6 +104,7 @@ const tabletPageVariants = {
 const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => {
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
+  const [mounted, setMounted] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(0);
   const [marginNotes, setMarginNotes] = useState<MarginNote[]>([]);
@@ -114,6 +116,10 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
   const [highlightColor, setHighlightColor] = useState(HIGHLIGHT_COLORS[0].value);
   const [showHighlights, setShowHighlights] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Split content into pages
   const pages = [
@@ -219,6 +225,15 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
 
   useEffect(() => {
     if (isOpen) {
+      // Ensure modal starts at the top of the document BEFORE scroll lock.
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      } catch {
+        // noop
+      }
+
       playPaperSound('rustle');
       setCurrentPage(0);
       setDirection(0);
@@ -237,7 +252,7 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!mounted) return null;
 
   // Render page content helper
   const renderPageContent = (pageIndex: number, size: 'mobile' | 'tablet' | 'desktop' = 'desktop') => {
@@ -302,7 +317,7 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
 
   // Mobile Single-Page Layout with 3D Flip - FIXED RESPONSIVE
   if (isMobile) {
-    return (
+    return createPortal(
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -444,13 +459,14 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body,
     );
   }
 
   // Tablet Single-Page Layout with Full 3D Flip
   if (isTablet) {
-    return (
+    return createPortal(
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -571,12 +587,13 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body,
     );
   }
 
   // Desktop Two-Page Book Layout
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -896,7 +913,8 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 };
 

@@ -196,7 +196,7 @@ const ReadingProgress = ({
           )}
         </AnimatePresence>
 
-        {/* Mobile minimal indicator with TOC toggle */}
+        {/* Mobile minimal indicator with TOC toggle (paper style) */}
         <AnimatePresence>
           {isVisible && showPercentage && (
             <motion.div
@@ -205,12 +205,20 @@ const ReadingProgress = ({
               exit={{ opacity: 0, scale: 0.8 }}
               className="fixed top-1/2 -translate-y-1/2 right-2 z-[70]"
             >
-              <div className="flex flex-col items-center gap-1 px-1 py-1.5 rounded-full 
-                            bg-card/90 backdrop-blur-sm border border-border/50 shadow-sm">
+              <div className="relative flex flex-col items-center gap-1 px-1.5 py-2 rounded-full 
+                            bg-card/95 backdrop-blur-sm border border-border/60 paper-shadow overflow-hidden">
+                {/* Paper grain */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 opacity-[0.06]"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E")`,
+                  }}
+                />
                 {/* Mini circular progress - clickable for TOC */}
                 <button
                   onClick={() => article && setShowTOC(!showTOC)}
-                  className="relative w-8 h-8 flex items-center justify-center"
+                  className="relative z-10 w-8 h-8 flex items-center justify-center"
                 >
                   <svg className="w-8 h-8 -rotate-90" viewBox="0 0 32 32">
                     <circle
@@ -239,7 +247,7 @@ const ReadingProgress = ({
                 {article && (
                   <button
                     onClick={() => setShowTOC(!showTOC)}
-                    className={`p-1 rounded-full transition-colors ${showTOC ? 'bg-accent/20' : 'hover:bg-muted/50'}`}
+                    className={`relative z-10 p-1 rounded-full transition-colors ${showTOC ? 'bg-accent/15' : 'hover:bg-muted/50'}`}
                   >
                     <List className="w-3 h-3 text-muted-foreground" />
                   </button>
@@ -248,7 +256,7 @@ const ReadingProgress = ({
                 {/* Bookmark */}
                 <button
                   onClick={handleSaveBookmark}
-                  className="p-1 rounded-full hover:bg-muted/50"
+                  className="relative z-10 p-1 rounded-full hover:bg-muted/50"
                 >
                   {hasBookmark ? (
                     <BookmarkCheck className="w-3 h-3 text-accent" />
@@ -261,7 +269,7 @@ const ReadingProgress = ({
           )}
         </AnimatePresence>
 
-        {/* Mobile TOC Panel */}
+        {/* Mobile TOC Panel (paper style) */}
         <AnimatePresence>
           {showTOC && article && (
             <motion.div
@@ -270,7 +278,14 @@ const ReadingProgress = ({
               exit={{ opacity: 0, x: 20 }}
               className="fixed top-1/2 -translate-y-1/2 right-12 z-[70] max-w-[180px]"
             >
-              <div className="bg-card/95 backdrop-blur-md rounded-lg border border-border shadow-lg p-2">
+              <div className="relative bg-card/97 backdrop-blur-md rounded-lg border border-border/70 paper-shadow overflow-hidden p-2">
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 opacity-[0.06]"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E")`,
+                  }}
+                />
                 <div className="flex items-center justify-between px-2 py-1 mb-1">
                   <span className="text-[10px] font-caps text-muted-foreground">Contents</span>
                   <button onClick={() => setShowTOC(false)} className="p-0.5">
@@ -338,7 +353,7 @@ const ReadingProgress = ({
         )}
       </AnimatePresence>
 
-      {/* Desktop indicator with TOC */}
+      {/* Desktop indicator with TOC (paper style) */}
       <AnimatePresence>
         {isVisible && showPercentage && (
           <motion.div
@@ -347,13 +362,20 @@ const ReadingProgress = ({
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.2 }}
             className="fixed top-1/2 -translate-y-1/2 right-4 z-[70] flex flex-col items-center gap-2 
-                      px-2 py-2.5 rounded-xl bg-card/90 backdrop-blur-sm 
-                      border border-border/50 shadow-md"
+                      px-2 py-2.5 rounded-xl bg-card/95 backdrop-blur-sm 
+                      border border-border/60 paper-shadow overflow-hidden"
           >
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 opacity-[0.06]"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E")`,
+              }}
+            />
             {/* Circular progress - clickable for TOC */}
             <button
               onClick={() => article && setShowTOC(!showTOC)}
-              className="relative w-10 h-10 group"
+              className="relative z-10 w-10 h-10 group"
               title="Show contents"
             >
               <svg className="w-10 h-10 -rotate-90" viewBox="0 0 40 40">
@@ -395,7 +417,7 @@ const ReadingProgress = ({
             {/* Bookmark button */}
             <button
               onClick={handleSaveBookmark}
-              className="p-1.5 rounded-full hover:bg-muted transition-colors group"
+              className="relative z-10 p-1.5 rounded-full hover:bg-muted transition-colors group"
               title="Simpan posisi baca"
             >
               {hasBookmark ? (
@@ -417,7 +439,14 @@ const ReadingProgress = ({
             exit={{ opacity: 0, x: 20 }}
             className="fixed top-1/2 -translate-y-1/2 right-20 z-[70] w-[220px]"
           >
-            <div className="bg-card/98 backdrop-blur-md rounded-lg border border-border shadow-lg overflow-hidden">
+            <div className="relative bg-card/98 backdrop-blur-md rounded-lg border border-border/70 paper-shadow overflow-hidden">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 opacity-[0.06]"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E")`,
+                }}
+              />
               <div className="flex items-center justify-between px-3 py-2 border-b border-border">
                 <div className="flex items-center gap-2">
                   <List className="w-4 h-4 text-muted-foreground" />
