@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
-import { List, ChevronUp } from "lucide-react";
+import { List, ChevronUp, X } from "lucide-react";
 import { Article } from "@/data/articles";
 
 interface ArticleTOCProps {
@@ -10,7 +10,7 @@ interface ArticleTOCProps {
 const ArticleTOC = ({ article }: ArticleTOCProps) => {
   const [activeSection, setActiveSection] = useState<string>("intro");
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
   const { scrollYProgress } = useScroll();
@@ -26,16 +26,8 @@ const ArticleTOC = ({ article }: ArticleTOCProps) => {
     { id: "conclusion", title: "Conclusion" },
   ];
 
-  // Show TOC after scrolling past hero
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setIsVisible(scrollY > 400);
-    };
-    
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Always visible - user can minimize if needed
+  const isVisible = true;
 
   // Track active section
   useEffect(() => {
@@ -80,6 +72,24 @@ const ArticleTOC = ({ article }: ArticleTOCProps) => {
     }
   };
 
+  // Minimized state - just show a small button
+  if (isMinimized) {
+    return (
+      <motion.button
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        onClick={() => setIsMinimized(false)}
+        className="fixed left-4 top-1/2 -translate-y-1/2 z-40 hidden xl:flex
+                   w-10 h-10 items-center justify-center rounded-full
+                   bg-card/90 backdrop-blur-sm paper-shadow border border-border
+                   hover:bg-muted transition-colors"
+        title="Show table of contents"
+      >
+        <List className="w-4 h-4" />
+      </motion.button>
+    );
+  }
+
   return (
     <motion.aside
       ref={containerRef}
@@ -89,7 +99,7 @@ const ArticleTOC = ({ article }: ArticleTOCProps) => {
         x: isVisible ? 0 : -20,
         pointerEvents: isVisible ? "auto" : "none"
       }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.3, delay: 0.5 }}
       className="fixed left-4 top-1/2 -translate-y-1/2 z-40 hidden xl:block"
     >
       <div className="relative paper-texture paper-shadow rounded-sm overflow-hidden max-w-[200px]">
@@ -108,12 +118,21 @@ const ArticleTOC = ({ article }: ArticleTOCProps) => {
               <List className="w-4 h-4 text-muted-foreground" />
               <span className="font-caps text-[10px] tracking-wider text-muted-foreground">Contents</span>
             </div>
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="w-6 h-6 flex items-center justify-center rounded hover:bg-[hsl(var(--muted))] transition-colors"
-            >
-              <ChevronUp className={`w-3 h-3 transition-transform ${isExpanded ? '' : 'rotate-180'}`} />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="w-6 h-6 flex items-center justify-center rounded hover:bg-[hsl(var(--muted))] transition-colors"
+              >
+                <ChevronUp className={`w-3 h-3 transition-transform ${isExpanded ? '' : 'rotate-180'}`} />
+              </button>
+              <button
+                onClick={() => setIsMinimized(true)}
+                className="w-6 h-6 flex items-center justify-center rounded hover:bg-[hsl(var(--muted))] transition-colors"
+                title="Minimize"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </div>
           </div>
           
           {/* Progress bar */}

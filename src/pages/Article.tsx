@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
@@ -20,6 +20,7 @@ const Article = () => {
   const article = id ? getArticleById(id) : undefined;
   const [isReadingMode, setIsReadingMode] = useState(false);
   const { playRustle } = usePaperSound();
+  const readingModeRef = useRef<HTMLDivElement>(null);
   
   if (!article) {
     return <Navigate to="/404" replace />;
@@ -35,6 +36,8 @@ const Article = () => {
   const handleOpenReadingMode = () => {
     playRustle();
     setIsReadingMode(true);
+    // Scroll to top smoothly so reading mode is visible
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const getCategoryClass = (cat: string) => {

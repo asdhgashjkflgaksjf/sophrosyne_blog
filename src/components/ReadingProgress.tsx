@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bookmark, BookmarkCheck, Clock, X } from "lucide-react";
+import { Bookmark, BookmarkCheck, X } from "lucide-react";
 import { useReadingBookmark } from "@/hooks/useReadingBookmark";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ReadingProgressProps {
   articleId: string;
-  estimatedReadTime?: number; // in minutes
+  estimatedReadTime?: number;
   showPercentage?: boolean;
 }
 
@@ -19,22 +20,18 @@ const ReadingProgress = ({
   const [mounted, setMounted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(estimatedReadTime);
   const [showRestorePrompt, setShowRestorePrompt] = useState(false);
+  const isMobile = useIsMobile();
   
-  // Scroll speed tracking
   const lastScrollTop = useRef(0);
   const lastScrollTime = useRef(Date.now());
-  const scrollSpeeds = useRef<number[]>([]);
   
-  const { bookmark, saveBookmark, restoreBookmark, clearBookmark, hasBookmark } = 
+  const { bookmark, saveBookmark, restoreBookmark, hasBookmark } = 
     useReadingBookmark(articleId);
 
-  // Show restore prompt if there's a saved bookmark
   useEffect(() => {
     if (hasBookmark && bookmark && bookmark.progress > 5 && bookmark.progress < 95) {
       setShowRestorePrompt(true);
-      // Auto-hide after 8 seconds
       const timer = setTimeout(() => setShowRestorePrompt(false), 8000);
       return () => clearTimeout(timer);
     }
@@ -53,47 +50,8 @@ const ReadingProgress = ({
       setProgress(Math.min(100, Math.max(0, scrollPercent)));
       setIsVisible(scrollTop > 100);
       
-      // Calculate scroll speed
-      const now = Date.now();
-      const timeDiff = now - lastScrollTime.current;
-      
-      if (timeDiff > 50) { // Update every 50ms minimum
-        const scrollDiff = Math.abs(scrollTop - lastScrollTop.current);
-        const speed = scrollDiff / timeDiff; // pixels per ms
-        
-        // Keep last 10 speed measurements
-        scrollSpeeds.current.push(speed);
-        if (scrollSpeeds.current.length > 10) {
-          scrollSpeeds.current.shift();
-        }
-        
-        // Calculate average speed
-        const avgSpeed = scrollSpeeds.current.reduce((a, b) => a + b, 0) / scrollSpeeds.current.length;
-        
-        // Estimate remaining time based on scroll speed and remaining content
-        const remainingPercent = 100 - scrollPercent;
-        const remainingPixels = (remainingPercent / 100) * docHeight;
-        
-        if (avgSpeed > 0) {
-          // Time in minutes based on scroll speed
-          const estimatedMs = remainingPixels / avgSpeed;
-          const estimatedMinutes = Math.ceil(estimatedMs / 60000);
-          
-          // Blend with original estimate for stability
-          const blendedTime = Math.max(0, Math.min(
-            estimatedReadTime,
-            (estimatedMinutes * 0.3 + (remainingPercent / 100 * estimatedReadTime) * 0.7)
-          ));
-          
-          setRemainingTime(Math.ceil(blendedTime));
-        } else {
-          // Fall back to linear estimate
-          setRemainingTime(Math.ceil((remainingPercent / 100) * estimatedReadTime));
-        }
-        
-        lastScrollTop.current = scrollTop;
-        lastScrollTime.current = now;
-      }
+      lastScrollTop.current = scrollTop;
+      lastScrollTime.current = Date.now();
     };
 
     window.addEventListener("scroll", updateProgress, { passive: true });
@@ -102,18 +60,16 @@ const ReadingProgress = ({
     return () => window.removeEventListener("scroll", updateProgress);
   }, [estimatedReadTime]);
 
-  // Auto-save bookmark periodically
   useEffect(() => {
     const interval = setInterval(() => {
       if (progress > 5 && progress < 95) {
         saveBookmark();
       }
-    }, 30000); // Save every 30 seconds
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [progress, saveBookmark]);
 
-  // Save on page leave
   useEffect(() => {
     const handleBeforeUnload = () => {
       if (progress > 5 && progress < 95) {
@@ -141,14 +97,102 @@ const ReadingProgress = ({
     });
   }, [restoreBookmark]);
 
-  const formatTime = (minutes: number) => {
-    if (minutes < 1) return "< 1 mnt";
-    if (minutes === 1) return "1 mnt";
-    return `${minutes} mnt`;
-  };
-
   if (!mounted) return null;
 
+  // Mobile: Ultra-minimal - just a tiny progress line at top right
+  if (isMobile) {
+    return createPortal(
+      <>
+        {/* Restore bookmark prompt - mobile */}
+        <AnimatePresence>
+          {showRestorePrompt && bookmark && (
+            <motion.div
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="fixed top-4 left-4 right-4 z-[80]"
+            >
+              <div className="flex items-center gap-2 px-3 py-2 rounded-full 
+                            bg-card/95 backdrop-blur-md paper-shadow border border-accent/30 text-xs">
+                <Bookmark className="w-3.5 h-3.5 text-accent flex-shrink-0" />
+                <span className="font-medium flex-1">
+                  Lanjutkan? ({Math.round(bookmark.progress)}%)
+                </span>
+                <button
+                  onClick={handleRestoreBookmark}
+                  className="px-2.5 py-1 rounded-full bg-accent text-accent-foreground 
+                           text-[10px] font-medium"
+                >
+                  Ya
+                </button>
+                <button
+                  onClick={() => setShowRestorePrompt(false)}
+                  className="p-1 rounded-full hover:bg-muted"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Mobile minimal indicator - small pill at center right */}
+        <AnimatePresence>
+          {isVisible && showPercentage && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="fixed top-1/2 -translate-y-1/2 right-2 z-[70]"
+            >
+              <div className="flex flex-col items-center gap-1.5 px-1.5 py-2 rounded-full 
+                            bg-card/80 backdrop-blur-sm border border-border/50 shadow-sm">
+                {/* Mini circular progress */}
+                <div className="relative w-7 h-7">
+                  <svg className="w-7 h-7 -rotate-90" viewBox="0 0 28 28">
+                    <circle
+                      cx="14" cy="14" r="11"
+                      fill="none"
+                      className="stroke-muted/50"
+                      strokeWidth="2"
+                    />
+                    <motion.circle
+                      cx="14" cy="14" r="11"
+                      fill="none"
+                      className="stroke-accent"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeDasharray={69}
+                      animate={{ strokeDashoffset: 69 - (progress / 100) * 69 }}
+                      transition={{ duration: 0.1 }}
+                    />
+                  </svg>
+                  <span className="absolute inset-0 flex items-center justify-center text-[8px] font-bold">
+                    {Math.round(progress)}
+                  </span>
+                </div>
+                
+                {/* Bookmark - only icon */}
+                <button
+                  onClick={handleSaveBookmark}
+                  className="p-1 rounded-full hover:bg-muted/50"
+                >
+                  {hasBookmark ? (
+                    <BookmarkCheck className="w-3.5 h-3.5 text-accent" />
+                  ) : (
+                    <Bookmark className="w-3.5 h-3.5 text-muted-foreground" />
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </>,
+      document.body,
+    );
+  }
+
+  // Desktop/Tablet: Compact vertical card at center-right
   return createPortal(
     <>
       {/* Restore bookmark prompt */}
@@ -159,7 +203,7 @@ const ReadingProgress = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             className="fixed right-4 z-[80] max-w-[90vw]"
-            style={{ top: "calc(50% - 128px)" }}
+            style={{ top: "calc(50% - 100px)" }}
           >
             <div className="flex items-center gap-3 px-4 py-2.5 rounded-full 
                           bg-card/98 backdrop-blur-md paper-shadow border border-accent/30">
@@ -185,7 +229,7 @@ const ReadingProgress = ({
         )}
       </AnimatePresence>
 
-      {/* Center-right sticky indicator - All devices */}
+      {/* Desktop indicator - compact at center-right */}
       <AnimatePresence>
         {isVisible && showPercentage && (
           <motion.div
@@ -193,60 +237,45 @@ const ReadingProgress = ({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.2 }}
-            className="fixed top-1/2 -translate-y-1/2 right-4 z-[80] flex flex-col items-center gap-3 
-                      px-3 py-4 rounded-2xl bg-card/95 backdrop-blur-md 
-                      paper-shadow border border-border"
+            className="fixed top-1/2 -translate-y-1/2 right-4 z-[70] flex flex-col items-center gap-2 
+                      px-2.5 py-3 rounded-xl bg-card/90 backdrop-blur-sm 
+                      border border-border/50 shadow-md"
           >
             {/* Circular progress */}
-            <div className="relative w-12 h-12">
-              <svg className="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
+            <div className="relative w-10 h-10">
+              <svg className="w-10 h-10 -rotate-90" viewBox="0 0 40 40">
                 <circle
-                  cx="24"
-                  cy="24"
-                  r="20"
+                  cx="20" cy="20" r="16"
                   fill="none"
                   className="stroke-muted"
-                  strokeWidth="3"
+                  strokeWidth="2.5"
                 />
                 <motion.circle
-                  cx="24"
-                  cy="24"
-                  r="20"
+                  cx="20" cy="20" r="16"
                   fill="none"
                   className="stroke-accent"
-                  strokeWidth="3"
+                  strokeWidth="2.5"
                   strokeLinecap="round"
-                  strokeDasharray={125.6}
-                  initial={{ strokeDashoffset: 125.6 }}
-                  animate={{ strokeDashoffset: 125.6 - (progress / 100) * 125.6 }}
+                  strokeDasharray={100.5}
+                  animate={{ strokeDashoffset: 100.5 - (progress / 100) * 100.5 }}
                   transition={{ duration: 0.1, ease: "easeOut" }}
                 />
               </svg>
-              <span className="absolute inset-0 flex items-center justify-center text-xs font-bold">
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold">
                 {Math.round(progress)}%
-              </span>
-            </div>
-            
-            <div className="w-full h-px bg-border" />
-            
-            {/* Time remaining */}
-            <div className="flex flex-col items-center gap-1 text-muted-foreground">
-              <Clock className="w-4 h-4" />
-              <span className="text-[10px] font-medium whitespace-nowrap">
-                ~{formatTime(remainingTime)}
               </span>
             </div>
 
             {/* Bookmark button */}
             <button
               onClick={handleSaveBookmark}
-              className="p-2 rounded-full hover:bg-muted transition-colors group"
+              className="p-1.5 rounded-full hover:bg-muted transition-colors group"
               title="Simpan posisi baca"
             >
               {hasBookmark ? (
-                <BookmarkCheck className="w-5 h-5 text-accent" />
+                <BookmarkCheck className="w-4 h-4 text-accent" />
               ) : (
-                <Bookmark className="w-5 h-5 text-muted-foreground group-hover:text-accent transition-colors" />
+                <Bookmark className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors" />
               )}
             </button>
           </motion.div>
