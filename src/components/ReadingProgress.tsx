@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Progress } from "@/components/ui/progress";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bookmark, BookmarkCheck, Clock, X } from "lucide-react";
 import { useReadingBookmark } from "@/hooks/useReadingBookmark";
@@ -16,6 +16,7 @@ const ReadingProgress = ({
   estimatedReadTime = 5, 
   showPercentage = true 
 }: ReadingProgressProps) => {
+  const [mounted, setMounted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [remainingTime, setRemainingTime] = useState(estimatedReadTime);
@@ -38,6 +39,10 @@ const ReadingProgress = ({
       return () => clearTimeout(timer);
     }
   }, [hasBookmark, bookmark]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const updateProgress = () => {
@@ -142,26 +147,10 @@ const ReadingProgress = ({
     return `${minutes} mnt`;
   };
 
-  return (
-    <>
-      {/* Fixed top progress bar - always visible */}
-      <div className="fixed top-0 left-0 right-0 z-[60] h-1 bg-muted/30">
-        <motion.div
-          className="h-full bg-gradient-to-r from-accent via-primary to-accent relative overflow-hidden"
-          style={{ width: `${progress}%` }}
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.1, ease: "easeOut" }}
-        >
-          {/* Animated shine effect */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-            animate={{ x: ["-100%", "200%"] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </motion.div>
-      </div>
+  if (!mounted) return null;
 
+  return createPortal(
+    <>
       {/* Restore bookmark prompt */}
       <AnimatePresence>
         {showRestorePrompt && bookmark && (
@@ -169,7 +158,8 @@ const ReadingProgress = ({
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-4 left-1/2 -translate-x-1/2 z-[60]"
+            className="fixed right-4 z-[80] max-w-[90vw]"
+            style={{ top: "calc(50% - 128px)" }}
           >
             <div className="flex items-center gap-3 px-4 py-2.5 rounded-full 
                           bg-card/98 backdrop-blur-md paper-shadow border border-accent/30">
@@ -203,7 +193,7 @@ const ReadingProgress = ({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.2 }}
-            className="fixed top-1/2 -translate-y-1/2 right-4 z-50 flex flex-col items-center gap-3 
+            className="fixed top-1/2 -translate-y-1/2 right-4 z-[80] flex flex-col items-center gap-3 
                       px-3 py-4 rounded-2xl bg-card/95 backdrop-blur-md 
                       paper-shadow border border-border"
           >
@@ -262,7 +252,8 @@ const ReadingProgress = ({
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </>,
+    document.body,
   );
 };
 
