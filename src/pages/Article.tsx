@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import BookReadingMode from "@/components/BookReadingMode";
 import TornPaperEdge from "@/components/TornPaperEdge";
 import ArticleTOC from "@/components/ArticleTOC";
+import ReadingProgress from "@/components/ReadingProgress";
 import { getArticleById, getRelatedArticles } from "@/data/articles";
 import { Facebook, Twitter, Linkedin, Link2, ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,9 @@ const Article = () => {
 
   return (
     <div className="min-h-screen bg-background animate-fade-in paper-page">
+      {/* Reading Progress Indicator */}
+      <ReadingProgress />
+      
       <Header />
       
       {/* Table of Contents Sidebar */}
