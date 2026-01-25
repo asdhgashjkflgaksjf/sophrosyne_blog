@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { X, BookOpen, ChevronLeft, ChevronRight, Bookmark, MessageSquare, Highlighter } from "lucide-react";
+import { motion, AnimatePresence, PanInfo, useReducedMotion } from "framer-motion";
+import { X, BookOpen, ChevronLeft, ChevronRight, Bookmark, MessageSquare, Highlighter, List } from "lucide-react";
 import { Article } from "@/data/articles";
 import PageCurl from "./PageCurl";
 import { Highlight, HIGHLIGHT_COLORS, HighlightList } from "./TextHighlighter";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
+
+// Paper grain SVG for reuse
+const PAPER_GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E")`;
 
 interface BookReadingModeProps {
   article: Article;
@@ -104,6 +107,7 @@ const tabletPageVariants = {
 const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => {
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
+  const prefersReducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(0);
@@ -115,11 +119,31 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
   const [isHighlighting, setIsHighlighting] = useState(false);
   const [highlightColor, setHighlightColor] = useState(HIGHLIGHT_COLORS[0].value);
   const [showHighlights, setShowHighlights] = useState(false);
+  const [showTOC, setShowTOC] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+  
+  // Build TOC items for jumping to pages
+  const tocItems = [
+    { pageIndex: 0, title: article.title, type: 'title' },
+    { pageIndex: 1, title: 'Introduction', type: 'intro' },
+    ...article.content.sections.map((section, index) => ({
+      pageIndex: index + 2,
+      title: section.heading,
+      type: 'section',
+    })),
+    { pageIndex: article.content.sections.length + 2, title: 'Conclusion', type: 'conclusion' },
+  ];
+  
+  const goToPage = useCallback((pageIndex: number) => {
+    setDirection(pageIndex > currentPage ? 1 : -1);
+    playPaperSound('turn');
+    setCurrentPage(pageIndex);
+    setShowTOC(false);
+  }, [currentPage]);
 
   // Split content into pages
   const pages = [
@@ -326,14 +350,39 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] flex flex-col bg-[hsl(var(--paper-cream))] overflow-hidden"
           >
-            {/* Mobile Header - Compact */}
+            {/* Mobile Header - Compact with mini progress */}
             <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-border bg-[hsl(var(--paper-cream))] safe-area-top">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-accent" />
-                <span className="font-caps text-xs tracking-wider font-medium">
-                  {currentPage + 1} / {totalPages}
-                </span>
+              <div className="flex items-center gap-3">
+                {/* Mini circular progress */}
+                <div className="relative w-8 h-8">
+                  <svg className="w-8 h-8 -rotate-90" viewBox="0 0 32 32">
+                    <circle cx="16" cy="16" r="12" fill="none" className="stroke-muted/40" strokeWidth="2" />
+                    <motion.circle
+                      cx="16" cy="16" r="12"
+                      fill="none"
+                      className="stroke-accent"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeDasharray={75.4}
+                      animate={{ strokeDashoffset: 75.4 - ((currentPage + 1) / totalPages) * 75.4 }}
+                      transition={{ duration: 0.2 }}
+                    />
+                  </svg>
+                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-bold">
+                    {currentPage + 1}
+                  </span>
+                </div>
+                
+                {/* TOC button */}
+                <button
+                  type="button"
+                  onClick={() => setShowTOC(!showTOC)}
+                  className={`p-2 rounded-full transition-colors ${showTOC ? 'bg-accent/15 text-accent' : 'hover:bg-muted/60'}`}
+                >
+                  <List className="w-4 h-4" />
+                </button>
               </div>
+              
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -349,12 +398,49 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="p-2.5 rounded-full hover:bg-muted/60 transition-colors"
+                  className="p-2.5 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
+            
+            {/* Mobile TOC Drawer */}
+            <AnimatePresence>
+              {showTOC && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden border-b border-border bg-[hsl(var(--paper-aged)/0.3)]"
+                >
+                  <div className="p-3 max-h-[200px] overflow-y-auto scrollbar-hide">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[9px] font-caps text-muted-foreground tracking-wider">Daftar Isi</span>
+                    </div>
+                    <nav className="space-y-1">
+                      {tocItems.map((item, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => goToPage(item.pageIndex)}
+                          className={`w-full text-left px-2 py-1.5 rounded text-xs transition-colors flex items-center gap-2
+                            ${currentPage === item.pageIndex 
+                              ? 'bg-accent/15 text-accent font-medium' 
+                              : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                            }`}
+                        >
+                          <span className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold
+                            ${currentPage === item.pageIndex ? 'bg-accent text-white' : 'bg-muted/50'}`}>
+                            {idx + 1}
+                          </span>
+                          <span className="line-clamp-1">{item.title}</span>
+                        </button>
+                      ))}
+                    </nav>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Mobile Content Area - Full height with proper scrolling */}
             <div className="flex-1 relative overflow-hidden" style={{ perspective: "1000px" }}>
@@ -473,17 +559,85 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={prefersReducedMotion ? { duration: 0.1 } : { duration: 0.3 }}
             className="fixed inset-0 z-[100] flex items-center justify-center bg-[hsl(var(--paper-shadow)/0.85)] backdrop-blur-sm"
           >
             {/* Click outside to close */}
             <div className="absolute inset-0" onClick={handleClose} />
             
+            {/* Mini progress & TOC - top left */}
+            <div className="absolute top-4 left-4 z-30 flex items-center gap-2">
+              {/* Mini circular progress */}
+              <div className="relative w-10 h-10 bg-card/90 rounded-full paper-shadow border border-border/50 flex items-center justify-center">
+                <svg className="w-10 h-10 -rotate-90 absolute" viewBox="0 0 40 40">
+                  <circle cx="20" cy="20" r="16" fill="none" className="stroke-muted/30" strokeWidth="2" />
+                  <motion.circle
+                    cx="20" cy="20" r="16"
+                    fill="none"
+                    className="stroke-accent"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeDasharray={100.5}
+                    animate={{ strokeDashoffset: 100.5 - ((currentPage + 1) / totalPages) * 100.5 }}
+                    transition={{ duration: 0.2 }}
+                  />
+                </svg>
+                <span className="text-[8px] font-bold z-10">{currentPage + 1}</span>
+              </div>
+              
+              {/* TOC button */}
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setShowTOC(!showTOC); }}
+                className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all shadow-lg
+                  ${showTOC ? 'bg-accent border-accent text-white' : 'bg-card/90 border-border hover:bg-muted'}`}
+              >
+                <List className="w-4 h-4" />
+              </button>
+              
+              {/* TOC Dropdown */}
+              <AnimatePresence>
+                {showTOC && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    className="absolute top-14 left-0 w-[200px] bg-card/98 backdrop-blur-md rounded-lg border border-border paper-shadow overflow-hidden"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="p-2 border-b border-border/50">
+                      <span className="text-[9px] font-caps text-muted-foreground">Daftar Isi</span>
+                    </div>
+                    <nav className="p-2 space-y-0.5 max-h-[250px] overflow-y-auto scrollbar-hide">
+                      {tocItems.map((item, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => goToPage(item.pageIndex)}
+                          className={`w-full text-left px-2 py-1.5 rounded text-xs transition-colors flex items-center gap-2
+                            ${currentPage === item.pageIndex 
+                              ? 'bg-accent/15 text-accent font-medium' 
+                              : 'text-muted-foreground hover:bg-muted/50'
+                            }`}
+                        >
+                          <span className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold
+                            ${currentPage === item.pageIndex ? 'bg-accent text-white' : 'bg-muted/50'}`}>
+                            {idx + 1}
+                          </span>
+                          <span className="line-clamp-1">{item.title}</span>
+                        </button>
+                      ))}
+                    </nav>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            
             {/* Tablet Book Container */}
             <motion.div
-              initial={{ scale: 0.9, rotateY: -20 }}
-              animate={{ scale: 1, rotateY: 0 }}
-              exit={{ scale: 0.9, rotateY: 20 }}
-              transition={{ type: "spring", damping: 20, stiffness: 100 }}
+              initial={prefersReducedMotion ? { opacity: 0 } : { scale: 0.9, rotateY: -20 }}
+              animate={prefersReducedMotion ? { opacity: 1 } : { scale: 1, rotateY: 0 }}
+              exit={prefersReducedMotion ? { opacity: 0 } : { scale: 0.9, rotateY: 20 }}
+              transition={prefersReducedMotion ? { duration: 0.1 } : { type: "spring", damping: 20, stiffness: 100 }}
               className="relative w-[85vw] max-w-2xl h-[80vh] max-h-[700px]"
               style={{ perspective: "2000px" }}
             >
@@ -600,17 +754,98 @@ const BookReadingMode = ({ article, isOpen, onClose }: BookReadingModeProps) => 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={prefersReducedMotion ? { duration: 0.1 } : { duration: 0.3 }}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-[hsl(var(--paper-shadow)/0.85)] backdrop-blur-sm"
         >
           {/* Click outside to close */}
           <div className="absolute inset-0" onClick={handleClose} />
           
+          {/* Mini progress & TOC - top left */}
+          <div className="absolute top-6 left-6 z-30 flex items-center gap-3">
+            {/* Mini circular progress */}
+            <div className="relative w-12 h-12 bg-card/90 rounded-full paper-shadow border border-border/50 flex items-center justify-center">
+              <svg className="w-12 h-12 -rotate-90 absolute" viewBox="0 0 48 48">
+                <circle cx="24" cy="24" r="20" fill="none" className="stroke-muted/30" strokeWidth="2.5" />
+                <motion.circle
+                  cx="24" cy="24" r="20"
+                  fill="none"
+                  className="stroke-accent"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeDasharray={125.6}
+                  animate={{ strokeDashoffset: 125.6 - ((currentPage + 1) / totalPages) * 125.6 }}
+                  transition={{ duration: 0.2 }}
+                />
+              </svg>
+              <span className="text-[10px] font-bold z-10">{currentPage + 1}/{totalPages}</span>
+            </div>
+            
+            {/* TOC button */}
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setShowTOC(!showTOC); }}
+              className={`w-11 h-11 rounded-full border-2 flex items-center justify-center transition-all shadow-lg cursor-pointer
+                ${showTOC ? 'bg-accent border-accent text-white' : 'bg-card/90 border-border hover:bg-muted'}`}
+            >
+              <List className="w-5 h-5" />
+            </button>
+            
+            {/* TOC Dropdown */}
+            <AnimatePresence>
+              {showTOC && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  className="absolute top-16 left-0 w-[240px] bg-card/98 backdrop-blur-md rounded-lg border border-border paper-shadow overflow-hidden"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 opacity-[0.06]"
+                    style={{ backgroundImage: PAPER_GRAIN }}
+                  />
+                  <div className="p-3 border-b border-border/50 flex items-center gap-2">
+                    <List className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-xs font-caps text-muted-foreground tracking-wider">Daftar Isi</span>
+                  </div>
+                  {/* Progress bar */}
+                  <div className="h-1 bg-muted/50">
+                    <motion.div 
+                      className="h-full bg-accent"
+                      animate={{ width: `${((currentPage + 1) / totalPages) * 100}%` }}
+                    />
+                  </div>
+                  <nav className="p-2 space-y-0.5 max-h-[300px] overflow-y-auto scrollbar-hide">
+                    {tocItems.map((item, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => goToPage(item.pageIndex)}
+                        className={`w-full text-left px-2.5 py-2 rounded text-xs transition-colors flex items-center gap-2
+                          ${currentPage === item.pageIndex 
+                            ? 'bg-accent/15 text-accent font-medium' 
+                            : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                          }`}
+                      >
+                        <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold
+                          ${currentPage === item.pageIndex ? 'bg-accent text-white' : 'bg-muted/50'}`}>
+                          {idx + 1}
+                        </span>
+                        <span className="line-clamp-1">{item.title}</span>
+                      </button>
+                    ))}
+                  </nav>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          
           {/* Book Container */}
           <motion.div
-            initial={{ scale: 0.8, rotateY: -30 }}
-            animate={{ scale: 1, rotateY: 0 }}
-            exit={{ scale: 0.8, rotateY: 30 }}
-            transition={{ type: "spring", damping: 20, stiffness: 100 }}
+            initial={prefersReducedMotion ? { opacity: 0 } : { scale: 0.85, rotateY: -25 }}
+            animate={prefersReducedMotion ? { opacity: 1 } : { scale: 1, rotateY: 0 }}
+            exit={prefersReducedMotion ? { opacity: 0 } : { scale: 0.85, rotateY: 25 }}
+            transition={prefersReducedMotion ? { duration: 0.1 } : { type: "spring", damping: 22, stiffness: 120 }}
             className="relative w-[95vw] max-w-5xl h-[80vh] max-h-[700px]"
             style={{ perspective: "2000px" }}
           >
