@@ -7,6 +7,7 @@ import BookReadingMode from "@/components/BookReadingMode";
 import TornPaperEdge from "@/components/TornPaperEdge";
 import ArticleTOC from "@/components/ArticleTOC";
 import ReadingProgress from "@/components/ReadingProgress";
+import ArticlePaper, { DropCap, SectionDivider } from "@/components/ArticlePaper";
 import { getArticleById, getRelatedArticles } from "@/data/articles";
 import { Facebook, Twitter, Linkedin, Link2, ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -50,7 +51,10 @@ const Article = () => {
   return (
     <div className="min-h-screen bg-background animate-fade-in paper-page">
       {/* Reading Progress Indicator */}
-      <ReadingProgress />
+      <ReadingProgress 
+        articleId={article.id} 
+        estimatedReadTime={parseInt(article.readTime) || 5}
+      />
       
       <Header />
       
@@ -101,21 +105,22 @@ const Article = () => {
           <TornPaperEdge position="bottom" variant="rough" />
         </div>
 
-        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10">
+        <ArticlePaper className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10">
           {/* Article Header */}
-          <div className="mb-12 animate-slide-up">
-            <div className="flex items-center gap-3 mb-6">
-              <span className={`px-4 py-2 rounded-full text-sm font-medium ${getCategoryClass(article.category)}`}>
-                {article.category}
-              </span>
-              <span className="text-sm text-muted-foreground">{article.date}</span>
-              <span className="text-sm text-muted-foreground">•</span>
-              <span className="text-sm text-muted-foreground">{article.readTime} read</span>
-            </div>
+          <article className="p-6 md:p-10 lg:p-12">
+            <div className="mb-12 animate-slide-up">
+              <div className="flex items-center gap-3 mb-6">
+                <span className={`px-4 py-2 rounded-full text-sm font-medium ${getCategoryClass(article.category)}`}>
+                  {article.category}
+                </span>
+                <span className="text-sm text-muted-foreground">{article.date}</span>
+                <span className="text-sm text-muted-foreground">•</span>
+                <span className="text-sm text-muted-foreground">{article.readTime} read</span>
+              </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
-              {article.title}
-            </h1>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+                {article.title}
+              </h1>
             
             <p className="text-xl text-muted-foreground mb-8">
               {article.subtitle}
@@ -177,23 +182,28 @@ const Article = () => {
 
           {/* Article Content with section IDs for TOC */}
           <div className="prose prose-lg max-w-none mb-16 animate-slide-up stagger-2">
-            <div id="intro">
-              <p className="text-lg leading-relaxed text-muted-foreground mb-8">
-                {article.content.introduction}
-              </p>
+            <div id="intro" className="mb-10">
+              <DropCap>{article.content.introduction}</DropCap>
             </div>
 
+            <SectionDivider />
+
             {article.content.sections.map((section, index) => (
-              <div key={index} id={`section-${index}`} className="mb-10 scroll-mt-24">
-                <h2 className="text-3xl font-bold mb-4">{section.heading}</h2>
+              <div key={index} id={`section-${index}`} className="mb-10 scroll-mt-24 relative">
+                <h2 className="text-3xl font-bold mb-4 font-editorial">{section.heading}</h2>
                 <p className="text-lg leading-relaxed text-muted-foreground">
                   {section.content}
                 </p>
+                {index < article.content.sections.length - 1 && <SectionDivider />}
               </div>
             ))}
 
-            <div id="conclusion" className="mt-12 p-6 rounded-2xl bg-muted border-l-4 border-accent scroll-mt-24">
-              <p className="text-lg leading-relaxed italic text-foreground">
+            <div id="conclusion" className="mt-12 p-6 md:p-8 rounded-sm bg-muted/50 border-l-4 border-accent scroll-mt-24 relative">
+              {/* Quote decoration */}
+              <div className="absolute -top-3 left-4 text-5xl font-editorial text-accent/40 leading-none">
+                "
+              </div>
+              <p className="text-lg md:text-xl leading-relaxed italic text-foreground font-editorial pl-4">
                 {article.content.conclusion}
               </p>
             </div>
@@ -205,7 +215,8 @@ const Article = () => {
               {article.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-4 py-2 rounded-full text-sm bg-muted text-foreground"
+                  className="px-4 py-2 rounded-sm text-sm bg-muted/80 text-foreground 
+                           border border-border/50 hover:bg-accent/10 transition-colors cursor-default"
                 >
                   #{tag}
                 </span>
@@ -246,8 +257,8 @@ const Article = () => {
           </div>
 
           {/* Newsletter CTA */}
-          <div className="mb-16 rounded-2xl bg-card p-8 md:p-12 text-center">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">Enjoyed this article?</h3>
+          <div className="mb-16 rounded-sm bg-muted/50 p-8 md:p-12 text-center border border-border/50">
+            <h3 className="text-2xl md:text-3xl font-bold mb-4 font-display">Enjoyed this article?</h3>
             <p className="text-muted-foreground mb-6">
               Subscribe to receive more insights like this directly in your inbox.
             </p>
@@ -255,14 +266,15 @@ const Article = () => {
               <input
                 type="email"
                 placeholder="Your email"
-                className="flex-1 px-4 py-3 rounded-full border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                className="flex-1 px-4 py-3 rounded-sm border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
               />
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8">
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-sm px-8">
                 Subscribe
               </Button>
             </div>
           </div>
-        </article>
+          </article>
+        </ArticlePaper>
 
         {/* Related Articles - with torn edge */}
         <section className="relative bg-muted py-16 animate-fade-in">
