@@ -135,6 +135,16 @@
 @layer base {
   * {
     @apply border-border;
+    transition: background-color 400ms ease-out, 
+                border-color 400ms ease-out,
+                color 200ms ease-out,
+                box-shadow 400ms ease-out;
+  }
+  
+  /* Disable transitions for elements that shouldn't animate */
+  .no-theme-transition,
+  .no-theme-transition * {
+    transition: none !important;
   }
 
   body {
