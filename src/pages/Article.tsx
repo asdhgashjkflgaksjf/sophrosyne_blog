@@ -89,12 +89,12 @@ const Article = () => {
         onClose={() => setIsReadingMode(false)} 
       />
 
-      <FloatingReadingModeToggle
-        onClick={handleToggleReadingMode}
-        isActive={isReadingMode}
-        label="Mode Baca"
-        exitLabel="Keluar"
-      />
+      {!isReadingMode && (
+        <FloatingReadingModeToggle
+          onClick={handleToggleReadingMode}
+          label="Mode Baca"
+        />
+      )}
       
       <main>
         {/* Back Navigation */}
