@@ -32,17 +32,17 @@ const Footer = () => {
           </div>
 
           {/* Navigation Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mb-12">
             <div className="paper-note">
               <h3 className="font-caps text-xs tracking-widest mb-4 text-foreground">Jelajahi</h3>
               <ul className="space-y-3 text-sm font-body text-muted-foreground">
                 <li>
-                  <a href="/creativity" className="hover:text-accent transition-colors inline-block paper-link">
+                  <a href="/filsafat" className="hover:text-accent transition-colors inline-block paper-link">
                     Filsafat
                   </a>
                 </li>
                 <li>
-                  <a href="/growth" className="hover:text-accent transition-colors inline-block paper-link">
+                  <a href="/book-review" className="hover:text-accent transition-colors inline-block paper-link">
                     Book Review
                   </a>
                 </li>
@@ -52,7 +52,7 @@ const Footer = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="/travel" className="hover:text-accent transition-colors inline-block paper-link">
+                  <a href="/growth" className="hover:text-accent transition-colors inline-block paper-link">
                     Stoikisme
                   </a>
                 </li>
@@ -60,53 +60,32 @@ const Footer = () => {
             </div>
             
             <div className="paper-note">
-              <h3 className="font-caps text-xs tracking-widest mb-4 text-foreground">About</h3>
+              <h3 className="font-caps text-xs tracking-widest mb-4 text-foreground">Tentang</h3>
               <ul className="space-y-3 text-sm font-body text-muted-foreground">
                 <li>
                   <a href="/about" className="hover:text-accent transition-colors inline-block paper-link">
-                    Our Story
-                  </a>
-                </li>
-                <li>
-                  <a href="/authors" className="hover:text-accent transition-colors inline-block paper-link">
-                    Authors
+                    Tentang Saya
                   </a>
                 </li>
                 <li>
                   <a href="/contact" className="hover:text-accent transition-colors inline-block paper-link">
-                    Contact
+                    Kontak
                   </a>
                 </li>
               </ul>
             </div>
             
             <div className="paper-note">
-              <h3 className="font-caps text-xs tracking-widest mb-4 text-foreground">Resources</h3>
+              <h3 className="font-caps text-xs tracking-widest mb-4 text-foreground">Ikuti</h3>
               <ul className="space-y-3 text-sm font-body text-muted-foreground">
                 <li>
-                  <a href="/style-guide" className="hover:text-accent transition-colors inline-block paper-link">
-                    Style Guide
+                  <a href="#instagram" className="hover:text-accent transition-colors inline-block paper-link">
+                    Instagram
                   </a>
                 </li>
                 <li>
-                  <a href="/#newsletter" className="hover:text-accent transition-colors inline-block paper-link">
-                    Newsletter
-                  </a>
-                </li>
-              </ul>
-            </div>
-            
-            <div className="paper-note">
-              <h3 className="font-caps text-xs tracking-widest mb-4 text-foreground">Legal</h3>
-              <ul className="space-y-3 text-sm font-body text-muted-foreground">
-                <li>
-                  <a href="/privacy" className="hover:text-accent transition-colors inline-block paper-link">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="/terms" className="hover:text-accent transition-colors inline-block paper-link">
-                    Terms of Service
+                  <a href="#twitter" className="hover:text-accent transition-colors inline-block paper-link">
+                    Twitter
                   </a>
                 </li>
               </ul>
