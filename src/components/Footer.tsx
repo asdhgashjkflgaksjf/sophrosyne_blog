@@ -1,4 +1,5 @@
-import { Feather, Instagram, Facebook, Linkedin, Twitter } from "lucide-react";
+import { Feather, Instagram, Twitter } from "lucide-react";
+import profileSilhouette from "@/assets/profile-silhouette.png";
 
 const Footer = () => {
   return (
@@ -63,9 +64,9 @@ const Footer = () => {
               <h3 className="font-caps text-xs tracking-widest mb-4 text-foreground">Tentang Penulis</h3>
               <div className="flex items-start gap-4">
                 <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
+                  src={profileSilhouette}
                   alt="Farhan"
-                  className="w-14 h-14 rounded-full object-cover border-2 border-border paper-shadow"
+                  className="w-14 h-14 rounded-full object-cover border-2 border-border paper-shadow bg-[hsl(var(--paper-cream))]"
                 />
                 <div className="flex-1">
                   <p className="font-editorial text-sm font-semibold text-foreground mb-1">Farhan</p>
@@ -103,14 +104,8 @@ const Footer = () => {
             <a href="#instagram" className="floating-button w-10 h-10" aria-label="Instagram">
               <Instagram className="w-4 h-4" />
             </a>
-            <a href="#facebook" className="floating-button w-10 h-10" aria-label="Facebook">
-              <Facebook className="w-4 h-4" />
-            </a>
             <a href="#twitter" className="floating-button w-10 h-10" aria-label="Twitter">
               <Twitter className="w-4 h-4" />
-            </a>
-            <a href="#linkedin" className="floating-button w-10 h-10" aria-label="LinkedIn">
-              <Linkedin className="w-4 h-4" />
             </a>
           </div>
 
