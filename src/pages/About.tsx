@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Mail, BookOpen, Heart, Globe, Palette, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import profileSilhouette from "@/assets/profile-silhouette.png";
 
 const About = () => {
   return (
@@ -9,17 +10,28 @@ const About = () => {
       <Header />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Hero Section with Paper Style */}
+        {/* Hero Section with Profile */}
         <div className="mb-16 text-center space-y-6">
           <div className="ornament-divider justify-center animate-fade-in">
             <span className="font-script text-2xl text-accent">❧</span>
           </div>
+          
+          {/* Profile Image */}
+          <div className="flex justify-center animate-slide-down">
+            <img
+              src={profileSilhouette}
+              alt="Farhan"
+              className="w-32 h-32 rounded-full object-cover border-4 border-border paper-shadow bg-[hsl(var(--paper-cream))]"
+            />
+          </div>
+          
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-tight animate-slide-down">
-            About Sophrosyne
+            Tentang Saya
           </h1>
-          <p className="text-lg font-body text-muted-foreground leading-relaxed animate-slide-up stagger-1">
-            A paper-crafted sanctuary for exploring ideas, finding inspiration, 
-            and discovering the art of balanced living.
+          <h2 className="text-2xl font-editorial text-accent animate-slide-up">Farhan</h2>
+          <p className="text-lg font-body text-muted-foreground leading-relaxed animate-slide-up stagger-1 max-w-2xl mx-auto">
+            Penulis & pemikir yang mengeksplorasi filsafat, stoikisme, dan kebijaksanaan hidup 
+            melalui tulisan. Selamat datang di ruang refleksi pribadi saya.
           </p>
           <div className="ornament-divider justify-center animate-fade-in stagger-2">
             <span className="text-sm">✦ ✦ ✦</span>
