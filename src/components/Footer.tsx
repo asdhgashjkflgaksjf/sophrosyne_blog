@@ -59,20 +59,26 @@ const Footer = () => {
               </ul>
             </div>
             
-            <div className="paper-note">
-              <h3 className="font-caps text-xs tracking-widest mb-4 text-foreground">Tentang</h3>
-              <ul className="space-y-3 text-sm font-body text-muted-foreground">
-                <li>
-                  <a href="/about" className="hover:text-accent transition-colors inline-block paper-link">
-                    Tentang Saya
-                  </a>
-                </li>
-                <li>
-                  <a href="/contact" className="hover:text-accent transition-colors inline-block paper-link">
-                    Kontak
-                  </a>
-                </li>
-              </ul>
+            <div className="paper-note col-span-2 md:col-span-1">
+              <h3 className="font-caps text-xs tracking-widest mb-4 text-foreground">Tentang Penulis</h3>
+              <div className="flex items-start gap-4">
+                <img
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
+                  alt="Farhan"
+                  className="w-14 h-14 rounded-full object-cover border-2 border-border paper-shadow"
+                />
+                <div className="flex-1">
+                  <p className="font-editorial text-sm font-semibold text-foreground mb-1">Farhan</p>
+                  <p className="text-xs text-muted-foreground font-body leading-relaxed">
+                    Penulis & pemikir yang mengeksplorasi filsafat, stoikisme, dan kebijaksanaan hidup melalui tulisan.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 space-y-2 text-sm font-body text-muted-foreground">
+                <a href="/about" className="hover:text-accent transition-colors inline-block paper-link">
+                  Selengkapnya →
+                </a>
+              </div>
             </div>
             
             <div className="paper-note">
