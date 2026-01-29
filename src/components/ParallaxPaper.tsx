@@ -24,7 +24,7 @@ const ParallaxPaper = ({ children }: ParallaxPaperProps) => {
   const smoothRotation = useSpring(rotation, { stiffness: 50, damping: 30 });
 
   return (
-    <div ref={containerRef} className="relative min-h-screen overflow-x-hidden overflow-y-visible">
+    <div ref={containerRef} className="relative min-h-screen overflow-hidden">
       {/* Base paper texture - fixed */}
       <div 
         className="fixed inset-0 pointer-events-none z-0"
