@@ -22,7 +22,7 @@ const navItems = [
     ],
   },
   { label: "Book Review", href: "/book-review" },
-  { label: "Penulis", href: "/authors" },
+  { label: "Tentang", href: "/about" },
 ];
 
 interface SubMenuProps {
