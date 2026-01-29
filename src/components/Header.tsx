@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Menu, X, Moon, Sun, Feather, ChevronDown, BookOpen, Lightbulb, Palette, Sprout, Compass, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -28,15 +29,33 @@ interface SubMenuProps {
   items: { label: string; href: string; icon: any; description: string }[];
   isOpen: boolean;
   onClose: () => void;
+  triggerRef: React.RefObject<HTMLButtonElement>;
 }
 
-const SubMenuDropdown = ({ items, isOpen, onClose }: SubMenuProps) => {
+const SubMenuDropdown = ({ items, isOpen, onClose, triggerRef }: SubMenuProps) => {
   const prefersReducedMotion = useReducedMotion();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+
+  // Calculate position based on trigger button
+  useEffect(() => {
+    if (isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.bottom + 8,
+        left: rect.left + rect.width / 2,
+      });
+    }
+  }, [isOpen, triggerRef]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current && 
+        !dropdownRef.current.contains(event.target as Node) &&
+        triggerRef.current &&
+        !triggerRef.current.contains(event.target as Node)
+      ) {
         onClose();
       }
     };
@@ -44,7 +63,7 @@ const SubMenuDropdown = ({ items, isOpen, onClose }: SubMenuProps) => {
       document.addEventListener("mousedown", handleClickOutside);
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, triggerRef]);
 
   const dropdownVariants = prefersReducedMotion
     ? { hidden: { opacity: 0 }, visible: { opacity: 1 } }
@@ -58,7 +77,10 @@ const SubMenuDropdown = ({ items, isOpen, onClose }: SubMenuProps) => {
         },
       };
 
-  return (
+  if (!isOpen) return null;
+
+  // Use portal to render dropdown at body level
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -67,10 +89,15 @@ const SubMenuDropdown = ({ items, isOpen, onClose }: SubMenuProps) => {
           initial="hidden"
           animate="visible"
           exit="hidden"
-          className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 z-[100] origin-top"
+          className="fixed w-72 z-[9999] origin-top"
+          style={{
+            top: position.top,
+            left: position.left,
+            transform: 'translateX(-50%)',
+          }}
         >
           {/* Paper style card */}
-          <div className="relative bg-[hsl(var(--paper-cream))] border border-border rounded-xl paper-shadow overflow-hidden">
+          <div className="relative bg-[hsl(var(--paper-cream))] border border-border rounded-xl shadow-xl overflow-hidden">
             {/* Paper grain overlay */}
             <div
               className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -116,7 +143,8 @@ const SubMenuDropdown = ({ items, isOpen, onClose }: SubMenuProps) => {
           </div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 
@@ -181,42 +209,47 @@ const Header = () => {
 
           {/* Desktop Navigation with Sub-menus */}
           <nav className="hidden lg:flex items-center gap-1 relative z-10">
-            {navItems.map((item) => (
-              <div key={item.label} className="relative">
-                {item.submenu ? (
-                  <>
-                    <button
-                      onClick={() => setOpenSubmenu(openSubmenu === item.label ? null : item.label)}
-                      className={`flex items-center gap-1 text-sm font-body font-medium px-4 py-2 transition-all border-b-2 rounded-lg
-                        ${openSubmenu === item.label 
-                          ? 'bg-muted/60 border-accent text-accent' 
-                          : 'border-transparent hover:bg-muted/40 hover:border-primary'
-                        }`}
+            {navItems.map((item) => {
+              const triggerRef = useRef<HTMLButtonElement>(null);
+              return (
+                <div key={item.label} className="relative">
+                  {item.submenu ? (
+                    <>
+                      <button
+                        ref={triggerRef}
+                        onClick={() => setOpenSubmenu(openSubmenu === item.label ? null : item.label)}
+                        className={`flex items-center gap-1 text-sm font-body font-medium px-4 py-2 transition-all border-b-2 rounded-lg
+                          ${openSubmenu === item.label 
+                            ? 'bg-muted/60 border-accent text-accent' 
+                            : 'border-transparent hover:bg-muted/40 hover:border-primary'
+                          }`}
+                      >
+                        {item.label}
+                        <motion.div
+                          animate={{ rotate: openSubmenu === item.label ? 180 : 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        </motion.div>
+                      </button>
+                      <SubMenuDropdown
+                        items={item.submenu}
+                        isOpen={openSubmenu === item.label}
+                        onClose={() => setOpenSubmenu(null)}
+                        triggerRef={triggerRef}
+                      />
+                    </>
+                  ) : (
+                    <a
+                      href={item.href}
+                      className="text-sm font-body font-medium hover:bg-muted/40 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary rounded-lg"
                     >
                       {item.label}
-                      <motion.div
-                        animate={{ rotate: openSubmenu === item.label ? 180 : 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <ChevronDown className="w-3.5 h-3.5" />
-                      </motion.div>
-                    </button>
-                    <SubMenuDropdown
-                      items={item.submenu}
-                      isOpen={openSubmenu === item.label}
-                      onClose={() => setOpenSubmenu(null)}
-                    />
-                  </>
-                ) : (
-                  <a
-                    href={item.href}
-                    className="text-sm font-body font-medium hover:bg-muted/40 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary rounded-lg"
-                  >
-                    {item.label}
-                  </a>
-                )}
-              </div>
-            ))}
+                    </a>
+                  )}
+                </div>
+              );
+            })}
           </nav>
 
           {/* Actions */}
