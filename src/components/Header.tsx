@@ -148,6 +148,49 @@ const SubMenuDropdown = ({ items, isOpen, onClose, triggerRef }: SubMenuProps) =
   );
 };
 
+// Separate component for nav items with submenu to properly use hooks
+interface NavItemWithSubmenuProps {
+  item: {
+    label: string;
+    submenu: { label: string; href: string; icon: any; description: string }[];
+  };
+  isOpen: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+}
+
+const NavItemWithSubmenu = ({ item, isOpen, onToggle, onClose }: NavItemWithSubmenuProps) => {
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  
+  return (
+    <div className="relative">
+      <button
+        ref={triggerRef}
+        onClick={onToggle}
+        className={`flex items-center gap-1 text-sm font-body font-medium px-4 py-2 transition-all border-b-2 rounded-lg
+          ${isOpen 
+            ? 'bg-muted/60 border-accent text-accent' 
+            : 'border-transparent hover:bg-muted/40 hover:border-primary'
+          }`}
+      >
+        {item.label}
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronDown className="w-3.5 h-3.5" />
+        </motion.div>
+      </button>
+      <SubMenuDropdown
+        items={item.submenu}
+        isOpen={isOpen}
+        onClose={onClose}
+        triggerRef={triggerRef}
+      />
+    </div>
+  );
+};
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
@@ -209,47 +252,25 @@ const Header = () => {
 
           {/* Desktop Navigation with Sub-menus */}
           <nav className="hidden lg:flex items-center gap-1 relative z-10">
-            {navItems.map((item) => {
-              const triggerRef = useRef<HTMLButtonElement>(null);
-              return (
-                <div key={item.label} className="relative">
-                  {item.submenu ? (
-                    <>
-                      <button
-                        ref={triggerRef}
-                        onClick={() => setOpenSubmenu(openSubmenu === item.label ? null : item.label)}
-                        className={`flex items-center gap-1 text-sm font-body font-medium px-4 py-2 transition-all border-b-2 rounded-lg
-                          ${openSubmenu === item.label 
-                            ? 'bg-muted/60 border-accent text-accent' 
-                            : 'border-transparent hover:bg-muted/40 hover:border-primary'
-                          }`}
-                      >
-                        {item.label}
-                        <motion.div
-                          animate={{ rotate: openSubmenu === item.label ? 180 : 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <ChevronDown className="w-3.5 h-3.5" />
-                        </motion.div>
-                      </button>
-                      <SubMenuDropdown
-                        items={item.submenu}
-                        isOpen={openSubmenu === item.label}
-                        onClose={() => setOpenSubmenu(null)}
-                        triggerRef={triggerRef}
-                      />
-                    </>
-                  ) : (
-                    <a
-                      href={item.href}
-                      className="text-sm font-body font-medium hover:bg-muted/40 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary rounded-lg"
-                    >
-                      {item.label}
-                    </a>
-                  )}
-                </div>
-              );
-            })}
+            {navItems.map((item) => (
+              <div key={item.label}>
+                {item.submenu ? (
+                  <NavItemWithSubmenu
+                    item={item as { label: string; submenu: { label: string; href: string; icon: any; description: string }[] }}
+                    isOpen={openSubmenu === item.label}
+                    onToggle={() => setOpenSubmenu(openSubmenu === item.label ? null : item.label)}
+                    onClose={() => setOpenSubmenu(null)}
+                  />
+                ) : (
+                  <a
+                    href={item.href}
+                    className="text-sm font-body font-medium hover:bg-muted/40 px-4 py-2 transition-all border-b-2 border-transparent hover:border-primary rounded-lg"
+                  >
+                    {item.label}
+                  </a>
+                )}
+              </div>
+            ))}
           </nav>
 
           {/* Actions */}
