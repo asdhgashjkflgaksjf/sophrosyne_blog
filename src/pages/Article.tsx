@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
@@ -8,12 +8,14 @@ import TornPaperEdge from "@/components/TornPaperEdge";
 import ArticleTOC from "@/components/ArticleTOC";
 import ReadingProgress from "@/components/ReadingProgress";
 import ArticlePaper, { DropCap, SectionDivider } from "@/components/ArticlePaper";
+import ArticleTranslator from "@/components/ArticleTranslator";
 import { getArticleById, getRelatedArticles } from "@/data/articles";
-import { Facebook, Twitter, Linkedin, Link2, ArrowLeft, BookOpen } from "lucide-react";
+import { Facebook, Twitter, Linkedin, Link2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { usePaperSound } from "@/hooks/usePaperSound";
 import FloatingReadingModeToggle from "@/components/FloatingReadingModeToggle";
+import { useGoogleTranslate } from "@/hooks/useGoogleTranslate";
 
 const Article = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,11 +23,48 @@ const Article = () => {
   const [isReadingMode, setIsReadingMode] = useState(false);
   const { playRustle } = usePaperSound();
   
+  // Translation state
+  const { translateArticle, isTranslating, currentLanguage, setCurrentLanguage } = useGoogleTranslate();
+  const [translatedContent, setTranslatedContent] = useState<{
+    title: string;
+    subtitle: string;
+    content: {
+      introduction: string;
+      sections: { heading: string; content: string }[];
+      conclusion: string;
+    };
+  } | null>(null);
+  
   if (!article) {
     return <Navigate to="/404" replace />;
   }
 
   const relatedArticles = getRelatedArticles(article.id);
+  
+  // Handle language change
+  const handleLanguageChange = async (langCode: string) => {
+    setCurrentLanguage(langCode);
+    
+    if (langCode === "id") {
+      setTranslatedContent(null);
+      return;
+    }
+    
+    const translated = await translateArticle(article, langCode);
+    if (translated) {
+      setTranslatedContent(translated);
+      toast.success(`Artikel diterjemahkan ke ${langCode.toUpperCase()}`);
+    } else {
+      toast.error("Gagal menerjemahkan artikel");
+    }
+  };
+  
+  // Use translated content if available, otherwise use original
+  const displayTitle = translatedContent?.title || article.title;
+  const displaySubtitle = translatedContent?.subtitle || article.subtitle;
+  const displayIntro = translatedContent?.content.introduction || article.content.introduction;
+  const displaySections = translatedContent?.content.sections || article.content.sections;
+  const displayConclusion = translatedContent?.content.conclusion || article.content.conclusion;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -125,21 +164,30 @@ const Article = () => {
           {/* Article Header */}
           <article className="p-6 md:p-10 lg:p-12">
             <div className="mb-12 animate-slide-up">
-              <div className="flex items-center gap-3 mb-6">
-                <span className={`px-4 py-2 rounded-full text-sm font-medium ${getCategoryClass(article.category)}`}>
-                  {article.category}
-                </span>
-                <span className="text-sm text-muted-foreground">{article.date}</span>
-                <span className="text-sm text-muted-foreground">•</span>
-                <span className="text-sm text-muted-foreground">{article.readTime} read</span>
+              <div className="flex items-center justify-between gap-3 mb-6 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <span className={`px-4 py-2 rounded-full text-sm font-medium ${getCategoryClass(article.category)}`}>
+                    {article.category}
+                  </span>
+                  <span className="text-sm text-muted-foreground">{article.date}</span>
+                  <span className="text-sm text-muted-foreground">•</span>
+                  <span className="text-sm text-muted-foreground">{article.readTime} read</span>
+                </div>
+                
+                {/* Translation Button */}
+                <ArticleTranslator
+                  currentLanguage={currentLanguage}
+                  onLanguageChange={handleLanguageChange}
+                  isTranslating={isTranslating}
+                />
               </div>
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
-                {article.title}
+                {displayTitle}
               </h1>
             
             <p className="text-xl text-muted-foreground mb-8">
-              {article.subtitle}
+              {displaySubtitle}
             </p>
 
             {/* Author Info */}
@@ -199,18 +247,18 @@ const Article = () => {
           {/* Article Content with section IDs for TOC */}
           <div className="prose prose-lg max-w-none mb-16 animate-slide-up stagger-2">
             <div id="intro" className="mb-10">
-              <DropCap>{article.content.introduction}</DropCap>
+              <DropCap>{displayIntro}</DropCap>
             </div>
 
             <SectionDivider />
 
-            {article.content.sections.map((section, index) => (
+            {displaySections.map((section, index) => (
               <div key={index} id={`section-${index}`} className="mb-10 scroll-mt-24 relative">
                 <h2 className="text-3xl font-bold mb-4 font-editorial">{section.heading}</h2>
                 <p className="text-lg leading-relaxed text-muted-foreground">
                   {section.content}
                 </p>
-                {index < article.content.sections.length - 1 && <SectionDivider />}
+                {index < displaySections.length - 1 && <SectionDivider />}
               </div>
             ))}
 
@@ -220,7 +268,7 @@ const Article = () => {
                 "
               </div>
               <p className="text-lg md:text-xl leading-relaxed italic text-foreground font-editorial pl-4">
-                {article.content.conclusion}
+                {displayConclusion}
               </p>
             </div>
           </div>
