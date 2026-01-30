@@ -7,7 +7,7 @@ import IntroSection from "@/components/IntroSection";
 import ArticleSearch from "@/components/ArticleSearch";
 import { Article } from "@/data/articles";
 import { useArticles } from "@/hooks/useArticles";
-import { Send, BookOpen, Feather, Sparkles, Loader2 } from "lucide-react";
+import { Send, BookOpen, Feather, Sparkles, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 // Decorative torn paper divider
@@ -36,23 +36,54 @@ const PaperStackDecor = ({ position }: { position: "left" | "right" }) => (
   </div>
 );
 
+const ARTICLES_PER_PAGE = 6;
+
 const Index = () => {
   const { articles, isLoading } = useArticles();
   const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
-  const [showAllArticles, setShowAllArticles] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Update filtered articles when articles load
   useEffect(() => {
     setFilteredArticles(articles);
   }, [articles]);
 
+  // Reset to page 1 when filter changes
   const handleFilteredArticles = useCallback((filtered: Article[]) => {
     setFilteredArticles(filtered);
+    setCurrentPage(1);
   }, []);
 
-  // Show 6 articles by default, or all if "Lihat Semua" is clicked
-  const displayedArticles = showAllArticles ? filteredArticles : filteredArticles.slice(0, 6);
-  const remainingCount = filteredArticles.length - 6;
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
+  const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
+  const endIndex = startIndex + ARTICLES_PER_PAGE;
+  const displayedArticles = filteredArticles.slice(startIndex, endIndex);
+
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      // Scroll to articles section
+      document.getElementById('articles')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages: (number | 'ellipsis')[] = [];
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push('ellipsis');
+      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+        pages.push(i);
+      }
+      if (currentPage < totalPages - 2) pages.push('ellipsis');
+      pages.push(totalPages);
+    }
+    return pages;
+  };
 
   return (
     <div className="min-h-screen paper-page animate-fade-in">
@@ -105,32 +136,13 @@ const Index = () => {
                   <p className="font-script text-lg text-accent mt-1">Kumpulan tulisan terbaik untuk Anda</p>
                 </div>
                 
-                {!showAllArticles && remainingCount > 0 && (
-                  <button 
-                    onClick={() => setShowAllArticles(true)}
-                    className="group flex items-center gap-2 px-5 py-2.5 bg-[hsl(var(--paper-aged))] border border-[hsl(var(--sepia)/0.3)] hover:border-accent transition-colors"
-                  >
-                    <span className="text-sm font-caps tracking-wider text-[hsl(var(--sepia))] group-hover:text-accent transition-colors">
-                      Lihat Semua
+                {/* Page info badge */}
+                {totalPages > 1 && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-[hsl(var(--paper-aged))] border border-[hsl(var(--sepia)/0.2)]">
+                    <span className="font-caps text-xs tracking-wider text-[hsl(var(--sepia))]">
+                      Halaman {currentPage} dari {totalPages}
                     </span>
-                    <motion.span
-                      className="text-[hsl(var(--sepia))] group-hover:text-accent"
-                      whileHover={{ x: 3 }}
-                    >
-                      →
-                    </motion.span>
-                  </button>
-                )}
-
-                {showAllArticles && (
-                  <button 
-                    onClick={() => setShowAllArticles(false)}
-                    className="group flex items-center gap-2 px-5 py-2.5 bg-[hsl(var(--paper-aged))] border border-[hsl(var(--sepia)/0.3)] hover:border-accent transition-colors"
-                  >
-                    <span className="text-sm font-caps tracking-wider text-[hsl(var(--sepia))] group-hover:text-accent transition-colors">
-                      Tampilkan Lebih Sedikit
-                    </span>
-                  </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -196,29 +208,104 @@ const Index = () => {
             </motion.div>
           )}
 
-          {/* Load more with vintage style */}
-          {!showAllArticles && remainingCount > 0 && (
+          {/* Vintage Paper Pagination */}
+          {!isLoading && totalPages > 1 && (
             <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-center mt-12"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mt-12"
             >
-              <button 
-                onClick={() => setShowAllArticles(true)}
-                className="group inline-flex items-center gap-3 px-8 py-4 bg-[hsl(var(--paper-cream))] border-2 border-[hsl(var(--sepia)/0.3)] hover:border-accent paper-shadow transition-all"
+              <nav 
+                role="navigation" 
+                aria-label="Pagination"
+                className="relative bg-[hsl(var(--paper-cream))] border border-[hsl(var(--sepia)/0.2)] p-4 md:p-6"
               >
-                <span className="font-body text-sm text-[hsl(var(--sepia))] group-hover:text-accent transition-colors">
-                  Muat {remainingCount} artikel lainnya
-                </span>
-                <motion.span 
-                  className="text-accent"
-                  animate={{ y: [0, 3, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.5 }}
-                >
-                  ↓
-                </motion.span>
-              </button>
+                {/* Paper texture */}
+                <div 
+                  className="absolute inset-0 opacity-[0.02] pointer-events-none"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                  }}
+                />
+                
+                {/* Corner decorations */}
+                <div className="absolute top-2 left-2 w-4 h-4 border-l border-t border-[hsl(var(--sepia)/0.2)]" />
+                <div className="absolute top-2 right-2 w-4 h-4 border-r border-t border-[hsl(var(--sepia)/0.2)]" />
+                <div className="absolute bottom-2 left-2 w-4 h-4 border-l border-b border-[hsl(var(--sepia)/0.2)]" />
+                <div className="absolute bottom-2 right-2 w-4 h-4 border-r border-b border-[hsl(var(--sepia)/0.2)]" />
+                
+                <div className="flex items-center justify-center gap-2 md:gap-3 relative">
+                  {/* Previous Button */}
+                  <motion.button
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`group flex items-center gap-1.5 px-3 py-2 md:px-4 md:py-2.5 border transition-all ${
+                      currentPage === 1 
+                        ? 'border-[hsl(var(--sepia)/0.1)] text-[hsl(var(--sepia)/0.3)] cursor-not-allowed bg-[hsl(var(--paper-aged)/0.3)]' 
+                        : 'border-[hsl(var(--sepia)/0.3)] text-[hsl(var(--sepia))] hover:border-accent hover:text-accent bg-[hsl(var(--paper-aged))]'
+                    }`}
+                    whileHover={currentPage !== 1 ? { x: -2 } : {}}
+                    whileTap={currentPage !== 1 ? { scale: 0.98 } : {}}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span className="hidden sm:inline font-caps text-xs tracking-wider">Sebelumnya</span>
+                  </motion.button>
+                  
+                  {/* Page Numbers */}
+                  <div className="flex items-center gap-1 md:gap-2">
+                    {getPageNumbers().map((page, index) => (
+                      page === 'ellipsis' ? (
+                        <span 
+                          key={`ellipsis-${index}`}
+                          className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-[hsl(var(--sepia)/0.4)] font-body"
+                        >
+                          ···
+                        </span>
+                      ) : (
+                        <motion.button
+                          key={page}
+                          onClick={() => goToPage(page)}
+                          className={`relative w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-body text-sm md:text-base border transition-all ${
+                            currentPage === page
+                              ? 'border-accent bg-accent text-accent-foreground font-medium'
+                              : 'border-[hsl(var(--sepia)/0.2)] text-[hsl(var(--sepia))] hover:border-accent hover:text-accent bg-[hsl(var(--paper-cream))]'
+                          }`}
+                          whileHover={{ y: -2 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          {/* Active page decoration */}
+                          {currentPage === page && (
+                            <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-4 h-1 bg-[hsl(var(--sepia-light)/0.5)]" />
+                          )}
+                          {page}
+                        </motion.button>
+                      )
+                    ))}
+                  </div>
+                  
+                  {/* Next Button */}
+                  <motion.button
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`group flex items-center gap-1.5 px-3 py-2 md:px-4 md:py-2.5 border transition-all ${
+                      currentPage === totalPages 
+                        ? 'border-[hsl(var(--sepia)/0.1)] text-[hsl(var(--sepia)/0.3)] cursor-not-allowed bg-[hsl(var(--paper-aged)/0.3)]' 
+                        : 'border-[hsl(var(--sepia)/0.3)] text-[hsl(var(--sepia))] hover:border-accent hover:text-accent bg-[hsl(var(--paper-aged))]'
+                    }`}
+                    whileHover={currentPage !== totalPages ? { x: 2 } : {}}
+                    whileTap={currentPage !== totalPages ? { scale: 0.98 } : {}}
+                  >
+                    <span className="hidden sm:inline font-caps text-xs tracking-wider">Selanjutnya</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </motion.button>
+                </div>
+                
+                {/* Page info text */}
+                <p className="text-center mt-3 font-body text-xs text-[hsl(var(--sepia)/0.5)]">
+                  Menampilkan {startIndex + 1}–{Math.min(endIndex, filteredArticles.length)} dari {filteredArticles.length} artikel
+                </p>
+              </nav>
             </motion.div>
           )}
         </section>
