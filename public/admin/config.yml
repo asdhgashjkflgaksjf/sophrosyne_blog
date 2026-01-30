@@ -8,11 +8,11 @@
 # ========================================
 
 backend:
-  name: github
-  repo: YOUR_GITHUB_USERNAME/YOUR_REPO_NAME # Contoh: farhan/sophrosyne-blog
+  name: github  # ⚠️ INI HARUS "github" - JANGAN DIGANTI dengan username!
+  repo: asdhgashjkflgaksjf/sophrosyne-blog
   branch: main
   # Gunakan Netlify Identity untuk OAuth
-  site_domain: YOUR_NETLIFY_SITE.netlify.app # Contoh: sophrosyne-blog.netlify.app
+  site_domain: storied-mochi-345172.netlify.app
   # Commit messages yang lebih deskriptif
   commit_messages:
     create: "✨ Buat {{collection}} baru: {{slug}}"
