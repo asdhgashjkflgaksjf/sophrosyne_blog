@@ -8,7 +8,7 @@ import profileSilhouette from "@/assets/profile-silhouette.png";
 
 // CMS Content Types (matching Decap CMS schema)
 export interface CMSContentBlock {
-  type: "heading" | "paragraph" | "quote" | "list" | "image" | "highlight";
+  type: "heading" | "paragraph" | "quote" | "list" | "image" | "highlight" | "code" | "divider";
   // Heading
   text?: string;
   level?: "h2" | "h3" | "h4";
@@ -21,9 +21,33 @@ export interface CMSContentBlock {
   src?: string;
   alt?: string;
   caption?: string;
+  size?: "full" | "medium" | "small";
   // Highlight
   title?: string;
   content?: string;
+  highlightType?: "info" | "tip" | "warning" | "quote";
+  // Code
+  language?: string;
+  code?: string;
+  // Divider
+  style?: "line" | "dots" | "ornament";
+}
+
+// Publishing settings for scheduled posts
+export interface CMSPublishingSettings {
+  status: "draft" | "in_review" | "scheduled" | "published";
+  publishDate?: string;
+  updatedDate?: string;
+  featured?: boolean;
+  hidden?: boolean;
+}
+
+// SEO settings
+export interface CMSSEOSettings {
+  metaTitle?: string;
+  metaDescription?: string;
+  canonicalUrl?: string;
+  noIndex?: boolean;
 }
 
 export interface CMSArticle {
@@ -34,6 +58,7 @@ export interface CMSArticle {
   date: string;
   readTime: string;
   image?: string;
+  imageAlt?: string;
   author: {
     name: string;
     avatar?: string;
@@ -42,6 +67,10 @@ export interface CMSArticle {
   tags: string[];
   content: CMSContentBlock[];
   relatedArticles?: string[];
+  // New fields for advanced features
+  publishing?: CMSPublishingSettings;
+  seo?: CMSSEOSettings;
+  // Legacy field for backward compatibility
   draft?: boolean;
 }
 
@@ -55,6 +84,18 @@ export interface CMSBookReview {
   review: string;
   date: string;
   tags: string[];
+  status?: "draft" | "published";
+  purchaseLink?: string;
+}
+
+// Draft/Idea type
+export interface CMSDraft {
+  title: string;
+  date: string;
+  targetCategory?: string;
+  notes: string;
+  references?: { title: string; url?: string }[];
+  priority: "high" | "medium" | "low";
 }
 
 // Default author for articles without one
@@ -176,6 +217,34 @@ export function convertCMSToArticle(cmsArticle: CMSArticle): Article {
 }
 
 /**
+ * Check if article should be published based on status and scheduled date
+ */
+function isArticlePublishable(cmsArticle: CMSArticle): boolean {
+  // Legacy draft field support
+  if (cmsArticle.draft === true) return false;
+  
+  // New publishing settings
+  if (cmsArticle.publishing) {
+    const { status, publishDate } = cmsArticle.publishing;
+    
+    // Draft or in review - not published
+    if (status === "draft" || status === "in_review") return false;
+    
+    // Hidden articles - don't show in listings
+    if (cmsArticle.publishing.hidden) return false;
+    
+    // Scheduled - check if publish date has passed
+    if (status === "scheduled" && publishDate) {
+      const now = new Date();
+      const scheduled = new Date(publishDate);
+      if (scheduled > now) return false; // Not yet time to publish
+    }
+  }
+  
+  return true;
+}
+
+/**
  * Load all CMS articles from the content folder
  * Uses Vite's import.meta.glob for dynamic imports
  */
@@ -191,8 +260,8 @@ export async function loadCMSArticles(): Promise<Article[]> {
   for (const path in modules) {
     const cmsArticle = modules[path];
     
-    // Skip drafts
-    if (cmsArticle.draft) continue;
+    // Check if article should be published
+    if (!isArticlePublishable(cmsArticle)) continue;
     
     try {
       const article = convertCMSToArticle(cmsArticle);
@@ -211,6 +280,29 @@ export async function loadCMSArticles(): Promise<Article[]> {
 }
 
 /**
+ * Load featured articles only
+ */
+export async function loadFeaturedArticles(): Promise<Article[]> {
+  const allArticles = await loadCMSArticles();
+  
+  // Use Vite's glob import to check for featured flag
+  const modules = import.meta.glob<CMSArticle>("/src/content/articles/*.json", {
+    eager: true,
+    import: "default",
+  });
+  
+  const featuredIds = new Set<string>();
+  for (const path in modules) {
+    const cmsArticle = modules[path];
+    if (cmsArticle.publishing?.featured) {
+      featuredIds.add(cmsArticle.id);
+    }
+  }
+  
+  return allArticles.filter(article => featuredIds.has(article.id));
+}
+
+/**
  * Load all CMS book reviews
  */
 export async function loadCMSBookReviews(): Promise<CMSBookReview[]> {
@@ -223,7 +315,10 @@ export async function loadCMSBookReviews(): Promise<CMSBookReview[]> {
 
   for (const path in modules) {
     try {
-      reviews.push(modules[path]);
+      const review = modules[path];
+      // Skip drafts
+      if (review.status === "draft") continue;
+      reviews.push(review);
     } catch (error) {
       console.error(`Error loading book review from ${path}:`, error);
     }
@@ -233,6 +328,34 @@ export async function loadCMSBookReviews(): Promise<CMSBookReview[]> {
     const dateA = new Date(a.date);
     const dateB = new Date(b.date);
     return dateB.getTime() - dateA.getTime();
+  });
+}
+
+/**
+ * Load drafts/ideas
+ */
+export async function loadDrafts(): Promise<CMSDraft[]> {
+  const drafts: CMSDraft[] = [];
+  
+  const modules = import.meta.glob<CMSDraft>("/src/content/drafts/*.json", {
+    eager: true,
+    import: "default",
+  });
+
+  for (const path in modules) {
+    try {
+      drafts.push(modules[path]);
+    } catch (error) {
+      console.error(`Error loading draft from ${path}:`, error);
+    }
+  }
+
+  // Sort by priority then date
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  return drafts.sort((a, b) => {
+    const priorityDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
+    if (priorityDiff !== 0) return priorityDiff;
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 }
 
