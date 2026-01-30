@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Feather, Instagram, Twitter, Mail, ArrowRight, Sparkles, BookOpen, Heart, Compass, Send } from "lucide-react";
+import { Feather, Instagram, Twitter, Mail, ArrowRight, Sparkles, BookOpen, Heart, Compass } from "lucide-react";
 import { motion } from "framer-motion";
 import profileSilhouette from "@/assets/profile-silhouette.png";
 
@@ -7,18 +6,6 @@ import profileSilhouette from "@/assets/profile-silhouette.png";
 const PAPER_GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E")`;
 
 const Footer = () => {
-  const [email, setEmail] = useState("");
-  const [isSubscribed, setIsSubscribed] = useState(false);
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      setIsSubscribed(true);
-      setTimeout(() => setIsSubscribed(false), 3000);
-      setEmail("");
-    }
-  };
-
   const navLinks = [
     { label: "Filsafat", href: "/filsafat", icon: BookOpen },
     { label: "Book Review", href: "/book-review", icon: Sparkles },
@@ -61,65 +48,7 @@ const Footer = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           
-          {/* Top Section - Newsletter */}
-          <div className="py-16 border-b border-border/50">
-            <div className="max-w-2xl mx-auto text-center">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-caps tracking-wider mb-6">
-                  <Sparkles className="w-3 h-3" />
-                  Tetap Terinspirasi
-                </span>
-                
-                <h3 className="font-display text-3xl md:text-4xl font-bold mb-4">
-                  Bergabung dalam Perjalanan
-                </h3>
-                <p className="font-body text-muted-foreground mb-8 max-w-md mx-auto">
-                  Dapatkan artikel terbaru dan pemikiran mendalam langsung ke inbox Anda.
-                </p>
-
-                <form onSubmit={handleSubscribe} className="relative max-w-md mx-auto">
-                  <div className="relative flex items-center gap-2 p-2 bg-[hsl(var(--paper-cream))] border border-border rounded-xl paper-shadow">
-                    <div className="flex-1 relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Email Anda"
-                        className="w-full pl-10 pr-4 py-3 bg-transparent font-body text-sm focus:outline-none placeholder:text-muted-foreground/50"
-                        required
-                      />
-                    </div>
-                    <motion.button
-                      type="submit"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-2 px-5 py-3 bg-primary text-primary-foreground rounded-lg font-body text-sm font-medium transition-colors hover:bg-primary/90"
-                    >
-                      {isSubscribed ? (
-                        <>
-                          <span>Terkirim!</span>
-                          <Sparkles className="w-4 h-4" />
-                        </>
-                      ) : (
-                        <>
-                          <span className="hidden sm:inline">Subscribe</span>
-                          <Send className="w-4 h-4" />
-                        </>
-                      )}
-                    </motion.button>
-                  </div>
-                </form>
-              </motion.div>
-            </div>
-          </div>
-
-          {/* Middle Section - Main Content */}
+          {/* Main Content Section */}
           <div className="py-12 grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
             
             {/* Brand Column */}
