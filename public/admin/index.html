@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Sophrosyne Admin | Kelola Konten Blog</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" />
+  
+  <!-- Fonts - matching the blog design -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Custom Admin Styles - Vintage Paper Theme -->
+  <style>
+    /* CSS Variables for theming */
+    :root {
+      --paper-cream: 45 30% 96%;
+      --paper-cream-dark: 45 25% 92%;
+      --ink-black: 30 15% 15%;
+      --ink-muted: 30 10% 40%;
+      --accent-sepia: 28 60% 45%;
+      --accent-warm: 35 80% 50%;
+      --border-aged: 35 20% 80%;
+      --shadow-paper: 0 4px 20px rgba(139, 115, 85, 0.15);
+      --grain-opacity: 0.03;
+    }
+
+    /* Paper grain texture */
+    .paper-grain {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E");
+    }
+
+    /* Base styles */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Lora', 'Georgia', serif;
+      background: linear-gradient(135deg, hsl(45 30% 94%) 0%, hsl(40 25% 90%) 100%);
+      min-height: 100vh;
+    }
+
+    /* Loading screen */
+    .admin-loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, hsl(45 30% 96%) 0%, hsl(40 25% 92%) 100%);
+      z-index: 9999;
+    }
+
+    .admin-loading::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E");
+    }
+
+    .loading-logo {
+      width: 80px;
+      height: 80px;
+      background: hsl(28 60% 45%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-paper);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .loading-logo svg {
+      width: 48px;
+      height: 48px;
+      color: hsl(45 30% 96%);
+    }
+
+    .loading-title {
+      font-family: 'Cormorant Garamond', 'Georgia', serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: hsl(30 15% 15%);
+      margin-bottom: 8px;
+    }
+
+    .loading-subtitle {
+      font-size: 14px;
+      color: hsl(30 10% 40%);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .loading-spinner {
+      margin-top: 32px;
+      width: 40px;
+      height: 40px;
+      border: 3px solid hsl(35 20% 85%);
+      border-top-color: hsl(28 60% 45%);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    /* ===== DECAP CMS CUSTOM STYLING ===== */
+    
+    /* Main app container */
+    #nc-root {
+      font-family: 'Lora', 'Georgia', serif !important;
+    }
+
+    /* Top bar / Header */
+    [class*="AppHeader"] {
+      background: linear-gradient(to bottom, hsl(45 30% 96%), hsl(45 25% 94%)) !important;
+      border-bottom: 1px solid hsl(35 20% 80%) !important;
+      box-shadow: 0 2px 10px rgba(139, 115, 85, 0.1) !important;
+    }
+
+    [class*="AppHeader"]::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.02;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E");
+    }
+
+    /* Sidebar */
+    [class*="Sidebar"],
+    [class*="sidebar"] {
+      background: linear-gradient(180deg, hsl(45 28% 95%) 0%, hsl(42 25% 92%) 100%) !important;
+      border-right: 1px solid hsl(35 20% 82%) !important;
+    }
+
+    /* Collection list items */
+    [class*="SidebarNavLink"],
+    [class*="NavLink"] {
+      font-family: 'Lora', 'Georgia', serif !important;
+      color: hsl(30 15% 25%) !important;
+      border-radius: 8px !important;
+      margin: 4px 8px !important;
+      transition: all 0.2s ease !important;
+    }
+
+    [class*="SidebarNavLink"]:hover,
+    [class*="NavLink"]:hover {
+      background: hsl(35 25% 88%) !important;
+      color: hsl(28 60% 40%) !important;
+    }
+
+    [class*="SidebarNavLink"][class*="active"],
+    [class*="NavLink"][class*="active"] {
+      background: hsl(28 60% 45%) !important;
+      color: hsl(45 30% 96%) !important;
+    }
+
+    /* Main content area */
+    [class*="MainView"],
+    [class*="main"],
+    main {
+      background: linear-gradient(135deg, hsl(45 30% 94%) 0%, hsl(40 25% 91%) 100%) !important;
+    }
+
+    /* Cards and panels */
+    [class*="Card"],
+    [class*="EntryCard"],
+    [class*="card"] {
+      background: hsl(45 30% 97%) !important;
+      border: 1px solid hsl(35 20% 85%) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 4px 15px rgba(139, 115, 85, 0.12) !important;
+      transition: all 0.3s ease !important;
+    }
+
+    [class*="Card"]:hover,
+    [class*="EntryCard"]:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 25px rgba(139, 115, 85, 0.18) !important;
+    }
+
+    /* Buttons - Primary */
+    button[class*="primary"],
+    [class*="Button"][class*="primary"],
+    button[type="submit"] {
+      background: linear-gradient(135deg, hsl(28 60% 45%) 0%, hsl(28 55% 40%) 100%) !important;
+      color: hsl(45 30% 96%) !important;
+      border: none !important;
+      border-radius: 8px !important;
+      font-family: 'Lora', 'Georgia', serif !important;
+      font-weight: 500 !important;
+      padding: 10px 20px !important;
+      box-shadow: 0 4px 12px rgba(139, 90, 43, 0.25) !important;
+      transition: all 0.2s ease !important;
+    }
+
+    button[class*="primary"]:hover,
+    [class*="Button"][class*="primary"]:hover {
+      background: linear-gradient(135deg, hsl(28 55% 40%) 0%, hsl(28 50% 35%) 100%) !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 6px 16px rgba(139, 90, 43, 0.3) !important;
+    }
+
+    /* Buttons - Secondary */
+    button:not([class*="primary"]),
+    [class*="Button"]:not([class*="primary"]) {
+      background: hsl(45 30% 96%) !important;
+      color: hsl(30 15% 25%) !important;
+      border: 1px solid hsl(35 20% 80%) !important;
+      border-radius: 8px !important;
+      font-family: 'Lora', 'Georgia', serif !important;
+      transition: all 0.2s ease !important;
+    }
+
+    button:not([class*="primary"]):hover {
+      background: hsl(45 25% 93%) !important;
+      border-color: hsl(28 60% 45%) !important;
+    }
+
+    /* Form inputs */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="url"],
+    textarea,
+    select,
+    [class*="Input"],
+    [class*="TextArea"],
+    [class*="Select"] {
+      background: hsl(45 35% 98%) !important;
+      border: 1px solid hsl(35 20% 82%) !important;
+      border-radius: 8px !important;
+      font-family: 'Lora', 'Georgia', serif !important;
+      color: hsl(30 15% 20%) !important;
+      padding: 12px 16px !important;
+      transition: all 0.2s ease !important;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus,
+    [class*="Input"]:focus,
+    [class*="TextArea"]:focus {
+      outline: none !important;
+      border-color: hsl(28 60% 50%) !important;
+      box-shadow: 0 0 0 3px hsla(28 60% 45% / 0.15) !important;
+    }
+
+    /* Labels */
+    label,
+    [class*="Label"],
+    [class*="FieldLabel"] {
+      font-family: 'Cormorant Garamond', 'Georgia', serif !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      color: hsl(30 15% 25%) !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1px !important;
+    }
+
+    /* Headings */
+    h1, h2, h3, h4, h5, h6,
+    [class*="Heading"] {
+      font-family: 'Cormorant Garamond', 'Georgia', serif !important;
+      color: hsl(30 15% 15%) !important;
+    }
+
+    /* Entry listing */
+    [class*="EntryListing"],
+    [class*="ListView"] {
+      padding: 24px !important;
+    }
+
+    /* Table styles */
+    table,
+    [class*="Table"] {
+      background: hsl(45 30% 97%) !important;
+      border-radius: 12px !important;
+      overflow: hidden !important;
+      border: 1px solid hsl(35 20% 85%) !important;
+    }
+
+    th {
+      background: hsl(45 25% 93%) !important;
+      font-family: 'Cormorant Garamond', 'Georgia', serif !important;
+      font-weight: 600 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1px !important;
+      font-size: 12px !important;
+      color: hsl(30 10% 40%) !important;
+    }
+
+    tr:hover {
+      background: hsl(45 30% 95%) !important;
+    }
+
+    /* Editor panel */
+    [class*="EditorControlPane"],
+    [class*="ControlPane"],
+    [class*="EditorControl"] {
+      background: hsl(45 30% 97%) !important;
+      border: 1px solid hsl(35 20% 85%) !important;
+      border-radius: 12px !important;
+      padding: 24px !important;
+      margin-bottom: 16px !important;
+    }
+
+    /* Rich text editor / Markdown editor */
+    [class*="MarkdownControl"],
+    [class*="RichText"],
+    .ProseMirror,
+    .CodeMirror {
+      background: hsl(45 35% 98%) !important;
+      border: 1px solid hsl(35 20% 82%) !important;
+      border-radius: 8px !important;
+      font-family: 'Spectral', 'Georgia', serif !important;
+      font-size: 16px !important;
+      line-height: 1.8 !important;
+    }
+
+    /* Toolbar */
+    [class*="Toolbar"],
+    [class*="toolbar"] {
+      background: hsl(45 28% 95%) !important;
+      border-bottom: 1px solid hsl(35 20% 85%) !important;
+      border-radius: 8px 8px 0 0 !important;
+    }
+
+    /* Dropdown menus */
+    [class*="Dropdown"],
+    [class*="Menu"],
+    [class*="dropdown"],
+    [class*="menu"] {
+      background: hsl(45 30% 97%) !important;
+      border: 1px solid hsl(35 20% 82%) !important;
+      border-radius: 8px !important;
+      box-shadow: 0 8px 30px rgba(139, 115, 85, 0.2) !important;
+    }
+
+    /* Dropdown items */
+    [class*="DropdownItem"],
+    [class*="MenuItem"] {
+      font-family: 'Lora', 'Georgia', serif !important;
+      transition: all 0.15s ease !important;
+    }
+
+    [class*="DropdownItem"]:hover,
+    [class*="MenuItem"]:hover {
+      background: hsl(35 25% 90%) !important;
+      color: hsl(28 60% 40%) !important;
+    }
+
+    /* Modal / Dialog */
+    [class*="Modal"],
+    [class*="Dialog"] {
+      background: hsl(45 30% 97%) !important;
+      border: 1px solid hsl(35 20% 82%) !important;
+      border-radius: 16px !important;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    [class*="ModalOverlay"],
+    [class*="DialogOverlay"] {
+      background: hsla(30 15% 15% / 0.6) !important;
+      backdrop-filter: blur(4px) !important;
+    }
+
+    /* Toast / Notifications */
+    [class*="Toast"],
+    [class*="Notification"] {
+      background: hsl(45 30% 97%) !important;
+      border: 1px solid hsl(35 20% 82%) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 8px 30px rgba(139, 115, 85, 0.25) !important;
+      font-family: 'Lora', 'Georgia', serif !important;
+    }
+
+    /* Success state */
+    [class*="success"] {
+      border-left: 4px solid hsl(142 60% 40%) !important;
+    }
+
+    /* Error state */
+    [class*="error"] {
+      border-left: 4px solid hsl(0 60% 50%) !important;
+    }
+
+    /* Image widget */
+    [class*="ImageWidget"],
+    [class*="FileWidget"] {
+      background: hsl(45 35% 98%) !important;
+      border: 2px dashed hsl(35 20% 80%) !important;
+      border-radius: 12px !important;
+      transition: all 0.2s ease !important;
+    }
+
+    [class*="ImageWidget"]:hover,
+    [class*="FileWidget"]:hover {
+      border-color: hsl(28 60% 50%) !important;
+      background: hsl(45 30% 96%) !important;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: hsl(45 25% 92%);
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: hsl(35 20% 75%);
+      border-radius: 5px;
+      border: 2px solid hsl(45 25% 92%);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: hsl(28 40% 55%);
+    }
+
+    /* Login screen */
+    [class*="LoginPage"],
+    [class*="AuthenticationPage"] {
+      background: linear-gradient(135deg, hsl(45 30% 94%) 0%, hsl(40 25% 90%) 100%) !important;
+    }
+
+    [class*="LoginButton"],
+    [class*="AuthButton"] {
+      background: linear-gradient(135deg, hsl(28 60% 45%) 0%, hsl(28 55% 40%) 100%) !important;
+      color: hsl(45 30% 96%) !important;
+      border-radius: 12px !important;
+      padding: 16px 32px !important;
+      font-size: 16px !important;
+      box-shadow: 0 4px 20px rgba(139, 90, 43, 0.3) !important;
+    }
+
+    /* Publish button special styling */
+    [class*="PublishButton"],
+    button[class*="publish"] {
+      background: linear-gradient(135deg, hsl(142 50% 40%) 0%, hsl(142 45% 35%) 100%) !important;
+    }
+
+    /* Draft indicator */
+    [class*="Draft"],
+    [class*="draft"] {
+      background: hsl(45 70% 85%) !important;
+      color: hsl(35 70% 30%) !important;
+      border-radius: 6px !important;
+      padding: 4px 12px !important;
+      font-size: 11px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1px !important;
+    }
+
+    /* Decorative elements */
+    [class*="Logo"] img {
+      filter: sepia(20%) !important;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      [class*="Sidebar"] {
+        background: hsl(45 30% 96%) !important;
+      }
+    }
+  </style>
+
+  <!-- Decap CMS Script -->
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+</head>
+<body>
+  <!-- Custom Loading Screen -->
+  <div class="admin-loading" id="admin-loading">
+    <div class="loading-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
+        <line x1="16" y1="8" x2="2" y2="22"></line>
+        <line x1="17.5" y1="15" x2="9" y2="15"></line>
+      </svg>
+    </div>
+    <div class="loading-title">Sophrosyne</div>
+    <div class="loading-subtitle">Admin Panel</div>
+    <div class="loading-spinner"></div>
+  </div>
+
+  <script>
+    // Hide loading screen when CMS is ready
+    if (window.CMS) {
+      CMS.registerEventListener({
+        name: 'preSave',
+        handler: () => {
+          console.log('Saving entry...');
+        }
+      });
+    }
+
+    // Hide loading after CMS loads
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        const loading = document.getElementById('admin-loading');
+        if (loading) {
+          loading.style.opacity = '0';
+          loading.style.transition = 'opacity 0.5s ease';
+          setTimeout(function() {
+            loading.style.display = 'none';
+          }, 500);
+        }
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
