@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import HandwritingText, { HandwritingLine, InkDrop } from "./HandwritingText";
 import { philosopherQuotes } from "@/data/philosopherQuotes";
+import heroSilhouette from "@/assets/hero-silhouette.jpg";
+
 const HeroSection = () => {
   const [showMainText, setShowMainText] = useState(false);
   const [showParagraph, setShowParagraph] = useState(false);
@@ -36,7 +38,7 @@ const HeroSection = () => {
           {/* Left side - Image with paper effects */}
           <div className="relative animate-paper-drop">
             <div className="relative aspect-[4/3] md:aspect-[3/4] overflow-hidden paper-shadow paper-corner-fold group">
-              <img src="https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=1920&q=80" alt="Sophrosyne - Wisdom and Balance" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <img src={heroSilhouette} alt="Sophrosyne - Wisdom and Balance" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               {/* Vintage overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--sepia)/0.1)] to-transparent mix-blend-multiply" />
               
