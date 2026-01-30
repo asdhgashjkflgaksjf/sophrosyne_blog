@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
@@ -9,17 +9,45 @@ import ArticleTOC from "@/components/ArticleTOC";
 import ReadingProgress from "@/components/ReadingProgress";
 import ArticlePaper, { DropCap, SectionDivider } from "@/components/ArticlePaper";
 import ArticleTranslator from "@/components/ArticleTranslator";
-import { getArticleById, getRelatedArticles } from "@/data/articles";
-import { Facebook, Twitter, Linkedin, Link2, ArrowLeft } from "lucide-react";
+import CMSContentRenderer from "@/components/CMSContentRenderer";
+import { useArticle } from "@/hooks/useArticles";
+import { loadCMSArticles, CMSArticle, CMSContentBlock } from "@/lib/contentLoader";
+import { Facebook, Twitter, Linkedin, Link2, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { usePaperSound } from "@/hooks/usePaperSound";
 import FloatingReadingModeToggle from "@/components/FloatingReadingModeToggle";
 import { useGoogleTranslate } from "@/hooks/useGoogleTranslate";
 
+// Check if article has CMS content blocks
+const useCMSContent = (articleId: string) => {
+  const [cmsBlocks, setCmsBlocks] = useState<CMSContentBlock[] | null>(null);
+  
+  // Try to load CMS content for this article
+  useState(() => {
+    const modules = import.meta.glob<CMSArticle>("/src/content/articles/*.json", {
+      eager: true,
+      import: "default",
+    });
+    
+    for (const path in modules) {
+      const cmsArticle = modules[path];
+      if (cmsArticle.id === articleId && cmsArticle.content && Array.isArray(cmsArticle.content)) {
+        // Check if content is CMS blocks (has 'type' property) vs legacy format
+        if (cmsArticle.content.length > 0 && 'type' in cmsArticle.content[0]) {
+          setCmsBlocks(cmsArticle.content as CMSContentBlock[]);
+        }
+      }
+    }
+  });
+  
+  return cmsBlocks;
+};
+
 const Article = () => {
   const { id } = useParams<{ id: string }>();
-  const article = id ? getArticleById(id) : undefined;
+  const { article, relatedArticles, isLoading } = useArticle(id || "");
+  const cmsBlocks = useCMSContent(id || "");
   const [isReadingMode, setIsReadingMode] = useState(false);
   const { playRustle } = usePaperSound();
   
@@ -35,11 +63,21 @@ const Article = () => {
     };
   } | null>(null);
   
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-accent mx-auto mb-4 animate-spin" />
+          <p className="font-editorial text-lg text-muted-foreground">Memuat artikel...</p>
+        </div>
+      </div>
+    );
+  }
+  
   if (!article) {
     return <Navigate to="/404" replace />;
   }
-
-  const relatedArticles = getRelatedArticles(article.id);
   
   // Handle language change
   const handleLanguageChange = async (langCode: string) => {
@@ -72,14 +110,12 @@ const Article = () => {
   };
 
   const handleToggleReadingMode = () => {
-    // If already open, treat this as an Exit button.
     if (isReadingMode) {
       playRustle();
       setIsReadingMode(false);
       return;
     }
 
-    // IMPORTANT: scroll FIRST (no smooth) to avoid iOS/body-lock issues.
     playRustle();
     try {
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -89,7 +125,6 @@ const Article = () => {
       // noop
     }
 
-    // Open next frame so the scroll position is applied before the modal locks body scroll.
     requestAnimationFrame(() => setIsReadingMode(true));
   };
 
@@ -244,33 +279,41 @@ const Article = () => {
             </div>
           </div>
 
-          {/* Article Content with section IDs for TOC */}
+          {/* Article Content */}
           <div className="prose prose-lg max-w-none mb-16 animate-slide-up stagger-2">
-            <div id="intro" className="mb-10">
-              <DropCap>{displayIntro}</DropCap>
-            </div>
+            {/* CMS Content Blocks */}
+            {cmsBlocks ? (
+              <CMSContentRenderer blocks={cmsBlocks} />
+            ) : (
+              <>
+                {/* Legacy content format */}
+                <div id="intro" className="mb-10">
+                  <DropCap>{displayIntro}</DropCap>
+                </div>
 
-            <SectionDivider />
+                <SectionDivider />
 
-            {displaySections.map((section, index) => (
-              <div key={index} id={`section-${index}`} className="mb-10 scroll-mt-24 relative">
-                <h2 className="text-3xl font-bold mb-4 font-editorial">{section.heading}</h2>
-                <p className="text-lg leading-relaxed text-muted-foreground">
-                  {section.content}
-                </p>
-                {index < displaySections.length - 1 && <SectionDivider />}
-              </div>
-            ))}
+                {displaySections.map((section, index) => (
+                  <div key={index} id={`section-${index}`} className="mb-10 scroll-mt-24 relative">
+                    <h2 className="text-3xl font-bold mb-4 font-editorial">{section.heading}</h2>
+                    <p className="text-lg leading-relaxed text-muted-foreground">
+                      {section.content}
+                    </p>
+                    {index < displaySections.length - 1 && <SectionDivider />}
+                  </div>
+                ))}
 
-            <div id="conclusion" className="mt-12 p-6 md:p-8 rounded-sm bg-muted/50 border-l-4 border-accent scroll-mt-24 relative">
-              {/* Quote decoration */}
-              <div className="absolute -top-3 left-4 text-5xl font-editorial text-accent/40 leading-none">
-                "
-              </div>
-              <p className="text-lg md:text-xl leading-relaxed italic text-foreground font-editorial pl-4">
-                {displayConclusion}
-              </p>
-            </div>
+                <div id="conclusion" className="mt-12 p-6 md:p-8 rounded-sm bg-muted/50 border-l-4 border-accent scroll-mt-24 relative">
+                  {/* Quote decoration */}
+                  <div className="absolute -top-3 left-4 text-5xl font-editorial text-accent/40 leading-none">
+                    "
+                  </div>
+                  <p className="text-lg md:text-xl leading-relaxed italic text-foreground font-editorial pl-4">
+                    {displayConclusion}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Tags */}
