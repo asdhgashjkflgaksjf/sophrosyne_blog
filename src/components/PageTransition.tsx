@@ -95,7 +95,7 @@ const PageTransition = ({ children }: PageTransitionProps) => {
   }, [location.pathname]);
 
   return (
-    <div className="perspective-[2000px] overflow-x-hidden overflow-y-visible">
+    <div className="perspective-[2000px]">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={location.pathname}

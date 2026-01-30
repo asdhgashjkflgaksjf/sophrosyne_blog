@@ -164,6 +164,14 @@
     transition: none !important;
   }
 
+  html, body {
+    overflow-x: hidden;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Lora', 'Georgia', serif;
@@ -172,8 +180,8 @@
     background-size: 200px 200px;
   }
 
-  html {
-    scroll-behavior: smooth;
+  #root {
+    overflow-x: hidden;
   }
 
   /* Mixed Editorial Typography */
