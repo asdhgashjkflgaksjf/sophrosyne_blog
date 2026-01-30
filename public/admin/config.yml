@@ -1,0 +1,203 @@
+backend:
+  name: github
+  repo: YOUR_GITHUB_USERNAME/YOUR_REPO_NAME # Ganti dengan repo GitHub Anda
+  branch: main
+  base_url: https://api.netlify.com # atau gunakan custom OAuth jika self-hosted
+
+# Lokasi media yang diupload
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+# Pengaturan editor
+slug:
+  encoding: "ascii"
+  clean_accents: true
+  sanitize_replacement: "-"
+
+# Koleksi konten
+collections:
+  # Artikel Blog
+  - name: "articles"
+    label: "Artikel"
+    label_singular: "Artikel"
+    folder: "src/content/articles"
+    create: true
+    slug: "{{slug}}"
+    extension: "json"
+    format: "json"
+    editor:
+      preview: false
+    sortable_fields: ["date", "title", "category"]
+    view_filters:
+      - label: "Filsafat"
+        field: category
+        pattern: "Filsafat"
+      - label: "Kreativitas"
+        field: category
+        pattern: "Kreativitas"
+      - label: "Pertumbuhan"
+        field: category
+        pattern: "Pertumbuhan"
+      - label: "Wellness"
+        field: category
+        pattern: "Wellness"
+    fields:
+      - label: "ID Artikel"
+        name: "id"
+        widget: "string"
+        hint: "ID unik untuk artikel (contoh: art-001)"
+      - label: "Judul"
+        name: "title"
+        widget: "string"
+      - label: "Deskripsi Singkat"
+        name: "excerpt"
+        widget: "text"
+        hint: "Ringkasan artikel untuk preview (maks 200 karakter)"
+      - label: "Kategori"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "Filsafat", value: "Filsafat" }
+          - { label: "Kreativitas", value: "Kreativitas" }
+          - { label: "Pertumbuhan", value: "Pertumbuhan" }
+          - { label: "Wellness", value: "Wellness" }
+      - label: "Tanggal Publikasi"
+        name: "date"
+        widget: "datetime"
+        format: "DD MMM YYYY"
+        date_format: "DD MMM YYYY"
+        time_format: false
+      - label: "Waktu Baca"
+        name: "readTime"
+        widget: "string"
+        default: "5 menit"
+      - label: "Gambar Sampul"
+        name: "image"
+        widget: "image"
+        required: false
+        hint: "Gambar utama artikel"
+      - label: "Penulis"
+        name: "author"
+        widget: "object"
+        fields:
+          - { label: "Nama", name: "name", widget: "string" }
+          - { label: "Avatar", name: "avatar", widget: "image", required: false }
+          - { label: "Bio Singkat", name: "bio", widget: "text", required: false }
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        hint: "Pisahkan dengan koma"
+      - label: "Konten Artikel"
+        name: "content"
+        widget: "list"
+        label_singular: "Bagian"
+        types:
+          - label: "Heading"
+            name: "heading"
+            widget: "object"
+            fields:
+              - { label: "Teks Heading", name: "text", widget: "string" }
+              - label: "Level"
+                name: "level"
+                widget: "select"
+                options: ["h2", "h3", "h4"]
+                default: "h2"
+          - label: "Paragraf"
+            name: "paragraph"
+            widget: "object"
+            fields:
+              - { label: "Teks", name: "text", widget: "markdown" }
+          - label: "Kutipan"
+            name: "quote"
+            widget: "object"
+            fields:
+              - { label: "Teks Kutipan", name: "text", widget: "text" }
+              - { label: "Sumber", name: "author", widget: "string", required: false }
+          - label: "Daftar"
+            name: "list"
+            widget: "object"
+            fields:
+              - label: "Tipe"
+                name: "type"
+                widget: "select"
+                options:
+                  - { label: "Bullet", value: "unordered" }
+                  - { label: "Numbered", value: "ordered" }
+              - label: "Item"
+                name: "items"
+                widget: "list"
+          - label: "Gambar"
+            name: "image"
+            widget: "object"
+            fields:
+              - { label: "File Gambar", name: "src", widget: "image" }
+              - { label: "Keterangan", name: "alt", widget: "string" }
+              - { label: "Caption", name: "caption", widget: "string", required: false }
+          - label: "Highlight Box"
+            name: "highlight"
+            widget: "object"
+            fields:
+              - { label: "Judul", name: "title", widget: "string", required: false }
+              - { label: "Konten", name: "content", widget: "markdown" }
+      - label: "Artikel Terkait"
+        name: "relatedArticles"
+        widget: "list"
+        required: false
+        hint: "ID artikel yang terkait"
+      - label: "Status"
+        name: "draft"
+        widget: "boolean"
+        default: false
+        hint: "Centang untuk menyimpan sebagai draft"
+
+  # Book Reviews
+  - name: "book-reviews"
+    label: "Review Buku"
+    label_singular: "Review Buku"
+    folder: "src/content/books"
+    create: true
+    slug: "{{slug}}"
+    extension: "json"
+    format: "json"
+    editor:
+      preview: false
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - { label: "Judul Buku", name: "title", widget: "string" }
+      - { label: "Penulis Buku", name: "bookAuthor", widget: "string" }
+      - { label: "Sampul Buku", name: "cover", widget: "image" }
+      - { label: "Rating", name: "rating", widget: "number", min: 1, max: 5 }
+      - { label: "Ringkasan", name: "summary", widget: "text" }
+      - { label: "Review", name: "review", widget: "markdown" }
+      - { label: "Tanggal Review", name: "date", widget: "datetime", format: "DD MMM YYYY" }
+      - { label: "Tags", name: "tags", widget: "list" }
+
+  # Pengaturan Situs
+  - name: "settings"
+    label: "Pengaturan"
+    files:
+      - name: "general"
+        label: "Pengaturan Umum"
+        file: "src/content/settings/general.json"
+        fields:
+          - { label: "Nama Situs", name: "siteName", widget: "string" }
+          - { label: "Tagline", name: "tagline", widget: "string" }
+          - { label: "Deskripsi", name: "description", widget: "text" }
+          - { label: "Logo", name: "logo", widget: "image", required: false }
+          - { label: "Favicon", name: "favicon", widget: "image", required: false }
+      - name: "social"
+        label: "Media Sosial"
+        file: "src/content/settings/social.json"
+        fields:
+          - { label: "Twitter", name: "twitter", widget: "string", required: false }
+          - { label: "Instagram", name: "instagram", widget: "string", required: false }
+          - { label: "GitHub", name: "github", widget: "string", required: false }
+          - { label: "Email", name: "email", widget: "string" }
+      - name: "about"
+        label: "Halaman Tentang"
+        file: "src/content/settings/about.json"
+        fields:
+          - { label: "Judul", name: "title", widget: "string" }
+          - { label: "Foto Profil", name: "photo", widget: "image" }
+          - { label: "Bio", name: "bio", widget: "markdown" }
+          - { label: "Quote Favorit", name: "quote", widget: "text", required: false }
