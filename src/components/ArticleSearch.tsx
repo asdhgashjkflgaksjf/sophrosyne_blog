@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search, X, Filter, Tag, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Article, articles } from "@/data/articles";
@@ -63,7 +63,8 @@ const ArticleSearch = ({ onFilteredArticles }: ArticleSearchProps) => {
     return result;
   }, [searchQuery, selectedCategory, selectedTags]);
 
-  useMemo(() => {
+  // Update parent when filters change - use useEffect to avoid setState during render
+  useEffect(() => {
     onFilteredArticles(filteredArticles);
   }, [filteredArticles, onFilteredArticles]);
 

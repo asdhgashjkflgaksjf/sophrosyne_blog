@@ -37,12 +37,15 @@ const PaperStackDecor = ({ position }: { position: "left" | "right" }) => (
 
 const Index = () => {
   const [filteredArticles, setFilteredArticles] = useState<Article[]>(articles);
+  const [showAllArticles, setShowAllArticles] = useState(false);
 
   const handleFilteredArticles = useCallback((filtered: Article[]) => {
     setFilteredArticles(filtered);
   }, []);
 
-  const displayedArticles = filteredArticles.slice(0, 6);
+  // Show 6 articles by default, or all if "Lihat Semua" is clicked
+  const displayedArticles = showAllArticles ? filteredArticles : filteredArticles.slice(0, 6);
+  const remainingCount = filteredArticles.length - 6;
 
   return (
     <div className="min-h-screen paper-page animate-fade-in">
@@ -95,20 +98,33 @@ const Index = () => {
                   <p className="font-script text-lg text-accent mt-1">Kumpulan tulisan terbaik untuk Anda</p>
                 </div>
                 
-                <a 
-                  href="#all" 
-                  className="group flex items-center gap-2 px-5 py-2.5 bg-[hsl(var(--paper-aged))] border border-[hsl(var(--sepia)/0.3)] hover:border-accent transition-colors"
-                >
-                  <span className="text-sm font-caps tracking-wider text-[hsl(var(--sepia))] group-hover:text-accent transition-colors">
-                    Lihat Semua
-                  </span>
-                  <motion.span
-                    className="text-[hsl(var(--sepia))] group-hover:text-accent"
-                    whileHover={{ x: 3 }}
+                {!showAllArticles && remainingCount > 0 && (
+                  <button 
+                    onClick={() => setShowAllArticles(true)}
+                    className="group flex items-center gap-2 px-5 py-2.5 bg-[hsl(var(--paper-aged))] border border-[hsl(var(--sepia)/0.3)] hover:border-accent transition-colors"
                   >
-                    →
-                  </motion.span>
-                </a>
+                    <span className="text-sm font-caps tracking-wider text-[hsl(var(--sepia))] group-hover:text-accent transition-colors">
+                      Lihat Semua
+                    </span>
+                    <motion.span
+                      className="text-[hsl(var(--sepia))] group-hover:text-accent"
+                      whileHover={{ x: 3 }}
+                    >
+                      →
+                    </motion.span>
+                  </button>
+                )}
+
+                {showAllArticles && (
+                  <button 
+                    onClick={() => setShowAllArticles(false)}
+                    className="group flex items-center gap-2 px-5 py-2.5 bg-[hsl(var(--paper-aged))] border border-[hsl(var(--sepia)/0.3)] hover:border-accent transition-colors"
+                  >
+                    <span className="text-sm font-caps tracking-wider text-[hsl(var(--sepia))] group-hover:text-accent transition-colors">
+                      Tampilkan Lebih Sedikit
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -158,19 +174,19 @@ const Index = () => {
           )}
 
           {/* Load more with vintage style */}
-          {filteredArticles.length > 6 && (
+          {!showAllArticles && remainingCount > 0 && (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
               className="text-center mt-12"
             >
-              <a 
-                href="#all" 
+              <button 
+                onClick={() => setShowAllArticles(true)}
                 className="group inline-flex items-center gap-3 px-8 py-4 bg-[hsl(var(--paper-cream))] border-2 border-[hsl(var(--sepia)/0.3)] hover:border-accent paper-shadow transition-all"
               >
                 <span className="font-body text-sm text-[hsl(var(--sepia))] group-hover:text-accent transition-colors">
-                  Muat {filteredArticles.length - 6} artikel lainnya
+                  Muat {remainingCount} artikel lainnya
                 </span>
                 <motion.span 
                   className="text-accent"
@@ -179,7 +195,7 @@ const Index = () => {
                 >
                   ↓
                 </motion.span>
-              </a>
+              </button>
             </motion.div>
           )}
         </section>
