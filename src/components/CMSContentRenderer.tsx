@@ -3,9 +3,10 @@
  * Renders various content blocks from Decap CMS
  */
 
-import { motion } from "framer-motion";
-import { Info, Lightbulb, AlertTriangle, Quote } from "lucide-react";
+import { Info, Lightbulb, AlertTriangle, Quote, Copy, Check } from "lucide-react";
 import { CMSContentBlock } from "@/lib/contentLoader";
+import { Highlight, themes } from "prism-react-renderer";
+import { useState } from "react";
 
 interface CMSContentRendererProps {
   blocks: CMSContentBlock[];
@@ -163,38 +164,98 @@ const HighlightBlock = ({
   );
 };
 
-// Code Block Component
-const CodeBlock = ({ language, code, caption }: { language?: string; code: string; caption?: string }) => (
-  <figure className="my-8">
-    <div className="relative">
-      {/* Terminal header */}
-      <div className="bg-[hsl(var(--sepia))] px-4 py-2 flex items-center gap-2">
-        <div className="flex gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-red-400" />
-          <div className="w-3 h-3 rounded-full bg-yellow-400" />
-          <div className="w-3 h-3 rounded-full bg-green-400" />
+// Code Block Component with Prism syntax highlighting
+const CodeBlock = ({ language = "javascript", code, caption }: { language?: string; code: string; caption?: string }) => {
+  const [copied, setCopied] = useState(false);
+  
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Map common language aliases
+  const languageMap: Record<string, string> = {
+    js: "javascript",
+    ts: "typescript",
+    jsx: "jsx",
+    tsx: "tsx",
+    py: "python",
+    rb: "ruby",
+    sh: "bash",
+    shell: "bash",
+    yml: "yaml",
+    md: "markdown",
+  };
+  
+  const normalizedLanguage = languageMap[language?.toLowerCase() || ""] || language?.toLowerCase() || "javascript";
+  
+  return (
+    <figure className="my-8 group">
+      <div className="relative overflow-hidden border border-[hsl(var(--sepia)/0.3)]">
+        {/* Terminal header */}
+        <div className="bg-[hsl(var(--sepia))] px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-red-400" />
+              <div className="w-3 h-3 rounded-full bg-yellow-400" />
+              <div className="w-3 h-3 rounded-full bg-green-400" />
+            </div>
+            {language && (
+              <span className="ml-4 text-xs text-[hsl(var(--paper-cream))] font-mono uppercase tracking-wider">
+                {language}
+              </span>
+            )}
+          </div>
+          <button
+            onClick={handleCopy}
+            className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-white/10 rounded text-[hsl(var(--paper-cream))]"
+            title="Copy code"
+          >
+            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+          </button>
         </div>
-        {language && (
-          <span className="ml-4 text-xs text-[hsl(var(--paper-cream))] font-mono uppercase">
-            {language}
-          </span>
-        )}
+        
+        {/* Code content with Prism highlighting */}
+        <Highlight
+          theme={themes.nightOwl}
+          code={code.trim()}
+          language={normalizedLanguage as any}
+        >
+          {({ className, style, tokens, getLineProps, getTokenProps }) => (
+            <pre 
+              className={`${className} p-4 overflow-x-auto text-sm`}
+              style={{ 
+                ...style, 
+                margin: 0,
+                backgroundColor: 'hsl(var(--ink-dark))',
+                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+              }}
+            >
+              {tokens.map((line, i) => (
+                <div key={i} {...getLineProps({ line })} className="table-row">
+                  <span className="table-cell text-right pr-4 select-none opacity-40 text-xs">
+                    {i + 1}
+                  </span>
+                  <span className="table-cell">
+                    {line.map((token, key) => (
+                      <span key={key} {...getTokenProps({ token })} />
+                    ))}
+                  </span>
+                </div>
+              ))}
+            </pre>
+          )}
+        </Highlight>
       </div>
-      
-      {/* Code content */}
-      <pre className="bg-[hsl(var(--ink-dark))] p-4 overflow-x-auto">
-        <code className="text-sm font-mono text-[hsl(var(--paper-cream))] whitespace-pre-wrap">
-          {code}
-        </code>
-      </pre>
-    </div>
-    {caption && (
-      <figcaption className="mt-2 text-center text-sm text-muted-foreground font-script italic">
-        {caption}
-      </figcaption>
-    )}
-  </figure>
-);
+      {caption && (
+        <figcaption className="mt-2 text-center text-sm text-muted-foreground font-script italic">
+          {caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+};
 
 // Divider Component
 const DividerBlock = ({ style = "line" }: { style?: "line" | "dots" | "ornament" }) => {
