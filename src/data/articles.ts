@@ -22,9 +22,11 @@ export interface Article {
   tags: string[];
 }
 
+import profileSilhouette from "@/assets/profile-silhouette.png";
+
 const farhanAuthor = {
   name: "Farhan",
-  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&q=80",
+  avatar: profileSilhouette,
   bio: "Penulis, pemikir, dan pencari makna melalui filsafat dan literatur",
 };
 
