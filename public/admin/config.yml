@@ -497,3 +497,46 @@ collections:
           - { label: "Aktifkan Newsletter", name: "enabled", widget: "boolean", default: true }
           - { label: "Provider", name: "provider", widget: "select", options: ["mailchimp", "convertkit", "buttondown", "none"], default: "none" }
           - { label: "Form Action URL", name: "formAction", widget: "string", required: false }
+      
+      # ========================================
+      # MAINTENANCE MODE
+      # ========================================
+      - name: "maintenance"
+        label: "🔧 Mode Maintenance"
+        file: "src/content/settings/maintenance.json"
+        fields:
+          - label: "Aktifkan Mode Maintenance"
+            name: "enabled"
+            widget: "boolean"
+            default: false
+            hint: "⚠️ HATI-HATI! Jika diaktifkan, website akan menampilkan halaman maintenance untuk semua pengunjung"
+          - label: "Judul"
+            name: "title"
+            widget: "string"
+            default: "Sedang Dalam Perbaikan"
+          - label: "Pesan"
+            name: "message"
+            widget: "text"
+            default: "Kami sedang melakukan pembaruan untuk memberikan pengalaman yang lebih baik. Silakan kembali lagi nanti."
+          - label: "Estimasi Waktu"
+            name: "estimatedTime"
+            widget: "string"
+            required: false
+            hint: "Contoh: 1-2 jam, 30 menit, dll"
+          - label: "Email Kontak"
+            name: "contactEmail"
+            widget: "string"
+            required: false
+            hint: "Email untuk dihubungi selama maintenance"
+          - label: "Tampilkan Progress Bar"
+            name: "showProgress"
+            widget: "boolean"
+            default: false
+          - label: "Persentase Progress"
+            name: "progressPercent"
+            widget: "number"
+            default: 0
+            min: 0
+            max: 100
+            required: false
+            hint: "Hanya tampil jika 'Tampilkan Progress Bar' aktif"

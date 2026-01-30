@@ -1,0 +1,9 @@
+{
+  "enabled": false,
+  "title": "Sedang Dalam Perbaikan",
+  "message": "Kami sedang melakukan pembaruan untuk memberikan pengalaman yang lebih baik. Silakan kembali lagi nanti.",
+  "estimatedTime": "1-2 jam",
+  "contactEmail": "hello@sophrosyne.id",
+  "showProgress": false,
+  "progressPercent": 0
+}
