@@ -4,18 +4,15 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import HandwritingText, { HandwritingLine, InkDrop } from "./HandwritingText";
 import { philosopherQuotes } from "@/data/philosopherQuotes";
-
 const HeroSection = () => {
   const [showMainText, setShowMainText] = useState(false);
   const [showParagraph, setShowParagraph] = useState(false);
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-
   useEffect(() => {
     // Start main text after welcome animation
     const timer1 = setTimeout(() => setShowMainText(true), 800);
     const timer2 = setTimeout(() => setShowParagraph(true), 1500);
-    
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
@@ -24,30 +21,22 @@ const HeroSection = () => {
 
   // Quote rotation
   const goToNextQuote = useCallback(() => {
-    setQuoteIndex((prev) => (prev + 1) % philosopherQuotes.length);
+    setQuoteIndex(prev => (prev + 1) % philosopherQuotes.length);
   }, []);
-
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(goToNextQuote, 8000);
     return () => clearInterval(timer);
   }, [isPaused, goToNextQuote]);
-
   const currentQuote = philosopherQuotes[quoteIndex];
-
-  return (
-    <section className="relative my-8 md:my-12 animate-fade-in">
+  return <section className="relative my-8 md:my-12 animate-fade-in">
       {/* Paper texture background */}
       <div className="relative paper-texture paper-stack overflow-hidden">
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 p-6 md:p-12 lg:p-16">
           {/* Left side - Image with paper effects */}
           <div className="relative animate-paper-drop">
             <div className="relative aspect-[4/3] md:aspect-[3/4] overflow-hidden paper-shadow paper-corner-fold group">
-              <img
-                src="https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=1920&q=80"
-                alt="Sophrosyne - Wisdom and Balance"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
+              <img src="https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=1920&q=80" alt="Sophrosyne - Wisdom and Balance" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               {/* Vintage overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--sepia)/0.1)] to-transparent mix-blend-multiply" />
               
@@ -66,59 +55,61 @@ const HeroSection = () => {
             {/* Editorial header with handwriting effect */}
             <div className="space-y-2">
               <span className="font-script text-2xl md:text-3xl text-accent block">
-                <HandwritingText 
-                  text="Welcome to" 
-                  speed={80}
-                  onComplete={() => setShowMainText(true)}
-                />
+                <HandwritingText text="Welcome to" speed={80} onComplete={() => setShowMainText(true)} />
               </span>
             </div>
             
             <div className="space-y-4 md:space-y-6">
-              <motion.h1 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: showMainText ? 1 : 0, y: showMainText ? 0 : 20 }}
-                transition={{ duration: 0.6 }}
-                className="text-4xl md:text-5xl lg:text-7xl font-display font-black leading-[0.95] tracking-tight"
-              >
+              <motion.h1 initial={{
+              opacity: 0,
+              y: 20
+            }} animate={{
+              opacity: showMainText ? 1 : 0,
+              y: showMainText ? 0 : 20
+            }} transition={{
+              duration: 0.6
+            }} className="text-4xl md:text-5xl lg:text-7xl font-display font-black leading-[0.95] tracking-tight">
                 <span className="block">The Art of</span>
                 <span className="block text-accent relative">
                   Balanced
                   {/* Decorative underline that draws in */}
-                  <motion.span 
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: showMainText ? 1 : 0 }}
-                    transition={{ delay: 0.5, duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-                    className="absolute -bottom-1 left-0 right-0 h-1 bg-[hsl(var(--accent)/0.3)] origin-left"
-                  />
+                  <motion.span initial={{
+                  scaleX: 0
+                }} animate={{
+                  scaleX: showMainText ? 1 : 0
+                }} transition={{
+                  delay: 0.5,
+                  duration: 0.8,
+                  ease: [0.4, 0, 0.2, 1]
+                }} className="absolute -bottom-1 left-0 right-0 h-1 bg-[hsl(var(--accent)/0.3)] origin-left" />
                 </span>
                 <span className="block">Living</span>
               </motion.h1>
               
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: showMainText ? 1 : 0 }}
-                transition={{ delay: 0.3 }}
-                className="ornament-divider text-2xl"
-              >
+              <motion.div initial={{
+              opacity: 0
+            }} animate={{
+              opacity: showMainText ? 1 : 0
+            }} transition={{
+              delay: 0.3
+            }} className="ornament-divider text-2xl">
                 ✦
               </motion.div>
               
               {/* Paragraph with typing effect */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: showParagraph ? 1 : 0 }}
-                transition={{ duration: 0.5 }}
-                className="relative"
-              >
+              <motion.div initial={{
+              opacity: 0
+            }} animate={{
+              opacity: showParagraph ? 1 : 0
+            }} transition={{
+              duration: 0.5
+            }} className="relative">
                 {/* Ink drops for decoration */}
                 <InkDrop x={95} y={10} delay={2} size={4} />
                 <InkDrop x={98} y={25} delay={2.2} size={3} />
                 
                 <p className="font-body text-muted-foreground text-lg md:text-xl leading-relaxed max-w-xl">
-                  <span className="drop-cap">S</span>ophrosyne invites you to explore the intersection of wisdom and wonder. 
-                  Here, words are carefully crafted like fine paper, each fold revealing new perspectives 
-                  on mindful living, creative expression, and the beautiful complexity of human experience.
+                  <span className="drop-cap">S</span>ophrosyne mengundang Anda untuk menjelajahi perpaduan antara kebijaksanaan dan keajaiban. Di sini, kata-kata dirangkai dengan teliti layaknya kertas halus, setiap lipatannya mengungkapkan sudut pandang baru tentang hidup yang sadar, ekspresi kreatif, dan keindahan kompleksitas pengalaman manusia.
                 </p>
                 
                 {/* Handwriting flourish line */}
@@ -128,60 +119,55 @@ const HeroSection = () => {
               </motion.div>
             </div>
 
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: showParagraph ? 1 : 0, y: showParagraph ? 0 : 20 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 pt-4"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            y: 20
+          }} animate={{
+            opacity: showParagraph ? 1 : 0,
+            y: showParagraph ? 0 : 20
+          }} transition={{
+            delay: 0.3,
+            duration: 0.5
+          }} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 pt-4">
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 md:px-10 md:py-6 text-base font-body font-medium paper-shadow hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all w-full sm:w-auto group">
                 <BookOpen className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
                 Begin Reading
               </Button>
 
               <div className="flex items-center gap-3">
-                <a
-                  href="#instagram"
-                  className="floating-button"
-                  aria-label="Instagram"
-                >
+                <a href="#instagram" className="floating-button" aria-label="Instagram">
                   <Instagram className="w-5 h-5" />
                 </a>
-                <a
-                  href="#facebook"
-                  className="floating-button"
-                  aria-label="Facebook"
-                >
+                <a href="#facebook" className="floating-button" aria-label="Facebook">
                   <Facebook className="w-5 h-5" />
                 </a>
-                <a
-                  href="#linkedin"
-                  className="floating-button"
-                  aria-label="LinkedIn"
-                >
+                <a href="#linkedin" className="floating-button" aria-label="LinkedIn">
                   <Linkedin className="w-5 h-5" />
                 </a>
               </div>
             </motion.div>
 
             {/* Rotating Philosopher Quote */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: showParagraph ? 1 : 0 }}
-              transition={{ delay: 0.5 }}
-              className="hidden lg:block mt-8 pt-6 border-t border-border"
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-            >
+            <motion.div initial={{
+            opacity: 0
+          }} animate={{
+            opacity: showParagraph ? 1 : 0
+          }} transition={{
+            delay: 0.5
+          }} className="hidden lg:block mt-8 pt-6 border-t border-border" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
               <AnimatePresence mode="wait">
-                <motion.blockquote 
-                  key={quoteIndex}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.5 }}
-                  className="pull-quote"
-                >
+                <motion.blockquote key={quoteIndex} initial={{
+                opacity: 0,
+                y: 10
+              }} animate={{
+                opacity: 1,
+                y: 0
+              }} exit={{
+                opacity: 0,
+                y: -10
+              }} transition={{
+                duration: 0.5
+              }} className="pull-quote">
                   <span className="font-editorial text-base italic text-muted-foreground">
                     "{currentQuote.quote}"
                   </span>
@@ -194,16 +180,7 @@ const HeroSection = () => {
               
               {/* Quote navigation dots */}
               <div className="flex gap-1.5 mt-4">
-                {philosopherQuotes.slice(0, 5).map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setQuoteIndex(idx)}
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${
-                      idx === quoteIndex % 5 ? 'bg-accent w-4' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
-                    }`}
-                    aria-label={`Go to quote ${idx + 1}`}
-                  />
-                ))}
+                {philosopherQuotes.slice(0, 5).map((_, idx) => <button key={idx} onClick={() => setQuoteIndex(idx)} className={`w-1.5 h-1.5 rounded-full transition-all ${idx === quoteIndex % 5 ? 'bg-accent w-4' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'}`} aria-label={`Go to quote ${idx + 1}`} />)}
               </div>
             </motion.div>
           </div>
@@ -212,8 +189,6 @@ const HeroSection = () => {
         {/* Torn edge bottom */}
         <div className="torn-edge-bottom" />
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default HeroSection;
