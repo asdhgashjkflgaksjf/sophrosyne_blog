@@ -131,7 +131,12 @@ const HeroSection = () => {
             delay: 0.3,
             duration: 0.5
           }} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 pt-4">
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 md:px-10 md:py-6 text-base font-body font-medium paper-shadow hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all w-full sm:w-auto group">
+              <Button 
+                onClick={() => {
+                  document.getElementById('articles')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 md:px-10 md:py-6 text-base font-body font-medium paper-shadow hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all w-full sm:w-auto group"
+              >
                 <BookOpen className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
                 Begin Reading
               </Button>

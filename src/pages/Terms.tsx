@@ -1,133 +1,177 @@
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown } from "lucide-react";
+
+interface TermsSectionProps {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}
+
+const TermsSection = ({ title, children, defaultOpen = false }: TermsSectionProps) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border-b border-sepia/10 last:border-b-0">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full py-4 flex items-center justify-between text-left group"
+      >
+        <h2 className="text-base md:text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+          {title}
+        </h2>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+          className="text-muted-foreground"
+        >
+          <ChevronDown className="w-5 h-5" />
+        </motion.div>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="pb-4 text-sm md:text-base text-muted-foreground leading-relaxed">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 const Terms = () => {
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
+    <div className="min-h-screen bg-background animate-fade-in flex flex-col">
       <Header />
       
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Hero Section */}
-        <div className="mb-12 space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold leading-tight animate-slide-down">
-            Terms of Service
+      <main className="flex-1 max-w-3xl mx-auto px-4 sm:px-6 py-8 md:py-12 w-full">
+        {/* Compact Hero */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 md:mb-8 pb-4 border-b border-sepia/20"
+        >
+          <h1 className="text-2xl md:text-3xl font-bold leading-tight">
+            Syarat & Ketentuan
           </h1>
-          <p className="text-muted-foreground animate-slide-up stagger-1">
-            Last updated: March 20, 2025
+          <p className="text-xs md:text-sm text-muted-foreground mt-1">
+            Terakhir diperbarui: 20 Maret 2025
           </p>
-        </div>
+        </motion.div>
 
-        <div className="prose prose-lg max-w-none space-y-8">
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Agreement to Terms</h2>
-            <p className="text-muted-foreground">
-              By accessing or using Perspective's website and services, you agree to be bound by these Terms of Service. 
-              If you disagree with any part of these terms, you may not access our services.
+        {/* Accordion-style sections */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="bg-card rounded-sm border border-sepia/10 paper-shadow px-4 md:px-6"
+        >
+          <TermsSection title="Persetujuan Syarat" defaultOpen={true}>
+            <p>
+              Dengan mengakses atau menggunakan website dan layanan Perspective, Anda setuju untuk terikat dengan 
+              Syarat & Ketentuan ini. Jika Anda tidak setuju dengan bagian mana pun dari syarat ini, Anda tidak 
+              diperkenankan untuk mengakses layanan kami.
             </p>
-          </section>
+          </TermsSection>
 
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Use License</h2>
-            <p className="text-muted-foreground mb-4">
-              Permission is granted to temporarily access the materials on Perspective's website for personal, 
-              non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
+          <TermsSection title="Lisensi Penggunaan">
+            <p className="mb-3">
+              Izin diberikan untuk mengakses materi di website Perspective secara sementara untuk keperluan pribadi 
+              dan non-komersial saja. Berdasarkan lisensi ini, Anda tidak diperkenankan untuk:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-              <li>Modify or copy the materials</li>
-              <li>Use the materials for any commercial purpose or public display</li>
-              <li>Attempt to decompile or reverse engineer any software on our website</li>
-              <li>Remove any copyright or proprietary notations from the materials</li>
-              <li>Transfer the materials to another person or mirror on any other server</li>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Memodifikasi atau menyalin materi</li>
+              <li>Menggunakan materi untuk tujuan komersial</li>
+              <li>Mencoba mendekompilasi atau merekayasa balik perangkat lunak</li>
+              <li>Menghapus notasi hak cipta atau kepemilikan</li>
             </ul>
-          </section>
+          </TermsSection>
 
-          <section>
-            <h2 className="text-2xl font-bold mb-4">User Content</h2>
-            <p className="text-muted-foreground">
-              When you post comments or other content on our website, you grant us a non-exclusive, worldwide, 
-              royalty-free license to use, reproduce, and display such content. You represent that you own or 
-              have the necessary rights to the content you post.
+          <TermsSection title="Konten Pengguna">
+            <p>
+              Ketika Anda memposting komentar atau konten lainnya di website kami, Anda memberikan kami lisensi 
+              non-eksklusif, berlaku di seluruh dunia, dan bebas royalti untuk menggunakan, mereproduksi, dan 
+              menampilkan konten tersebut. Anda menyatakan bahwa Anda memiliki atau memiliki hak yang diperlukan 
+              atas konten yang Anda posting.
             </p>
-          </section>
+          </TermsSection>
 
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Prohibited Uses</h2>
-            <p className="text-muted-foreground mb-4">
-              You may not use our website:
-            </p>
-            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-              <li>In any way that violates any applicable law or regulation</li>
-              <li>To transmit any harmful or malicious code</li>
-              <li>To impersonate or attempt to impersonate Perspective or any employee</li>
-              <li>To harass, abuse, or harm another person</li>
-              <li>To spam or send unsolicited communications</li>
+          <TermsSection title="Penggunaan yang Dilarang">
+            <p className="mb-3">Anda tidak diperkenankan menggunakan website kami untuk:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Melanggar hukum atau peraturan yang berlaku</li>
+              <li>Mengirimkan kode berbahaya atau malicious</li>
+              <li>Menyamar sebagai Perspective atau karyawannya</li>
+              <li>Melecehkan, menyalahgunakan, atau menyakiti orang lain</li>
+              <li>Mengirim spam atau komunikasi yang tidak diminta</li>
             </ul>
-          </section>
+          </TermsSection>
 
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Intellectual Property</h2>
-            <p className="text-muted-foreground">
-              All content on Perspective, including articles, images, logos, and designs, is the property of 
-              Perspective or its content creators and is protected by international copyright laws. 
-              Unauthorized use of our content may violate copyright, trademark, and other laws.
+          <TermsSection title="Hak Kekayaan Intelektual">
+            <p>
+              Semua konten di Perspective, termasuk artikel, gambar, logo, dan desain, adalah milik Perspective 
+              atau pembuat kontennya dan dilindungi oleh undang-undang hak cipta internasional. Penggunaan konten 
+              kami tanpa izin dapat melanggar hak cipta, merek dagang, dan hukum lainnya.
             </p>
-          </section>
+          </TermsSection>
 
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Disclaimer</h2>
-            <p className="text-muted-foreground">
-              The materials on Perspective's website are provided on an "as is" basis. Perspective makes no 
-              warranties, expressed or implied, and hereby disclaims and negates all other warranties including, 
-              without limitation, implied warranties or conditions of merchantability, fitness for a particular 
-              purpose, or non-infringement of intellectual property.
+          <TermsSection title="Penafian & Batasan Tanggung Jawab">
+            <p className="mb-3">
+              Materi di website Perspective disediakan dalam kondisi "apa adanya". Perspective tidak memberikan 
+              jaminan, tersurat maupun tersirat, dan dengan ini menolak semua jaminan lainnya.
             </p>
-          </section>
+            <p>
+              Dalam keadaan apa pun, Perspective atau pemasoknya tidak bertanggung jawab atas kerugian apa pun 
+              yang timbul dari penggunaan atau ketidakmampuan menggunakan materi di website Perspective.
+            </p>
+          </TermsSection>
 
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Limitations of Liability</h2>
-            <p className="text-muted-foreground">
-              In no event shall Perspective or its suppliers be liable for any damages (including, without 
-              limitation, damages for loss of data or profit, or due to business interruption) arising out of 
-              the use or inability to use the materials on Perspective's website.
+          <TermsSection title="Tautan ke Website Lain">
+            <p>
+              Website kami mungkin berisi tautan ke website pihak ketiga yang tidak dimiliki atau dikendalikan 
+              oleh Perspective. Kami tidak memiliki kendali dan tidak bertanggung jawab atas konten, kebijakan 
+              privasi, atau praktik website pihak ketiga mana pun.
             </p>
-          </section>
+          </TermsSection>
 
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Links to Other Websites</h2>
-            <p className="text-muted-foreground">
-              Our website may contain links to third-party websites that are not owned or controlled by Perspective. 
-              We have no control over and assume no responsibility for the content, privacy policies, or practices 
-              of any third-party websites.
+          <TermsSection title="Perubahan & Hukum yang Berlaku">
+            <p className="mb-3">
+              Perspective dapat merevisi Syarat & Ketentuan ini kapan saja tanpa pemberitahuan. Dengan menggunakan 
+              website ini, Anda setuju untuk terikat dengan versi terbaru dari Syarat & Ketentuan ini.
             </p>
-          </section>
+            <p>
+              Syarat ini diatur dan ditafsirkan sesuai dengan hukum Indonesia, tanpa memperhatikan ketentuan 
+              pertentangan hukumnya.
+            </p>
+          </TermsSection>
 
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Modifications</h2>
-            <p className="text-muted-foreground">
-              Perspective may revise these Terms of Service at any time without notice. By using this website, 
-              you are agreeing to be bound by the current version of these Terms of Service.
+          <TermsSection title="Hubungi Kami">
+            <p>
+              Jika Anda memiliki pertanyaan tentang Syarat & Ketentuan ini, silakan hubungi kami di:
             </p>
-          </section>
+            <p className="mt-2 font-medium">
+              Email: legal@perspective.blog
+            </p>
+          </TermsSection>
+        </motion.div>
 
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Governing Law</h2>
-            <p className="text-muted-foreground">
-              These terms shall be governed by and construed in accordance with the laws of the State of California, 
-              without regard to its conflict of law provisions.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Contact Information</h2>
-            <p className="text-muted-foreground">
-              If you have any questions about these Terms of Service, please contact us at:
-            </p>
-            <p className="text-muted-foreground mt-4">
-              Email: legal@perspective.blog<br />
-              Address: San Francisco, CA
-            </p>
-          </section>
-        </div>
+        {/* Quick summary note */}
+        <p className="text-xs text-muted-foreground text-center mt-6 italic">
+          Klik pada setiap bagian untuk membaca selengkapnya
+        </p>
       </main>
+
+      <Footer />
     </div>
   );
 };
