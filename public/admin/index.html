@@ -440,10 +440,14 @@
       background: hsl(28 40% 55%);
     }
 
-    /* Login screen */
+    /* ===== LOGIN SCREEN STYLING ===== */
     [class*="LoginPage"],
     [class*="AuthenticationPage"] {
       background: linear-gradient(135deg, hsl(45 30% 94%) 0%, hsl(40 25% 90%) 100%) !important;
+      min-height: 100vh !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
     }
 
     [class*="LoginButton"],
@@ -453,10 +457,254 @@
       border-radius: 12px !important;
       padding: 16px 32px !important;
       font-size: 16px !important;
+      font-weight: 500 !important;
       box-shadow: 0 4px 20px rgba(139, 90, 43, 0.3) !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
     }
 
-    /* Publish button special styling */
+    [class*="LoginButton"]:hover,
+    [class*="AuthButton"]:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 25px rgba(139, 90, 43, 0.4) !important;
+    }
+
+    /* ===== NETLIFY IDENTITY WIDGET STYLING ===== */
+    .netlify-identity-widget {
+      font-family: 'Lora', 'Georgia', serif !important;
+    }
+
+    .netlify-identity-widget-modal {
+      background: hsla(30 15% 15% / 0.7) !important;
+      backdrop-filter: blur(8px) !important;
+    }
+
+    .netlify-identity-widget-modal-content {
+      background: linear-gradient(135deg, hsl(45 30% 97%) 0%, hsl(42 28% 94%) 100%) !important;
+      border: 1px solid hsl(35 20% 82%) !important;
+      border-radius: 20px !important;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25) !important;
+      overflow: hidden !important;
+      max-width: 420px !important;
+    }
+
+    .netlify-identity-widget-modal-content::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E");
+    }
+
+    /* Widget Header */
+    .netlify-identity-widget-modal-content header,
+    .netlify-identity-widget header {
+      background: linear-gradient(135deg, hsl(28 60% 45%) 0%, hsl(28 50% 38%) 100%) !important;
+      padding: 28px 24px !important;
+      text-align: center !important;
+    }
+
+    .netlify-identity-widget-modal-content header h1,
+    .netlify-identity-widget header h1,
+    .netlify-identity-widget .logo {
+      font-family: 'Cormorant Garamond', 'Georgia', serif !important;
+      font-size: 28px !important;
+      font-weight: 600 !important;
+      color: hsl(45 30% 96%) !important;
+      margin: 0 !important;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Widget Form */
+    .netlify-identity-widget form,
+    .netlify-identity-widget-modal-content form {
+      padding: 32px 28px !important;
+    }
+
+    .netlify-identity-widget input[type="email"],
+    .netlify-identity-widget input[type="password"],
+    .netlify-identity-widget input[type="text"],
+    .netlify-identity-widget-modal-content input {
+      background: hsl(45 35% 98%) !important;
+      border: 2px solid hsl(35 20% 82%) !important;
+      border-radius: 10px !important;
+      font-family: 'Lora', 'Georgia', serif !important;
+      font-size: 15px !important;
+      color: hsl(30 15% 20%) !important;
+      padding: 14px 18px !important;
+      width: 100% !important;
+      transition: all 0.2s ease !important;
+      box-sizing: border-box !important;
+    }
+
+    .netlify-identity-widget input:focus,
+    .netlify-identity-widget-modal-content input:focus {
+      outline: none !important;
+      border-color: hsl(28 60% 50%) !important;
+      box-shadow: 0 0 0 4px hsla(28 60% 45% / 0.15) !important;
+    }
+
+    .netlify-identity-widget label,
+    .netlify-identity-widget-modal-content label {
+      font-family: 'Cormorant Garamond', 'Georgia', serif !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      color: hsl(30 15% 35%) !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1.5px !important;
+      margin-bottom: 8px !important;
+      display: block !important;
+    }
+
+    /* Widget Buttons */
+    .netlify-identity-widget button[type="submit"],
+    .netlify-identity-widget .btn,
+    .netlify-identity-widget-modal-content button[type="submit"] {
+      background: linear-gradient(135deg, hsl(28 60% 45%) 0%, hsl(28 55% 40%) 100%) !important;
+      color: hsl(45 30% 96%) !important;
+      border: none !important;
+      border-radius: 10px !important;
+      font-family: 'Lora', 'Georgia', serif !important;
+      font-size: 15px !important;
+      font-weight: 500 !important;
+      padding: 14px 28px !important;
+      width: 100% !important;
+      cursor: pointer !important;
+      box-shadow: 0 4px 15px rgba(139, 90, 43, 0.25) !important;
+      transition: all 0.3s ease !important;
+      text-transform: none !important;
+    }
+
+    .netlify-identity-widget button[type="submit"]:hover,
+    .netlify-identity-widget .btn:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 20px rgba(139, 90, 43, 0.35) !important;
+    }
+
+    /* Secondary buttons / links */
+    .netlify-identity-widget a,
+    .netlify-identity-widget .btnLink,
+    .netlify-identity-widget-modal-content a {
+      color: hsl(28 60% 45%) !important;
+      font-family: 'Lora', 'Georgia', serif !important;
+      text-decoration: none !important;
+      transition: color 0.2s ease !important;
+    }
+
+    .netlify-identity-widget a:hover {
+      color: hsl(28 65% 35%) !important;
+      text-decoration: underline !important;
+    }
+
+    /* Tab navigation */
+    .netlify-identity-widget .tabs,
+    .netlify-identity-widget-modal-content .tabs {
+      display: flex !important;
+      border-bottom: 2px solid hsl(35 20% 85%) !important;
+      margin-bottom: 24px !important;
+    }
+
+    .netlify-identity-widget .tab,
+    .netlify-identity-widget-modal-content .tab {
+      flex: 1 !important;
+      padding: 12px !important;
+      text-align: center !important;
+      font-family: 'Cormorant Garamond', 'Georgia', serif !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1px !important;
+      color: hsl(30 10% 50%) !important;
+      border-bottom: 2px solid transparent !important;
+      margin-bottom: -2px !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .netlify-identity-widget .tab.active,
+    .netlify-identity-widget .tab:hover {
+      color: hsl(28 60% 45%) !important;
+      border-bottom-color: hsl(28 60% 45%) !important;
+    }
+
+    /* Provider buttons (GitHub, etc) */
+    .netlify-identity-widget .providers,
+    .netlify-identity-widget-modal-content .providers {
+      margin-top: 20px !important;
+      padding-top: 20px !important;
+      border-top: 1px solid hsl(35 20% 88%) !important;
+    }
+
+    .netlify-identity-widget .provider-button,
+    .netlify-identity-widget button.provider {
+      background: hsl(45 30% 97%) !important;
+      border: 2px solid hsl(35 20% 82%) !important;
+      border-radius: 10px !important;
+      padding: 12px 20px !important;
+      font-family: 'Lora', 'Georgia', serif !important;
+      font-size: 14px !important;
+      color: hsl(30 15% 25%) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 10px !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+      width: 100% !important;
+    }
+
+    .netlify-identity-widget .provider-button:hover,
+    .netlify-identity-widget button.provider:hover {
+      background: hsl(45 28% 94%) !important;
+      border-color: hsl(28 60% 50%) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    /* Error messages */
+    .netlify-identity-widget .error,
+    .netlify-identity-widget-modal-content .error {
+      background: hsl(0 60% 97%) !important;
+      border: 1px solid hsl(0 50% 80%) !important;
+      color: hsl(0 60% 40%) !important;
+      padding: 12px 16px !important;
+      border-radius: 8px !important;
+      font-size: 14px !important;
+      margin-bottom: 16px !important;
+    }
+
+    /* Success messages */
+    .netlify-identity-widget .success {
+      background: hsl(142 50% 95%) !important;
+      border: 1px solid hsl(142 40% 75%) !important;
+      color: hsl(142 50% 30%) !important;
+      padding: 12px 16px !important;
+      border-radius: 8px !important;
+    }
+
+    /* Close button */
+    .netlify-identity-widget .close,
+    .netlify-identity-widget-modal-content .close {
+      position: absolute !important;
+      top: 16px !important;
+      right: 16px !important;
+      width: 32px !important;
+      height: 32px !important;
+      background: hsla(45 30% 96% / 0.2) !important;
+      border: none !important;
+      border-radius: 50% !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: background 0.2s ease !important;
+    }
+
+    .netlify-identity-widget .close:hover {
+      background: hsla(45 30% 96% / 0.4) !important;
+    }
+
+    /* ===== PUBLISH BUTTON ===== */
     [class*="PublishButton"],
     button[class*="publish"] {
       background: linear-gradient(135deg, hsl(142 50% 40%) 0%, hsl(142 45% 35%) 100%) !important;
@@ -483,6 +731,15 @@
     @media (max-width: 768px) {
       [class*="Sidebar"] {
         background: hsl(45 30% 96%) !important;
+      }
+
+      .netlify-identity-widget-modal-content {
+        margin: 16px !important;
+        border-radius: 16px !important;
+      }
+
+      .netlify-identity-widget form {
+        padding: 24px 20px !important;
       }
     }
   </style>
