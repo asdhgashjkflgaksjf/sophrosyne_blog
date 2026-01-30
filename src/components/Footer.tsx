@@ -10,7 +10,7 @@ const Footer = () => {
     { label: "Filsafat", href: "/filsafat", icon: BookOpen },
     { label: "Book Review", href: "/book-review", icon: Sparkles },
     { label: "Wellness", href: "/wellness", icon: Heart },
-    { label: "Travel", href: "/travel", icon: Compass },
+    { label: "Creative", href: "/creativity", icon: Compass },
   ];
 
   const socialLinks = [
