@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Search, X, Filter, Tag, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Article, articles } from "@/data/articles";
+import { Article } from "@/data/articles";
 import {
   Select,
   SelectContent,
@@ -11,12 +11,9 @@ import {
 } from "@/components/ui/select";
 
 interface ArticleSearchProps {
+  articles: Article[];
   onFilteredArticles: (articles: Article[]) => void;
 }
-
-// Get unique categories and tags from articles
-const categories = [...new Set(articles.map(a => a.category))];
-const allTags = [...new Set(articles.flatMap(a => a.tags))];
 
 // Typewriter search icon animation
 const TypewriterIcon = () => (
@@ -29,12 +26,16 @@ const TypewriterIcon = () => (
   </svg>
 );
 
-const ArticleSearch = ({ onFilteredArticles }: ArticleSearchProps) => {
+const ArticleSearch = ({ articles, onFilteredArticles }: ArticleSearchProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+
+  // Get unique categories and tags from articles
+  const categories = useMemo(() => [...new Set(articles.map(a => a.category))], [articles]);
+  const allTags = useMemo(() => [...new Set(articles.flatMap(a => a.tags))], [articles]);
 
   // Filter articles based on search, category, and tags
   const filteredArticles = useMemo(() => {
