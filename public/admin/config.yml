@@ -33,10 +33,6 @@ publish_mode: editorial_workflow
 # Lokasi media yang diupload
 media_folder: "public/uploads"
 public_folder: "/uploads"
-# Organisasi media berdasarkan tahun/bulan
-media_library:
-  folder_support: true
-
 # Pengaturan editor
 slug:
   encoding: "ascii"
@@ -62,11 +58,7 @@ collections:
     editor:
       preview: false
     # Sorting & Grouping
-    sortable_fields: 
-      fields: ["date", "title", "category"]
-      default:
-        field: "date"
-        direction: "Descending"
+    sortable_fields: ["date", "title", "category"]
     # Filter berdasarkan kategori
     view_filters:
       - label: "📚 Filsafat"
@@ -356,11 +348,7 @@ collections:
     summary: "{{title}} by {{bookAuthor}} | ⭐{{rating}}"
     editor:
       preview: false
-    sortable_fields:
-      fields: ["date", "rating", "title"]
-      default:
-        field: "date"
-        direction: "Descending"
+    sortable_fields: ["date", "rating", "title"]
     fields:
       - { label: "ID", name: "id", widget: "string" }
       - { label: "Judul Buku", name: "title", widget: "string" }
