@@ -17,7 +17,6 @@ const navItems = [
       { label: "Filsafat", href: "/filsafat", icon: BookOpen, description: "Eksplorasi pemikiran filosofis" },
       { label: "Kreativitas", href: "/creativity", icon: Palette, description: "Seni & ekspresi diri" },
       { label: "Pertumbuhan", href: "/growth", icon: Sprout, description: "Pengembangan diri" },
-      { label: "Travel", href: "/travel", icon: Compass, description: "Petualangan & eksplorasi" },
       { label: "Wellness", href: "/wellness", icon: Heart, description: "Kesehatan & keseimbangan" },
     ],
   },
