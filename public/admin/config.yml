@@ -12,7 +12,7 @@ backend:
   repo: asdhgashjkflgaksjf/sophrosyne-blog
   branch: main
   # Gunakan Netlify Identity untuk OAuth
-  site_domain: storied-mochi-345172.netlify.app
+  site_domain: sophrosyne88.netlify.app
   # Commit messages yang lebih deskriptif
   commit_messages:
     create: "✨ Buat {{collection}} baru: {{slug}}"
