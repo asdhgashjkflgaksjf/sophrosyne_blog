@@ -1,12 +1,13 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ArticleCard from "@/components/ArticleCard";
 import HeroSection from "@/components/HeroSection";
 import IntroSection from "@/components/IntroSection";
 import ArticleSearch from "@/components/ArticleSearch";
-import { articles, Article } from "@/data/articles";
-import { Send, BookOpen, Feather, Sparkles } from "lucide-react";
+import { Article } from "@/data/articles";
+import { useArticles } from "@/hooks/useArticles";
+import { Send, BookOpen, Feather, Sparkles, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 // Decorative torn paper divider
@@ -36,8 +37,14 @@ const PaperStackDecor = ({ position }: { position: "left" | "right" }) => (
 );
 
 const Index = () => {
-  const [filteredArticles, setFilteredArticles] = useState<Article[]>(articles);
+  const { articles, isLoading } = useArticles();
+  const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
   const [showAllArticles, setShowAllArticles] = useState(false);
+
+  // Update filtered articles when articles load
+  useEffect(() => {
+    setFilteredArticles(articles);
+  }, [articles]);
 
   const handleFilteredArticles = useCallback((filtered: Article[]) => {
     setFilteredArticles(filtered);
@@ -133,27 +140,43 @@ const Index = () => {
           <TornDivider />
 
           {/* Search Component */}
-          <ArticleSearch onFilteredArticles={handleFilteredArticles} />
+          <ArticleSearch articles={articles} onFilteredArticles={handleFilteredArticles} />
+
+          {/* Loading state */}
+          {isLoading && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center justify-center py-12"
+            >
+              <div className="relative bg-[hsl(var(--paper-cream))] border border-[hsl(var(--sepia)/0.2)] p-8 text-center">
+                <Loader2 className="w-8 h-8 text-accent mx-auto mb-4 animate-spin" />
+                <p className="font-editorial text-lg text-[hsl(var(--sepia))]">Memuat artikel...</p>
+              </div>
+            </motion.div>
+          )}
 
           {/* Articles Grid with masonry-like layout */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-            {displayedArticles.map((article, index) => (
-              <motion.div 
-                key={article.id} 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.4 }}
-                style={{ 
-                  marginTop: index % 3 === 1 ? '2rem' : index % 3 === 2 ? '1rem' : '0',
-                }}
-              >
-                <ArticleCard {...article} size="small" />
-              </motion.div>
-            ))}
-          </div>
+          {!isLoading && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+              {displayedArticles.map((article, index) => (
+                <motion.div 
+                  key={article.id} 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.4 }}
+                  style={{ 
+                    marginTop: index % 3 === 1 ? '2rem' : index % 3 === 2 ? '1rem' : '0',
+                  }}
+                >
+                  <ArticleCard {...article} size="small" />
+                </motion.div>
+              ))}
+            </div>
+          )}
 
           {/* Empty state with vintage style */}
-          {displayedArticles.length === 0 && (
+          {!isLoading && displayedArticles.length === 0 && (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
