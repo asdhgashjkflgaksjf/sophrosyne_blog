@@ -487,8 +487,6 @@
     }
   </style>
 
-  <!-- Decap CMS Script -->
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 </head>
 <body>
   <!-- Custom Loading Screen -->
@@ -505,19 +503,16 @@
     <div class="loading-spinner"></div>
   </div>
 
+  <!-- Container untuk Decap CMS mounting -->
+  <div id="nc-root"></div>
+
+  <!-- Decap CMS Script - HARUS di akhir body setelah DOM siap -->
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
   <script>
     // Hide loading screen when CMS is ready
-    if (window.CMS) {
-      CMS.registerEventListener({
-        name: 'preSave',
-        handler: () => {
-          console.log('Saving entry...');
-        }
-      });
-    }
-
-    // Hide loading after CMS loads
-    window.addEventListener('load', function() {
+    document.addEventListener('DOMContentLoaded', function() {
+      // Tunggu CMS init
       setTimeout(function() {
         const loading = document.getElementById('admin-loading');
         if (loading) {
@@ -527,7 +522,7 @@
             loading.style.display = 'none';
           }, 500);
         }
-      }, 1500);
+      }, 2000);
     });
   </script>
 </body>
