@@ -20,28 +20,24 @@ import FloatingReadingModeToggle from "@/components/FloatingReadingModeToggle";
 import { useGoogleTranslate } from "@/hooks/useGoogleTranslate";
 
 // Check if article has CMS content blocks
-const useCMSContent = (articleId: string) => {
-  const [cmsBlocks, setCmsBlocks] = useState<CMSContentBlock[] | null>(null);
-  
-  // Try to load CMS content for this article
-  useState(() => {
-    const modules = import.meta.glob<CMSArticle>("/src/content/articles/*.json", {
-      eager: true,
-      import: "default",
-    });
-    
-    for (const path in modules) {
-      const cmsArticle = modules[path];
-      if (cmsArticle.id === articleId && cmsArticle.content && Array.isArray(cmsArticle.content)) {
-        // Check if content is CMS blocks (has 'type' property) vs legacy format
-        if (cmsArticle.content.length > 0 && 'type' in cmsArticle.content[0]) {
-          setCmsBlocks(cmsArticle.content as CMSContentBlock[]);
-        }
-      }
-    }
+const useCMSContent = (articleId: string): CMSContentBlock[] | null => {
+  // Use Vite's glob import to get CMS content (synchronous since eager: true)
+  const modules = import.meta.glob<CMSArticle>("/src/content/articles/*.json", {
+    eager: true,
+    import: "default",
   });
   
-  return cmsBlocks;
+  for (const path in modules) {
+    const cmsArticle = modules[path];
+    if (cmsArticle.id === articleId && cmsArticle.content && Array.isArray(cmsArticle.content)) {
+      // Check if content is CMS blocks (has 'type' property) vs legacy format
+      if (cmsArticle.content.length > 0 && 'type' in cmsArticle.content[0]) {
+        return cmsArticle.content as CMSContentBlock[];
+      }
+    }
+  }
+  
+  return null;
 };
 
 const Article = () => {

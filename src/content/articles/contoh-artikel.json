@@ -1,16 +1,16 @@
 {
   "id": "cms-001",
-  "title": "Contoh Artikel dari CMS",
-  "excerpt": "Ini adalah contoh artikel yang dibuat melalui Decap CMS untuk demonstrasi integrasi content loader.",
+  "title": "Panduan Lengkap Content Blocks CMS",
+  "excerpt": "Demonstrasi semua jenis content block yang tersedia di Decap CMS — dari heading, paragraf, highlight box, code block, hingga divider dekoratif.",
   "category": "Filsafat",
   "date": "30 Jan 2026",
-  "readTime": "5 menit",
+  "readTime": "7 menit",
   "image": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1920&q=80",
   "author": {
     "name": "Farhan",
     "bio": "Penulis, pemikir, dan pencari makna melalui filsafat dan literatur"
   },
-  "tags": ["contoh", "cms", "decap", "tutorial"],
+  "tags": ["tutorial", "cms", "decap", "content-blocks"],
   "content": [
     {
       "type": "heading",
@@ -19,45 +19,181 @@
     },
     {
       "type": "paragraph",
-      "text": "Artikel ini dibuat untuk mendemonstrasikan bagaimana content loader bekerja dengan Decap CMS. Semua artikel yang dibuat melalui panel admin akan otomatis muncul di blog."
+      "text": "Artikel ini mendemonstrasikan <strong>semua jenis content block</strong> yang tersedia di Decap CMS. Mulai dari heading, paragraf, kutipan, daftar, hingga fitur-fitur lanjutan seperti code block dan highlight box."
     },
     {
-      "type": "quote",
-      "text": "Kebijaksanaan dimulai dari rasa ingin tahu.",
-      "author": "Socrates"
+      "type": "divider",
+      "style": "ornament"
     },
     {
       "type": "heading",
-      "text": "Cara Kerja Content Loader",
+      "text": "Kutipan (Quote Block)",
       "level": "h2"
     },
     {
       "type": "paragraph",
-      "text": "Content loader menggunakan Vite's import.meta.glob untuk membaca semua file JSON dari folder src/content/articles/. Setiap file JSON dikonversi menjadi format Article yang kompatibel dengan struktur blog yang sudah ada."
+      "text": "Quote block digunakan untuk menampilkan kutipan dengan gaya yang elegan dan menarik perhatian:"
+    },
+    {
+      "type": "quote",
+      "text": "Kebijaksanaan dimulai dari pengakuan bahwa kita tidak tahu apa-apa.",
+      "author": "Socrates"
+    },
+    {
+      "type": "divider",
+      "style": "dots"
+    },
+    {
+      "type": "heading",
+      "text": "Daftar (List Blocks)",
+      "level": "h2"
+    },
+    {
+      "type": "heading",
+      "text": "Unordered List",
+      "level": "h3"
     },
     {
       "type": "list",
-      "type": "unordered",
+      "listType": "unordered",
       "items": [
-        "File JSON dibuat oleh Decap CMS",
-        "Content loader membaca file saat build time",
-        "Artikel digabung dengan static articles",
-        "Duplikat ID akan override artikel statis"
+        "Stoikisme — Fokus pada apa yang bisa dikontrol",
+        "Eksistensialisme — Makna diciptakan, bukan ditemukan",
+        "Zen Buddhisme — Kesadaran penuh dalam setiap momen",
+        "Epikureanisme — Kebahagiaan melalui kesederhanaan"
       ]
     },
     {
       "type": "heading",
-      "text": "Fitur yang Didukung",
+      "text": "Ordered List",
+      "level": "h3"
+    },
+    {
+      "type": "list",
+      "listType": "ordered",
+      "items": [
+        "Identifikasi masalah yang dihadapi",
+        "Analisis akar penyebab",
+        "Evaluasi solusi yang mungkin",
+        "Implementasi dan refleksi"
+      ]
+    },
+    {
+      "type": "divider",
+      "style": "line"
+    },
+    {
+      "type": "heading",
+      "text": "Highlight Boxes",
       "level": "h2"
     },
     {
       "type": "paragraph",
-      "text": "CMS mendukung berbagai jenis konten termasuk heading, paragraf, kutipan, daftar, gambar, dan highlight box. Semua konten ini akan dirender dengan baik di halaman artikel."
+      "text": "Highlight box tersedia dalam 4 tipe berbeda untuk berbagai kebutuhan:"
     },
     {
       "type": "highlight",
-      "title": "Tips Penting",
-      "content": "Pastikan setiap artikel memiliki ID unik. Jika ID sama dengan artikel statis, artikel CMS akan menggantikannya."
+      "highlightType": "info",
+      "title": "Info Box",
+      "content": "Ini adalah <strong>info box</strong> untuk memberikan informasi tambahan kepada pembaca. Cocok untuk konteks atau latar belakang."
+    },
+    {
+      "type": "highlight",
+      "highlightType": "tip",
+      "title": "💡 Tips Praktis",
+      "content": "Gunakan <em>tip box</em> untuk berbagi saran atau trik yang bermanfaat bagi pembaca."
+    },
+    {
+      "type": "highlight",
+      "highlightType": "warning",
+      "title": "⚠️ Perhatian",
+      "content": "Warning box digunakan untuk memperingatkan pembaca tentang hal-hal penting yang perlu diperhatikan."
+    },
+    {
+      "type": "highlight",
+      "highlightType": "quote",
+      "title": "Inspirasi",
+      "content": "Quote highlight cocok untuk menyoroti pemikiran atau inspirasi yang mendalam dari tokoh-tokoh terkenal."
+    },
+    {
+      "type": "divider",
+      "style": "ornament"
+    },
+    {
+      "type": "heading",
+      "text": "Code Block",
+      "level": "h2"
+    },
+    {
+      "type": "paragraph",
+      "text": "Code block menampilkan kode dengan gaya terminal vintage yang elegan:"
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "code": "// Contoh fungsi filosofis\nconst contemplateLife = (question) => {\n  const wisdom = reflect(question);\n  return seekMeaning(wisdom);\n};\n\n// Praktik harian\ncontemplateLife('Apa yang benar-benar penting?');",
+      "caption": "Kode contoh dengan syntax JavaScript"
+    },
+    {
+      "type": "code",
+      "language": "bash",
+      "code": "# Instalasi wisdom\nnpm install --save stoic-philosophy\n\n# Jalankan meditasi\nnpm run meditate --time=20m"
+    },
+    {
+      "type": "divider",
+      "style": "dots"
+    },
+    {
+      "type": "heading",
+      "text": "Gambar dengan Caption",
+      "level": "h2"
+    },
+    {
+      "type": "image",
+      "src": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=800&q=80",
+      "alt": "Buku-buku filosofi di perpustakaan",
+      "caption": "Perpustakaan penuh dengan kebijaksanaan kuno menanti untuk dijelajahi",
+      "size": "medium"
+    },
+    {
+      "type": "divider",
+      "style": "line"
+    },
+    {
+      "type": "heading",
+      "text": "Jenis Divider",
+      "level": "h2"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ada 3 jenis divider yang tersedia:"
+    },
+    {
+      "type": "heading",
+      "text": "Line Divider",
+      "level": "h3"
+    },
+    {
+      "type": "divider",
+      "style": "line"
+    },
+    {
+      "type": "heading",
+      "text": "Dots Divider",
+      "level": "h3"
+    },
+    {
+      "type": "divider",
+      "style": "dots"
+    },
+    {
+      "type": "heading",
+      "text": "Ornament Divider",
+      "level": "h3"
+    },
+    {
+      "type": "divider",
+      "style": "ornament"
     },
     {
       "type": "heading",
@@ -66,7 +202,13 @@
     },
     {
       "type": "paragraph",
-      "text": "Dengan integrasi ini, Anda dapat dengan mudah mengelola konten blog melalui antarmuka visual Decap CMS tanpa perlu mengedit kode secara langsung."
+      "text": "Dengan berbagai content block ini, Anda memiliki kebebasan penuh untuk menyusun artikel yang informatif, menarik, dan mudah dibaca. Setiap block dirancang dengan estetika vintage paper yang konsisten."
+    },
+    {
+      "type": "highlight",
+      "highlightType": "tip",
+      "title": "Langkah Selanjutnya",
+      "content": "Buka panel admin di <code>/admin</code> dan mulai bereksperimen dengan berbagai content block untuk artikel Anda sendiri!"
     }
   ],
   "draft": false
