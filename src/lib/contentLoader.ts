@@ -259,12 +259,30 @@ export async function loadCMSArticles(): Promise<Article[]> {
 
   for (const path in modules) {
     const cmsArticle = modules[path];
+
+    // Ensure every CMS article has a stable ID.
+    // In Decap CMS, the `id` field is optional; if authors leave it empty, the
+    // JSON may be saved without `id`, which breaks routing (/article/:id).
+    // Fallback: derive ID from filename (e.g. 2026-01-31-my-post.json -> 2026-01-31-my-post)
+    const fallbackId = path
+      .split("/")
+      .pop()
+      ?.replace(/\.json$/i, "")
+      .trim();
+
+    const cmsArticleWithId: CMSArticle = {
+      ...cmsArticle,
+      id:
+        typeof cmsArticle.id === "string" && cmsArticle.id.trim().length > 0
+          ? cmsArticle.id.trim()
+          : fallbackId || "untitled",
+    };
     
     // Check if article should be published
-    if (!isArticlePublishable(cmsArticle)) continue;
+    if (!isArticlePublishable(cmsArticleWithId)) continue;
     
     try {
-      const article = convertCMSToArticle(cmsArticle);
+      const article = convertCMSToArticle(cmsArticleWithId);
       articles.push(article);
     } catch (error) {
       console.error(`Error loading article from ${path}:`, error);
