@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import PageTransition from "./components/PageTransition";
 import ParallaxPaper from "./components/ParallaxPaper";
 import MaintenancePage from "./components/MaintenancePage";
@@ -50,6 +51,20 @@ const maintenanceSettings = loadMaintenanceSettings();
 
 const AppRoutes = () => {
   const location = useLocation();
+
+  // If user clicks a Netlify Identity invite/recovery link that lands on "/#invite_token=...",
+  // redirect them to the admin app (Decap CMS) where the token flow is handled.
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+
+    const hash = location.hash || "";
+    const isInviteOrRecovery =
+      hash.includes("invite_token=") || hash.includes("recovery_token=");
+
+    if (isInviteOrRecovery) {
+      window.location.assign(`/admin/${hash}`);
+    }
+  }, [location.pathname, location.hash]);
   
   // Check if maintenance mode is enabled
   // Allow access to /admin path even during maintenance

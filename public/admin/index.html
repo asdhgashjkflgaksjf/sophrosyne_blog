@@ -763,10 +763,37 @@
   <!-- Container untuk Decap CMS mounting -->
   <div id="nc-root"></div>
 
+  <!-- Netlify Identity Widget (required for invite/recovery tokens + GitHub OAuth bridge) -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
   <!-- Decap CMS Script - HARUS di akhir body setelah DOM siap -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
   <script>
+    // If user lands on /admin/#invite_token=... or /admin/#recovery_token=...
+    // auto-open the Identity modal so they can set password / recover access.
+    (function () {
+      if (!window.netlifyIdentity) return;
+
+      const hash = window.location.hash || "";
+      const hasToken = hash.includes("invite_token=") || hash.includes("recovery_token=");
+
+      window.netlifyIdentity.on("init", function (user) {
+        // If token is present and user isn't logged in yet, open the modal.
+        if (hasToken && !user) {
+          // Use widget's default flow; it will detect invite/recovery token in URL.
+          window.netlifyIdentity.open();
+        }
+
+        // After successful login, ensure we stay in /admin/ (not redirected elsewhere).
+        window.netlifyIdentity.on("login", function () {
+          if (!window.location.pathname.startsWith("/admin")) {
+            window.location.assign("/admin/");
+          }
+        });
+      });
+    })();
+
     // Hide loading screen when CMS is ready
     document.addEventListener('DOMContentLoaded', function() {
       // Tunggu CMS init
