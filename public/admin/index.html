@@ -16,7 +16,7 @@
   
   <!-- Custom Admin Styles - Vintage Paper Theme -->
   <style>
-    /* CSS Variables for theming */
+    /* CSS Variables for theming - LIGHT MODE */
     :root {
       --paper-cream: 45 30% 96%;
       --paper-cream-dark: 45 25% 92%;
@@ -27,6 +27,45 @@
       --border-aged: 35 20% 80%;
       --shadow-paper: 0 4px 20px rgba(139, 115, 85, 0.15);
       --grain-opacity: 0.03;
+      
+      /* Theme-aware tokens */
+      --admin-bg: hsl(45 30% 94%);
+      --admin-bg-secondary: hsl(45 25% 92%);
+      --admin-surface: hsl(45 30% 97%);
+      --admin-surface-hover: hsl(45 25% 93%);
+      --admin-text: hsl(30 15% 15%);
+      --admin-text-muted: hsl(30 10% 40%);
+      --admin-border: hsl(35 20% 80%);
+      --admin-accent: hsl(28 60% 45%);
+      --admin-accent-hover: hsl(28 55% 40%);
+    }
+
+    /* DARK MODE */
+    .dark {
+      --paper-cream: 220 15% 13%;
+      --paper-cream-dark: 220 15% 10%;
+      --ink-black: 45 30% 96%;
+      --ink-muted: 45 20% 70%;
+      --accent-sepia: 35 70% 55%;
+      --accent-warm: 35 80% 60%;
+      --border-aged: 220 10% 25%;
+      --shadow-paper: 0 4px 20px rgba(0, 0, 0, 0.4);
+      
+      /* Theme-aware tokens - Dark */
+      --admin-bg: hsl(220 15% 10%);
+      --admin-bg-secondary: hsl(220 15% 13%);
+      --admin-surface: hsl(220 15% 16%);
+      --admin-surface-hover: hsl(220 15% 20%);
+      --admin-text: hsl(45 30% 96%);
+      --admin-text-muted: hsl(45 15% 70%);
+      --admin-border: hsl(220 10% 25%);
+      --admin-accent: hsl(35 70% 55%);
+      --admin-accent-hover: hsl(35 65% 50%);
+    }
+
+    /* Smooth transition for theme switch */
+    *, *::before, *::after {
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease !important;
     }
 
     /* Paper grain texture */
@@ -43,8 +82,93 @@
       margin: 0;
       padding: 0;
       font-family: 'Lora', 'Georgia', serif;
-      background: linear-gradient(135deg, hsl(45 30% 94%) 0%, hsl(40 25% 90%) 100%);
+      background: var(--admin-bg);
       min-height: 100vh;
+    }
+
+    /* ===== DARK MODE TOGGLE ===== */
+    .theme-toggle-container {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--admin-surface);
+      border: 1px solid var(--admin-border);
+      padding: 8px 12px;
+      border-radius: 50px;
+      box-shadow: var(--shadow-paper);
+    }
+
+    .theme-toggle-label {
+      font-size: 12px;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      color: var(--admin-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .theme-toggle {
+      position: relative;
+      width: 52px;
+      height: 28px;
+      background: var(--admin-border);
+      border-radius: 50px;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+      transition: background 0.3s ease;
+    }
+
+    .dark .theme-toggle {
+      background: var(--admin-accent);
+    }
+
+    .theme-toggle::before {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      background: var(--admin-surface);
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .dark .theme-toggle::before {
+      transform: translateX(24px);
+    }
+
+    .theme-toggle-icon {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      transition: opacity 0.3s ease;
+    }
+
+    .theme-toggle-icon.sun {
+      left: 6px;
+      opacity: 1;
+    }
+
+    .theme-toggle-icon.moon {
+      right: 6px;
+      opacity: 0.5;
+    }
+
+    .dark .theme-toggle-icon.sun {
+      opacity: 0.5;
+    }
+
+    .dark .theme-toggle-icon.moon {
+      opacity: 1;
     }
 
     /* Loading screen */
@@ -55,7 +179,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, hsl(45 30% 96%) 0%, hsl(40 25% 92%) 100%);
+      background: var(--admin-bg);
       z-index: 9999;
     }
 
@@ -71,7 +195,7 @@
     .loading-logo {
       width: 80px;
       height: 80px;
-      background: hsl(28 60% 45%);
+      background: var(--admin-accent);
       border-radius: 16px;
       display: flex;
       align-items: center;
@@ -84,20 +208,20 @@
     .loading-logo svg {
       width: 48px;
       height: 48px;
-      color: hsl(45 30% 96%);
+      color: var(--admin-surface);
     }
 
     .loading-title {
       font-family: 'Cormorant Garamond', 'Georgia', serif;
       font-size: 32px;
       font-weight: 600;
-      color: hsl(30 15% 15%);
+      color: var(--admin-text);
       margin-bottom: 8px;
     }
 
     .loading-subtitle {
       font-size: 14px;
-      color: hsl(30 10% 40%);
+      color: var(--admin-text-muted);
       letter-spacing: 2px;
       text-transform: uppercase;
     }
@@ -106,8 +230,8 @@
       margin-top: 32px;
       width: 40px;
       height: 40px;
-      border: 3px solid hsl(35 20% 85%);
-      border-top-color: hsl(28 60% 45%);
+      border: 3px solid var(--admin-border);
+      border-top-color: var(--admin-accent);
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -130,9 +254,9 @@
 
     /* Top bar / Header */
     [class*="AppHeader"] {
-      background: linear-gradient(to bottom, hsl(45 30% 96%), hsl(45 25% 94%)) !important;
-      border-bottom: 1px solid hsl(35 20% 80%) !important;
-      box-shadow: 0 2px 10px rgba(139, 115, 85, 0.1) !important;
+      background: var(--admin-surface) !important;
+      border-bottom: 1px solid var(--admin-border) !important;
+      box-shadow: var(--shadow-paper) !important;
     }
 
     [class*="AppHeader"]::before {
@@ -147,15 +271,15 @@
     /* Sidebar */
     [class*="Sidebar"],
     [class*="sidebar"] {
-      background: linear-gradient(180deg, hsl(45 28% 95%) 0%, hsl(42 25% 92%) 100%) !important;
-      border-right: 1px solid hsl(35 20% 82%) !important;
+      background: var(--admin-bg-secondary) !important;
+      border-right: 1px solid var(--admin-border) !important;
     }
 
     /* Collection list items */
     [class*="SidebarNavLink"],
     [class*="NavLink"] {
       font-family: 'Lora', 'Georgia', serif !important;
-      color: hsl(30 15% 25%) !important;
+      color: var(--admin-text) !important;
       border-radius: 8px !important;
       margin: 4px 8px !important;
       transition: all 0.2s ease !important;
@@ -163,46 +287,45 @@
 
     [class*="SidebarNavLink"]:hover,
     [class*="NavLink"]:hover {
-      background: hsl(35 25% 88%) !important;
-      color: hsl(28 60% 40%) !important;
+      background: var(--admin-surface-hover) !important;
+      color: var(--admin-accent) !important;
     }
 
     [class*="SidebarNavLink"][class*="active"],
     [class*="NavLink"][class*="active"] {
-      background: hsl(28 60% 45%) !important;
-      color: hsl(45 30% 96%) !important;
+      background: var(--admin-accent) !important;
+      color: var(--admin-surface) !important;
     }
 
     /* Main content area */
     [class*="MainView"],
     [class*="main"],
     main {
-      background: linear-gradient(135deg, hsl(45 30% 94%) 0%, hsl(40 25% 91%) 100%) !important;
+      background: var(--admin-bg) !important;
     }
 
     /* Cards and panels */
     [class*="Card"],
     [class*="EntryCard"],
     [class*="card"] {
-      background: hsl(45 30% 97%) !important;
-      border: 1px solid hsl(35 20% 85%) !important;
+      background: var(--admin-surface) !important;
+      border: 1px solid var(--admin-border) !important;
       border-radius: 12px !important;
-      box-shadow: 0 4px 15px rgba(139, 115, 85, 0.12) !important;
+      box-shadow: var(--shadow-paper) !important;
       transition: all 0.3s ease !important;
     }
 
     [class*="Card"]:hover,
     [class*="EntryCard"]:hover {
       transform: translateY(-2px) !important;
-      box-shadow: 0 8px 25px rgba(139, 115, 85, 0.18) !important;
     }
 
     /* Buttons - Primary */
     button[class*="primary"],
     [class*="Button"][class*="primary"],
     button[type="submit"] {
-      background: linear-gradient(135deg, hsl(28 60% 45%) 0%, hsl(28 55% 40%) 100%) !important;
-      color: hsl(45 30% 96%) !important;
+      background: var(--admin-accent) !important;
+      color: var(--admin-surface) !important;
       border: none !important;
       border-radius: 8px !important;
       font-family: 'Lora', 'Georgia', serif !important;
@@ -214,25 +337,24 @@
 
     button[class*="primary"]:hover,
     [class*="Button"][class*="primary"]:hover {
-      background: linear-gradient(135deg, hsl(28 55% 40%) 0%, hsl(28 50% 35%) 100%) !important;
+      background: var(--admin-accent-hover) !important;
       transform: translateY(-1px) !important;
-      box-shadow: 0 6px 16px rgba(139, 90, 43, 0.3) !important;
     }
 
     /* Buttons - Secondary */
     button:not([class*="primary"]),
     [class*="Button"]:not([class*="primary"]) {
-      background: hsl(45 30% 96%) !important;
-      color: hsl(30 15% 25%) !important;
-      border: 1px solid hsl(35 20% 80%) !important;
+      background: var(--admin-surface) !important;
+      color: var(--admin-text) !important;
+      border: 1px solid var(--admin-border) !important;
       border-radius: 8px !important;
       font-family: 'Lora', 'Georgia', serif !important;
       transition: all 0.2s ease !important;
     }
 
     button:not([class*="primary"]):hover {
-      background: hsl(45 25% 93%) !important;
-      border-color: hsl(28 60% 45%) !important;
+      background: var(--admin-surface-hover) !important;
+      border-color: var(--admin-accent) !important;
     }
 
     /* Form inputs */
@@ -246,11 +368,11 @@
     [class*="Input"],
     [class*="TextArea"],
     [class*="Select"] {
-      background: hsl(45 35% 98%) !important;
-      border: 1px solid hsl(35 20% 82%) !important;
+      background: var(--admin-surface) !important;
+      border: 1px solid var(--admin-border) !important;
       border-radius: 8px !important;
       font-family: 'Lora', 'Georgia', serif !important;
-      color: hsl(30 15% 20%) !important;
+      color: var(--admin-text) !important;
       padding: 12px 16px !important;
       transition: all 0.2s ease !important;
     }
@@ -261,8 +383,42 @@
     [class*="Input"]:focus,
     [class*="TextArea"]:focus {
       outline: none !important;
-      border-color: hsl(28 60% 50%) !important;
+      border-color: var(--admin-accent) !important;
       box-shadow: 0 0 0 3px hsla(28 60% 45% / 0.15) !important;
+    }
+
+    /* ===== FIX: PARAGRAPH/TEXT VISIBILITY ===== */
+    /* Make all text content visible */
+    p, span, div, li, td, th, label, a {
+      color: var(--admin-text) !important;
+    }
+
+    /* Muted text */
+    [class*="muted"], [class*="secondary"], [class*="hint"], [class*="description"] {
+      color: var(--admin-text-muted) !important;
+    }
+
+    /* Ensure editor content is visible */
+    [class*="ControlPaneContainer"] p,
+    [class*="ControlPaneContainer"] span,
+    [class*="ControlPaneContainer"] div,
+    [class*="EditorControl"] p,
+    [class*="EditorControl"] span,
+    [class*="Editor"] p,
+    [class*="Editor"] span,
+    .ProseMirror p,
+    .ProseMirror span,
+    .CodeMirror-line,
+    .CodeMirror-line span {
+      color: var(--admin-text) !important;
+    }
+
+    /* Markdown preview text */
+    [class*="Preview"] p,
+    [class*="Preview"] span,
+    [class*="Preview"] li,
+    [class*="preview"] p {
+      color: var(--admin-text) !important;
     }
 
     /* Labels */
@@ -272,7 +428,7 @@
       font-family: 'Cormorant Garamond', 'Georgia', serif !important;
       font-size: 14px !important;
       font-weight: 600 !important;
-      color: hsl(30 15% 25%) !important;
+      color: var(--admin-text) !important;
       text-transform: uppercase !important;
       letter-spacing: 1px !important;
     }
@@ -281,7 +437,7 @@
     h1, h2, h3, h4, h5, h6,
     [class*="Heading"] {
       font-family: 'Cormorant Garamond', 'Georgia', serif !important;
-      color: hsl(30 15% 15%) !important;
+      color: var(--admin-text) !important;
     }
 
     /* Entry listing */
@@ -293,32 +449,32 @@
     /* Table styles */
     table,
     [class*="Table"] {
-      background: hsl(45 30% 97%) !important;
+      background: var(--admin-surface) !important;
       border-radius: 12px !important;
       overflow: hidden !important;
-      border: 1px solid hsl(35 20% 85%) !important;
+      border: 1px solid var(--admin-border) !important;
     }
 
     th {
-      background: hsl(45 25% 93%) !important;
+      background: var(--admin-surface-hover) !important;
       font-family: 'Cormorant Garamond', 'Georgia', serif !important;
       font-weight: 600 !important;
       text-transform: uppercase !important;
       letter-spacing: 1px !important;
       font-size: 12px !important;
-      color: hsl(30 10% 40%) !important;
+      color: var(--admin-text-muted) !important;
     }
 
     tr:hover {
-      background: hsl(45 30% 95%) !important;
+      background: var(--admin-surface-hover) !important;
     }
 
     /* Editor panel */
     [class*="EditorControlPane"],
     [class*="ControlPane"],
     [class*="EditorControl"] {
-      background: hsl(45 30% 97%) !important;
-      border: 1px solid hsl(35 20% 85%) !important;
+      background: var(--admin-surface) !important;
+      border: 1px solid var(--admin-border) !important;
       border-radius: 12px !important;
       padding: 24px !important;
       margin-bottom: 16px !important;
@@ -329,19 +485,30 @@
     [class*="RichText"],
     .ProseMirror,
     .CodeMirror {
-      background: hsl(45 35% 98%) !important;
-      border: 1px solid hsl(35 20% 82%) !important;
+      background: var(--admin-surface) !important;
+      border: 1px solid var(--admin-border) !important;
       border-radius: 8px !important;
       font-family: 'Spectral', 'Georgia', serif !important;
       font-size: 16px !important;
       line-height: 1.8 !important;
+      color: var(--admin-text) !important;
+    }
+
+    /* CodeMirror specific */
+    .CodeMirror-cursor {
+      border-left-color: var(--admin-text) !important;
+    }
+
+    .CodeMirror-selected {
+      background: var(--admin-accent) !important;
+      opacity: 0.3 !important;
     }
 
     /* Toolbar */
     [class*="Toolbar"],
     [class*="toolbar"] {
-      background: hsl(45 28% 95%) !important;
-      border-bottom: 1px solid hsl(35 20% 85%) !important;
+      background: var(--admin-surface-hover) !important;
+      border-bottom: 1px solid var(--admin-border) !important;
       border-radius: 8px 8px 0 0 !important;
     }
 
@@ -350,48 +517,50 @@
     [class*="Menu"],
     [class*="dropdown"],
     [class*="menu"] {
-      background: hsl(45 30% 97%) !important;
-      border: 1px solid hsl(35 20% 82%) !important;
+      background: var(--admin-surface) !important;
+      border: 1px solid var(--admin-border) !important;
       border-radius: 8px !important;
-      box-shadow: 0 8px 30px rgba(139, 115, 85, 0.2) !important;
+      box-shadow: var(--shadow-paper) !important;
     }
 
     /* Dropdown items */
     [class*="DropdownItem"],
     [class*="MenuItem"] {
       font-family: 'Lora', 'Georgia', serif !important;
+      color: var(--admin-text) !important;
       transition: all 0.15s ease !important;
     }
 
     [class*="DropdownItem"]:hover,
     [class*="MenuItem"]:hover {
-      background: hsl(35 25% 90%) !important;
-      color: hsl(28 60% 40%) !important;
+      background: var(--admin-surface-hover) !important;
+      color: var(--admin-accent) !important;
     }
 
     /* Modal / Dialog */
     [class*="Modal"],
     [class*="Dialog"] {
-      background: hsl(45 30% 97%) !important;
-      border: 1px solid hsl(35 20% 82%) !important;
+      background: var(--admin-surface) !important;
+      border: 1px solid var(--admin-border) !important;
       border-radius: 16px !important;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2) !important;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
     }
 
     [class*="ModalOverlay"],
     [class*="DialogOverlay"] {
-      background: hsla(30 15% 15% / 0.6) !important;
+      background: hsla(220 15% 10% / 0.7) !important;
       backdrop-filter: blur(4px) !important;
     }
 
     /* Toast / Notifications */
     [class*="Toast"],
     [class*="Notification"] {
-      background: hsl(45 30% 97%) !important;
-      border: 1px solid hsl(35 20% 82%) !important;
+      background: var(--admin-surface) !important;
+      border: 1px solid var(--admin-border) !important;
       border-radius: 12px !important;
-      box-shadow: 0 8px 30px rgba(139, 115, 85, 0.25) !important;
+      box-shadow: var(--shadow-paper) !important;
       font-family: 'Lora', 'Georgia', serif !important;
+      color: var(--admin-text) !important;
     }
 
     /* Success state */
@@ -407,16 +576,16 @@
     /* Image widget */
     [class*="ImageWidget"],
     [class*="FileWidget"] {
-      background: hsl(45 35% 98%) !important;
-      border: 2px dashed hsl(35 20% 80%) !important;
+      background: var(--admin-surface) !important;
+      border: 2px dashed var(--admin-border) !important;
       border-radius: 12px !important;
       transition: all 0.2s ease !important;
     }
 
     [class*="ImageWidget"]:hover,
     [class*="FileWidget"]:hover {
-      border-color: hsl(28 60% 50%) !important;
-      background: hsl(45 30% 96%) !important;
+      border-color: var(--admin-accent) !important;
+      background: var(--admin-surface-hover) !important;
     }
 
     /* Scrollbar styling */
@@ -426,24 +595,24 @@
     }
 
     ::-webkit-scrollbar-track {
-      background: hsl(45 25% 92%);
+      background: var(--admin-bg-secondary);
       border-radius: 5px;
     }
 
     ::-webkit-scrollbar-thumb {
-      background: hsl(35 20% 75%);
+      background: var(--admin-border);
       border-radius: 5px;
-      border: 2px solid hsl(45 25% 92%);
+      border: 2px solid var(--admin-bg-secondary);
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: hsl(28 40% 55%);
+      background: var(--admin-accent);
     }
 
     /* ===== LOGIN SCREEN STYLING ===== */
     [class*="LoginPage"],
     [class*="AuthenticationPage"] {
-      background: linear-gradient(135deg, hsl(45 30% 94%) 0%, hsl(40 25% 90%) 100%) !important;
+      background: var(--admin-bg) !important;
       min-height: 100vh !important;
       display: flex !important;
       align-items: center !important;
@@ -452,8 +621,8 @@
 
     [class*="LoginButton"],
     [class*="AuthButton"] {
-      background: linear-gradient(135deg, hsl(28 60% 45%) 0%, hsl(28 55% 40%) 100%) !important;
-      color: hsl(45 30% 96%) !important;
+      background: var(--admin-accent) !important;
+      color: var(--admin-surface) !important;
       border-radius: 12px !important;
       padding: 16px 32px !important;
       font-size: 16px !important;
@@ -466,7 +635,6 @@
     [class*="LoginButton"]:hover,
     [class*="AuthButton"]:hover {
       transform: translateY(-2px) !important;
-      box-shadow: 0 6px 25px rgba(139, 90, 43, 0.4) !important;
     }
 
     /* ===== NETLIFY IDENTITY WIDGET STYLING ===== */
@@ -475,15 +643,15 @@
     }
 
     .netlify-identity-widget-modal {
-      background: hsla(30 15% 15% / 0.7) !important;
+      background: hsla(220 15% 10% / 0.7) !important;
       backdrop-filter: blur(8px) !important;
     }
 
     .netlify-identity-widget-modal-content {
-      background: linear-gradient(135deg, hsl(45 30% 97%) 0%, hsl(42 28% 94%) 100%) !important;
-      border: 1px solid hsl(35 20% 82%) !important;
+      background: var(--admin-surface) !important;
+      border: 1px solid var(--admin-border) !important;
       border-radius: 20px !important;
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25) !important;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35) !important;
       overflow: hidden !important;
       max-width: 420px !important;
     }
@@ -500,7 +668,7 @@
     /* Widget Header */
     .netlify-identity-widget-modal-content header,
     .netlify-identity-widget header {
-      background: linear-gradient(135deg, hsl(28 60% 45%) 0%, hsl(28 50% 38%) 100%) !important;
+      background: var(--admin-accent) !important;
       padding: 28px 24px !important;
       text-align: center !important;
     }
@@ -511,9 +679,8 @@
       font-family: 'Cormorant Garamond', 'Georgia', serif !important;
       font-size: 28px !important;
       font-weight: 600 !important;
-      color: hsl(45 30% 96%) !important;
+      color: var(--admin-surface) !important;
       margin: 0 !important;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
     }
 
     /* Widget Form */
@@ -526,12 +693,12 @@
     .netlify-identity-widget input[type="password"],
     .netlify-identity-widget input[type="text"],
     .netlify-identity-widget-modal-content input {
-      background: hsl(45 35% 98%) !important;
-      border: 2px solid hsl(35 20% 82%) !important;
+      background: var(--admin-surface) !important;
+      border: 2px solid var(--admin-border) !important;
       border-radius: 10px !important;
       font-family: 'Lora', 'Georgia', serif !important;
       font-size: 15px !important;
-      color: hsl(30 15% 20%) !important;
+      color: var(--admin-text) !important;
       padding: 14px 18px !important;
       width: 100% !important;
       transition: all 0.2s ease !important;
@@ -541,7 +708,7 @@
     .netlify-identity-widget input:focus,
     .netlify-identity-widget-modal-content input:focus {
       outline: none !important;
-      border-color: hsl(28 60% 50%) !important;
+      border-color: var(--admin-accent) !important;
       box-shadow: 0 0 0 4px hsla(28 60% 45% / 0.15) !important;
     }
 
@@ -550,7 +717,7 @@
       font-family: 'Cormorant Garamond', 'Georgia', serif !important;
       font-size: 13px !important;
       font-weight: 600 !important;
-      color: hsl(30 15% 35%) !important;
+      color: var(--admin-text-muted) !important;
       text-transform: uppercase !important;
       letter-spacing: 1.5px !important;
       margin-bottom: 8px !important;
@@ -561,8 +728,8 @@
     .netlify-identity-widget button[type="submit"],
     .netlify-identity-widget .btn,
     .netlify-identity-widget-modal-content button[type="submit"] {
-      background: linear-gradient(135deg, hsl(28 60% 45%) 0%, hsl(28 55% 40%) 100%) !important;
-      color: hsl(45 30% 96%) !important;
+      background: var(--admin-accent) !important;
+      color: var(--admin-surface) !important;
       border: none !important;
       border-radius: 10px !important;
       font-family: 'Lora', 'Georgia', serif !important;
@@ -579,21 +746,20 @@
     .netlify-identity-widget button[type="submit"]:hover,
     .netlify-identity-widget .btn:hover {
       transform: translateY(-2px) !important;
-      box-shadow: 0 6px 20px rgba(139, 90, 43, 0.35) !important;
     }
 
     /* Secondary buttons / links */
     .netlify-identity-widget a,
     .netlify-identity-widget .btnLink,
     .netlify-identity-widget-modal-content a {
-      color: hsl(28 60% 45%) !important;
+      color: var(--admin-accent) !important;
       font-family: 'Lora', 'Georgia', serif !important;
       text-decoration: none !important;
       transition: color 0.2s ease !important;
     }
 
     .netlify-identity-widget a:hover {
-      color: hsl(28 65% 35%) !important;
+      color: var(--admin-accent-hover) !important;
       text-decoration: underline !important;
     }
 
@@ -601,7 +767,7 @@
     .netlify-identity-widget .tabs,
     .netlify-identity-widget-modal-content .tabs {
       display: flex !important;
-      border-bottom: 2px solid hsl(35 20% 85%) !important;
+      border-bottom: 2px solid var(--admin-border) !important;
       margin-bottom: 24px !important;
     }
 
@@ -615,7 +781,7 @@
       font-weight: 600 !important;
       text-transform: uppercase !important;
       letter-spacing: 1px !important;
-      color: hsl(30 10% 50%) !important;
+      color: var(--admin-text-muted) !important;
       border-bottom: 2px solid transparent !important;
       margin-bottom: -2px !important;
       cursor: pointer !important;
@@ -624,8 +790,8 @@
 
     .netlify-identity-widget .tab.active,
     .netlify-identity-widget .tab:hover {
-      color: hsl(28 60% 45%) !important;
-      border-bottom-color: hsl(28 60% 45%) !important;
+      color: var(--admin-accent) !important;
+      border-bottom-color: var(--admin-accent) !important;
     }
 
     /* Provider buttons (GitHub, etc) */
@@ -633,18 +799,18 @@
     .netlify-identity-widget-modal-content .providers {
       margin-top: 20px !important;
       padding-top: 20px !important;
-      border-top: 1px solid hsl(35 20% 88%) !important;
+      border-top: 1px solid var(--admin-border) !important;
     }
 
     .netlify-identity-widget .provider-button,
     .netlify-identity-widget button.provider {
-      background: hsl(45 30% 97%) !important;
-      border: 2px solid hsl(35 20% 82%) !important;
+      background: var(--admin-surface) !important;
+      border: 2px solid var(--admin-border) !important;
       border-radius: 10px !important;
       padding: 12px 20px !important;
       font-family: 'Lora', 'Georgia', serif !important;
       font-size: 14px !important;
-      color: hsl(30 15% 25%) !important;
+      color: var(--admin-text) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -656,8 +822,8 @@
 
     .netlify-identity-widget .provider-button:hover,
     .netlify-identity-widget button.provider:hover {
-      background: hsl(45 28% 94%) !important;
-      border-color: hsl(28 60% 50%) !important;
+      background: var(--admin-surface-hover) !important;
+      border-color: var(--admin-accent) !important;
       transform: translateY(-1px) !important;
     }
 
@@ -673,6 +839,13 @@
       margin-bottom: 16px !important;
     }
 
+    .dark .netlify-identity-widget .error,
+    .dark .netlify-identity-widget-modal-content .error {
+      background: hsl(0 50% 15%) !important;
+      border-color: hsl(0 40% 35%) !important;
+      color: hsl(0 70% 70%) !important;
+    }
+
     /* Success messages */
     .netlify-identity-widget .success {
       background: hsl(142 50% 95%) !important;
@@ -680,6 +853,12 @@
       color: hsl(142 50% 30%) !important;
       padding: 12px 16px !important;
       border-radius: 8px !important;
+    }
+
+    .dark .netlify-identity-widget .success {
+      background: hsl(142 40% 15%) !important;
+      border-color: hsl(142 30% 35%) !important;
+      color: hsl(142 60% 70%) !important;
     }
 
     /* Close button */
@@ -722,15 +901,25 @@
       letter-spacing: 1px !important;
     }
 
+    .dark [class*="Draft"],
+    .dark [class*="draft"] {
+      background: hsl(45 50% 25%) !important;
+      color: hsl(45 70% 75%) !important;
+    }
+
     /* Decorative elements */
     [class*="Logo"] img {
       filter: sepia(20%) !important;
     }
 
+    .dark [class*="Logo"] img {
+      filter: sepia(20%) invert(1) !important;
+    }
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
       [class*="Sidebar"] {
-        background: hsl(45 30% 96%) !important;
+        background: var(--admin-surface) !important;
       }
 
       .netlify-identity-widget-modal-content {
@@ -741,11 +930,35 @@
       .netlify-identity-widget form {
         padding: 24px 20px !important;
       }
+
+      .theme-toggle-container {
+        top: 8px;
+        right: 8px;
+        padding: 6px 10px;
+      }
+
+      .theme-toggle-label {
+        display: none;
+      }
     }
   </style>
 
 </head>
 <body>
+  <!-- Dark Mode Toggle -->
+  <div class="theme-toggle-container" id="theme-toggle-container">
+    <span class="theme-toggle-label">Mode</span>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <svg class="theme-toggle-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="5"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+      <svg class="theme-toggle-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </div>
+
   <!-- Custom Loading Screen -->
   <div class="admin-loading" id="admin-loading">
     <div class="loading-logo">
@@ -770,6 +983,50 @@
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
   <script>
+    // ===== DARK MODE LOGIC =====
+    (function() {
+      const STORAGE_KEY = 'sophrosyne-admin-theme';
+      
+      // Check saved preference or system preference
+      function getInitialTheme() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) return saved;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      
+      // Apply theme
+      function applyTheme(theme) {
+        if (theme === 'dark') {
+          document.body.classList.add('dark');
+        } else {
+          document.body.classList.remove('dark');
+        }
+        localStorage.setItem(STORAGE_KEY, theme);
+      }
+      
+      // Initialize immediately (before DOM ready to prevent flash)
+      applyTheme(getInitialTheme());
+      
+      // Setup toggle after DOM ready
+      document.addEventListener('DOMContentLoaded', function() {
+        const toggle = document.getElementById('theme-toggle');
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            const isDark = document.body.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+          });
+        }
+      });
+      
+      // Listen for system theme changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem(STORAGE_KEY)) {
+          applyTheme(e.matches ? 'dark' : 'light');
+        }
+      });
+    })();
+
+    // ===== NETLIFY IDENTITY HANDLING =====
     // If user lands on /admin/#invite_token=... or /admin/#recovery_token=...
     // auto-open the Identity modal so they can set password / recover access.
     (function () {
