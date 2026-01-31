@@ -317,7 +317,10 @@ collections:
                 name: "language"
                 widget: "select"
                 options: ["javascript", "typescript", "python", "css", "html", "bash", "json"]
-              - { label: "Kode", name: "code", widget: "code" }
+              # NOTE: Decap CMS versi terbaru kadang error pada widget built-in `code`
+              # saat digunakan di dalam `object`/`list` (error: this.props.value?.get is not a function).
+              # Solusi: gunakan textarea biasa untuk menyimpan kode sebagai string.
+              - { label: "Kode", name: "code", widget: "text" }
               - { label: "Caption", name: "caption", widget: "string", required: false }
           - label: "➖ Divider"
             name: "divider"

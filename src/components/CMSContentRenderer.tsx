@@ -257,6 +257,16 @@ const CodeBlock = ({ language = "javascript", code, caption }: { language?: stri
   );
 };
 
+function normalizeCodeValue(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (value && typeof value === "object") {
+    const maybe = value as { code?: unknown; value?: unknown };
+    if (typeof maybe.code === "string") return maybe.code;
+    if (typeof maybe.value === "string") return maybe.value;
+  }
+  return "";
+}
+
 // Divider Component
 const DividerBlock = ({ style = "line" }: { style?: "line" | "dots" | "ornament" }) => {
   const dividerContent = {
@@ -353,11 +363,12 @@ const CMSContentRenderer = ({ blocks, className = "" }: CMSContentRendererProps)
             ) : null;
           
           case "code":
-            return block.code ? (
+            const normalizedCode = normalizeCodeValue(block.code);
+            return normalizedCode ? (
               <CodeBlock 
                 key={index} 
                 language={block.language} 
-                code={block.code}
+                code={normalizedCode}
                 caption={block.caption}
               />
             ) : null;
