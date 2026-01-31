@@ -494,6 +494,59 @@
       color: var(--admin-text) !important;
     }
 
+    /* ===== CRITICAL FIX: PROSEMIRROR TEXT VISIBILITY ===== */
+    /* Force all text inside ProseMirror editor to be visible */
+    .ProseMirror,
+    .ProseMirror *,
+    .ProseMirror p,
+    .ProseMirror span,
+    .ProseMirror div,
+    .ProseMirror li,
+    .ProseMirror h1,
+    .ProseMirror h2,
+    .ProseMirror h3,
+    .ProseMirror h4,
+    .ProseMirror blockquote,
+    .ProseMirror code,
+    .ProseMirror pre,
+    [data-slate-editor] *,
+    [data-slate-node] *,
+    [contenteditable="true"] *,
+    [class*="VisualEditor"] *,
+    [class*="RichTextEditor"] *,
+    [class*="EditorContent"] *,
+    [class*="editor-content"] * {
+      color: var(--admin-text) !important;
+      caret-color: var(--admin-text) !important;
+    }
+
+    /* Placeholder text */
+    .ProseMirror p.is-empty::before,
+    .ProseMirror .placeholder,
+    [class*="placeholder"] {
+      color: var(--admin-text-muted) !important;
+    }
+
+    /* Ensure parent containers don't hide text */
+    [class*="WidgetPreviewContainer"],
+    [class*="EditorContainer"],
+    [class*="ObjectWidgetTopBar"] ~ div,
+    [class*="ListItemTopBar"] ~ div {
+      color: var(--admin-text) !important;
+    }
+
+    /* Nested object/list content */
+    [class*="NestedObjectLabel"],
+    [class*="ObjectControl"],
+    [class*="ListControl"] {
+      color: var(--admin-text) !important;
+    }
+
+    [class*="ObjectControl"] *,
+    [class*="ListControl"] * {
+      color: var(--admin-text) !important;
+    }
+
     /* CodeMirror specific */
     .CodeMirror-cursor {
       border-left-color: var(--admin-text) !important;
@@ -502,6 +555,14 @@
     .CodeMirror-selected {
       background: var(--admin-accent) !important;
       opacity: 0.3 !important;
+    }
+
+    /* CodeMirror lines must be visible */
+    .CodeMirror pre,
+    .CodeMirror-line,
+    .CodeMirror-line *,
+    .CodeMirror-code * {
+      color: var(--admin-text) !important;
     }
 
     /* Toolbar */
