@@ -28,7 +28,9 @@ export interface CMSContentBlock {
   highlightType?: "info" | "tip" | "warning" | "quote";
   // Code
   language?: string;
-  code?: string;
+  // Historically this could be stored by Decap's `code` widget as an object.
+  // We keep it flexible and normalize at render-time.
+  code?: unknown;
   // Divider
   style?: "line" | "dots" | "ornament";
 }
