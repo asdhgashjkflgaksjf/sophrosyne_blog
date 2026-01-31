@@ -7,12 +7,17 @@
 # 3. Ganti YOUR_NETLIFY_SITE dengan nama site Netlify
 # ========================================
 
+# ========================================
+# BACKEND: GIT GATEWAY (via Netlify Identity)
+# ========================================
+# Menggunakan git-gateway = login via Netlify Identity (email/password)
+# Tidak perlu OAuth app GitHub terpisah, cukup aktifkan:
+# 1. Netlify Dashboard > Site Settings > Identity > Enable Identity
+# 2. Netlify Dashboard > Site Settings > Identity > Services > Git Gateway > Enable
+# ========================================
 backend:
-  name: github  # ⚠️ INI HARUS "github" - JANGAN DIGANTI dengan username!
-  repo: asdhgashjkflgaksjf/sophrosyne-blog
+  name: git-gateway
   branch: main
-  # Gunakan Netlify Identity untuk OAuth
-  site_domain: sophrosyne88.netlify.app
   # Commit messages yang lebih deskriptif
   commit_messages:
     create: "✨ Buat {{collection}} baru: {{slug}}"
