@@ -8,6 +8,17 @@ import { CMSContentBlock } from "@/lib/contentLoader";
 import { Highlight, themes } from "prism-react-renderer";
 import { useState } from "react";
 
+// Import new block components
+import TableBlock from "@/components/cms/TableBlock";
+import EmbedBlock from "@/components/cms/EmbedBlock";
+import CTABlock from "@/components/cms/CTABlock";
+import GalleryBlock from "@/components/cms/GalleryBlock";
+import NoteBlock from "@/components/cms/NoteBlock";
+import StatsBlock from "@/components/cms/StatsBlock";
+import FAQBlock from "@/components/cms/FAQBlock";
+import TimelineBlock from "@/components/cms/TimelineBlock";
+import WaveDivider from "@/components/cms/WaveDivider";
+
 interface CMSContentRendererProps {
   blocks: CMSContentBlock[];
   className?: string;
@@ -268,7 +279,11 @@ function normalizeCodeValue(value: unknown): string {
 }
 
 // Divider Component
-const DividerBlock = ({ style = "line" }: { style?: "line" | "dots" | "ornament" }) => {
+const DividerBlock = ({ style = "line" }: { style?: "line" | "dots" | "ornament" | "wave" }) => {
+  if (style === "wave") {
+    return <WaveDivider />;
+  }
+
   const dividerContent = {
     line: (
       <div className="flex items-center gap-4">
@@ -333,10 +348,12 @@ const CMSContentRenderer = ({ blocks, className = "" }: CMSContentRendererProps)
             ) : null;
           
           case "list":
-            return block.items && block.items.length > 0 ? (
+            // Type guard: list items are string[]
+            const listItems = block.items as string[] | undefined;
+            return listItems && listItems.length > 0 ? (
               <ListBlock 
                 key={index} 
-                items={block.items} 
+                items={listItems} 
                 listType={block.listType} 
               />
             ) : null;
@@ -375,6 +392,88 @@ const CMSContentRenderer = ({ blocks, className = "" }: CMSContentRendererProps)
           
           case "divider":
             return <DividerBlock key={index} style={block.style} />;
+          
+          case "table":
+            return (
+              <TableBlock 
+                key={index} 
+                headers={block.headers}
+                rows={block.rows}
+                caption={block.caption}
+              />
+            );
+          
+          case "embed":
+            return (
+              <EmbedBlock
+                key={index}
+                embedType={block.embedType}
+                url={block.url}
+                caption={block.caption}
+              />
+            );
+          
+          case "cta":
+            return (
+              <CTABlock
+                key={index}
+                text={block.text}
+                url={block.url}
+                ctaStyle={block.ctaStyle}
+                description={block.description}
+              />
+            );
+          
+          case "gallery":
+            return (
+              <GalleryBlock
+                key={index}
+                images={block.images}
+                layout={block.layout}
+                caption={block.caption}
+              />
+            );
+          
+          case "note":
+            return (
+              <NoteBlock
+                key={index}
+                text={block.text}
+                position={block.position}
+              />
+            );
+          
+          case "stats":
+            // Type guard: stats items are { value, label, description? }[]
+            const statsItems = block.items as { value: string; label: string; description?: string }[] | undefined;
+            return (
+              <StatsBlock
+                key={index}
+                items={statsItems}
+              />
+            );
+          
+          case "faq":
+            // Type guard: faq items are { question, answer }[]
+            const faqItems = block.items as { question: string; answer: string }[] | undefined;
+            return (
+              <FAQBlock
+                key={index}
+                title={block.title}
+                items={faqItems}
+              />
+            );
+          
+          case "timeline":
+            // Type guard: timeline items are { date, title, description }[]
+            const timelineItems = block.items as { date: string; title: string; description: string }[] | undefined;
+            return (
+              <TimelineBlock
+                key={index}
+                title={block.title}
+                items={timelineItems}
+              />
+            );
           
           default:
             return null;

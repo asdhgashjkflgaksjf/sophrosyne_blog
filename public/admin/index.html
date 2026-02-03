@@ -547,6 +547,141 @@
       color: var(--admin-text) !important;
     }
 
+    /* ===== FIX: TOOLBAR NOT COVERING CONTENT ===== */
+    /* Ensure markdown toolbar doesn't overlap content */
+    [class*="MarkdownControl"] [class*="Toolbar"],
+    [class*="EditorToolbar"],
+    .ProseMirror-menubar {
+      position: relative !important;
+      z-index: 10 !important;
+      background: var(--admin-surface-hover) !important;
+      border-bottom: 1px solid var(--admin-border) !important;
+      margin-bottom: 0 !important;
+    }
+
+    /* Content area below toolbar */
+    [class*="MarkdownControl"] .ProseMirror,
+    [class*="EditorContent"],
+    .ProseMirror-content {
+      position: relative !important;
+      z-index: 1 !important;
+      margin-top: 0 !important;
+      padding: 16px !important;
+      min-height: 150px !important;
+    }
+
+    /* Ensure textarea for markdown raw mode is visible */
+    [class*="RawEditor"] textarea,
+    [class*="MarkdownControl"] textarea {
+      color: var(--admin-text) !important;
+      background: var(--admin-surface) !important;
+      padding: 16px !important;
+      min-height: 150px !important;
+      font-family: 'Spectral', serif !important;
+      font-size: 16px !important;
+      line-height: 1.8 !important;
+    }
+
+    /* ===== BETTER NESTED WIDGET STYLING ===== */
+    /* List item cards - make them cleaner */
+    [class*="ListItem"] {
+      background: var(--admin-surface) !important;
+      border: 1px solid var(--admin-border) !important;
+      border-radius: 12px !important;
+      margin-bottom: 12px !important;
+      overflow: hidden !important;
+    }
+
+    /* List item header/topbar */
+    [class*="ListItemTopBar"],
+    [class*="ObjectWidgetTopBar"] {
+      background: var(--admin-surface-hover) !important;
+      border-bottom: 1px solid var(--admin-border) !important;
+      padding: 12px 16px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+    }
+
+    /* Nested content padding */
+    [class*="ListItem"] > div:last-child,
+    [class*="ObjectWidget"] > div:last-child {
+      padding: 16px !important;
+    }
+
+    /* Collapse/expand toggle */
+    [class*="CollapseToggle"],
+    [class*="ExpandButton"] {
+      color: var(--admin-text-muted) !important;
+      cursor: pointer !important;
+      transition: color 0.2s ease !important;
+    }
+
+    [class*="CollapseToggle"]:hover,
+    [class*="ExpandButton"]:hover {
+      color: var(--admin-accent) !important;
+    }
+
+    /* Add button in list */
+    [class*="ListControl"] > button,
+    button[class*="AddButton"] {
+      background: var(--admin-surface) !important;
+      border: 2px dashed var(--admin-border) !important;
+      border-radius: 10px !important;
+      padding: 16px !important;
+      margin-top: 8px !important;
+      color: var(--admin-text-muted) !important;
+      font-family: 'Lora', serif !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+      width: 100% !important;
+    }
+
+    [class*="ListControl"] > button:hover,
+    button[class*="AddButton"]:hover {
+      border-color: var(--admin-accent) !important;
+      color: var(--admin-accent) !important;
+      background: var(--admin-surface-hover) !important;
+    }
+
+    /* Type selector dropdown for variable list */
+    [class*="TypeSelector"],
+    [class*="AddItemButton"] ~ [class*="Dropdown"] {
+      background: var(--admin-surface) !important;
+      border: 1px solid var(--admin-border) !important;
+      border-radius: 10px !important;
+      box-shadow: var(--shadow-paper), 0 10px 40px rgba(0,0,0,0.15) !important;
+      padding: 8px !important;
+      max-height: 400px !important;
+      overflow-y: auto !important;
+    }
+
+    /* Type selector items - make them pretty */
+    [class*="TypeSelector"] button,
+    [class*="TypeMenu"] button {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      padding: 12px 16px !important;
+      border-radius: 8px !important;
+      margin-bottom: 4px !important;
+      font-size: 14px !important;
+      font-family: 'Lora', serif !important;
+      background: transparent !important;
+      border: none !important;
+      width: 100% !important;
+      text-align: left !important;
+      color: var(--admin-text) !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease !important;
+    }
+
+    [class*="TypeSelector"] button:hover,
+    [class*="TypeMenu"] button:hover {
+      background: var(--admin-surface-hover) !important;
+      color: var(--admin-accent) !important;
+    }
+
     /* CodeMirror specific */
     .CodeMirror-cursor {
       border-left-color: var(--admin-text) !important;
