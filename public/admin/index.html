@@ -580,6 +580,372 @@
       }
     }
 
+    /* ===== TEMPLATE SELECTOR STYLES ===== */
+    #template-overlay {
+      position: fixed;
+      inset: 0;
+      background: hsla(220 15% 5% / 0);
+      backdrop-filter: blur(0px);
+      z-index: 999998;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #template-overlay.visible {
+      background: hsla(220 15% 5% / 0.8);
+      backdrop-filter: blur(12px);
+      pointer-events: auto;
+    }
+
+    .template-modal {
+      background: var(--admin-surface);
+      border: 1px solid var(--admin-border);
+      border-radius: 24px;
+      box-shadow: 0 30px 100px rgba(0, 0, 0, 0.5);
+      width: 95%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow: hidden;
+      opacity: 0;
+      transform: scale(0.9) translateY(30px);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .template-modal.visible {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+
+    .template-header {
+      background: linear-gradient(135deg, var(--admin-accent) 0%, hsl(35 65% 40%) 100%);
+      padding: 28px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .template-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.828-1.415 1.415L51.8 0h2.827zM5.373 0l-.83.828L5.96 2.243 8.2 0H5.374zM48.97 0l3.657 3.657-1.414 1.414L46.143 0h2.828zM11.03 0L7.372 3.657 8.787 5.07 13.857 0H11.03zm32.284 0L49.8 6.485 48.384 7.9l-7.9-7.9h2.83zM16.686 0L10.2 6.485 11.616 7.9l7.9-7.9h-2.83zM22.344 0L13.858 8.485 15.272 9.9l9.9-9.9h-2.828zM32 0l-3.486 3.485 1.414 1.414L37.172 0h-5.173zM0 32v-2.828l3.657 3.657-1.414 1.414L0 32zm0-5.657V23.51l6.343 6.343-1.414 1.415L0 26.343zM0 16l10.485 10.485-1.414 1.414L0 18.828V16zm0 5.657L8.485 30 7.07 31.414 0 24.343v-2.686zM0 0v5.657L5.657 0H0zm60 60v-5.657L54.343 60H60z' fill='%23ffffff' fill-opacity='0.08' fill-rule='evenodd'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .template-header-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .template-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: white;
+      margin: 0 0 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .template-header h2 svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .template-header p {
+      font-family: 'Lora', serif;
+      font-size: 15px;
+      color: hsla(45, 30%, 96%, 0.85);
+      margin: 0;
+    }
+
+    .template-close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      background: hsla(0, 0%, 100%, 0.15);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: all 0.2s ease;
+      z-index: 2;
+    }
+
+    .template-close-btn:hover {
+      background: hsla(0, 0%, 100%, 0.25);
+      transform: rotate(90deg);
+    }
+
+    .template-close-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .template-body {
+      padding: 32px;
+      max-height: calc(90vh - 140px);
+      overflow-y: auto;
+    }
+
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .template-card {
+      position: relative;
+      background: var(--admin-surface);
+      border: 2px solid var(--admin-border);
+      border-radius: 16px;
+      padding: 0;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    .template-card:hover {
+      border-color: var(--admin-accent);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(139, 90, 43, 0.2);
+    }
+
+    .template-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 0%, var(--admin-accent) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .template-card:hover::before {
+      opacity: 0.05;
+    }
+
+    .template-card-preview {
+      height: 140px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .template-card-preview-bg {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+      gap: 6px;
+      transition: transform 0.3s ease;
+    }
+
+    .template-card:hover .template-card-preview-bg {
+      transform: scale(1.02);
+    }
+
+    /* Template Preview Mini Elements */
+    .tpl-line {
+      height: 4px;
+      border-radius: 2px;
+      background: var(--admin-border);
+    }
+    .tpl-line.title { width: 70%; height: 8px; background: var(--admin-text); opacity: 0.2; }
+    .tpl-line.subtitle { width: 50%; height: 5px; margin-bottom: 8px; }
+    .tpl-line.text { width: 100%; }
+    .tpl-line.text-short { width: 85%; }
+    .tpl-line.text-med { width: 70%; }
+    .tpl-line.accent { background: var(--admin-accent); opacity: 0.5; }
+    .tpl-box {
+      height: 24px;
+      border-radius: 6px;
+      background: var(--admin-surface-hover);
+      border: 1px solid var(--admin-border);
+      margin: 4px 0;
+    }
+    .tpl-box.quote { border-left: 3px solid var(--admin-accent); }
+    .tpl-box.highlight { background: hsla(28, 60%, 45%, 0.1); }
+    .tpl-row {
+      display: flex;
+      gap: 8px;
+    }
+    .tpl-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .tpl-img {
+      width: 100%;
+      height: 28px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, var(--admin-border) 0%, var(--admin-surface-hover) 100%);
+    }
+    .tpl-star {
+      display: flex;
+      gap: 3px;
+    }
+    .tpl-star span {
+      width: 10px;
+      height: 10px;
+      background: var(--admin-accent);
+      border-radius: 50%;
+      opacity: 0.6;
+    }
+    .tpl-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .tpl-list-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tpl-list-item::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--admin-accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .tpl-num {
+      width: 16px;
+      height: 16px;
+      background: var(--admin-accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      color: white;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .template-card-content {
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .template-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      font-size: 24px;
+    }
+
+    .template-card-icon.book { background: linear-gradient(135deg, hsl(45 70% 50%) 0%, hsl(35 60% 45%) 100%); }
+    .template-card-icon.essay { background: linear-gradient(135deg, hsl(220 60% 55%) 0%, hsl(230 50% 45%) 100%); }
+    .template-card-icon.listicle { background: linear-gradient(135deg, hsl(340 65% 55%) 0%, hsl(350 55% 45%) 100%); }
+    .template-card-icon.blank { background: linear-gradient(135deg, hsl(0 0% 60%) 0%, hsl(0 0% 45%) 100%); }
+
+    .template-card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--admin-text);
+      margin: 0 0 8px 0;
+    }
+
+    .template-card-desc {
+      font-family: 'Lora', serif;
+      font-size: 13px;
+      color: var(--admin-text-muted);
+      margin: 0 0 16px 0;
+      line-height: 1.6;
+    }
+
+    .template-card-blocks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .template-block-tag {
+      background: var(--admin-surface-hover);
+      border: 1px solid var(--admin-border);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 11px;
+      color: var(--admin-text-muted);
+      font-family: 'Lora', serif;
+    }
+
+    .template-card-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--admin-accent);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .template-skip-btn {
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      background: transparent;
+      border: 2px dashed var(--admin-border);
+      border-radius: 12px;
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      color: var(--admin-text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .template-skip-btn:hover {
+      border-color: var(--admin-accent);
+      color: var(--admin-accent);
+      background: var(--admin-surface-hover);
+    }
+
+    @media (max-width: 768px) {
+      .template-modal {
+        border-radius: 16px;
+        margin: 16px;
+      }
+
+      .template-header {
+        padding: 20px 24px;
+      }
+
+      .template-header h2 {
+        font-size: 22px;
+      }
+
+      .template-body {
+        padding: 20px;
+      }
+
+      .template-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* Loading screen */
     .admin-loading {
       position: fixed;
@@ -1928,7 +2294,154 @@
     </div>
   </div>
 
-  <!-- Custom Loading Screen -->
+  <!-- Template Selector Modal -->
+  <div id="template-overlay">
+    <div class="template-modal">
+      <div class="template-header">
+        <div class="template-header-content">
+          <h2>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <path d="M14 2v6h6"/>
+              <path d="M12 18v-6"/>
+              <path d="M9 15h6"/>
+            </svg>
+            Pilih Template Artikel
+          </h2>
+          <p>Mulai dengan struktur yang sudah disiapkan untuk menghemat waktu</p>
+        </div>
+        <button class="template-close-btn" id="template-close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="template-body">
+        <div class="template-grid">
+          <!-- Book Review Template -->
+          <div class="template-card" data-template="book-review">
+            <div class="template-card-badge">Populer</div>
+            <div class="template-card-preview">
+              <div class="template-card-preview-bg" style="background: linear-gradient(180deg, hsl(45 40% 92%) 0%, hsl(45 30% 88%) 100%);">
+                <div class="tpl-line title"></div>
+                <div class="tpl-star">
+                  <span></span><span></span><span></span><span></span><span style="opacity: 0.3;"></span>
+                </div>
+                <div class="tpl-row" style="margin-top: 8px;">
+                  <div style="width: 60px;">
+                    <div class="tpl-img" style="height: 70px;"></div>
+                  </div>
+                  <div class="tpl-col">
+                    <div class="tpl-line text-short"></div>
+                    <div class="tpl-line text-med"></div>
+                    <div class="tpl-line text-short"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="template-card-content">
+              <div class="template-card-icon book">📚</div>
+              <h3 class="template-card-title">Review Buku</h3>
+              <p class="template-card-desc">Template lengkap untuk ulasan buku dengan rating, ringkasan, dan analisis mendalam.</p>
+              <div class="template-card-blocks">
+                <span class="template-block-tag">📌 Info Buku</span>
+                <span class="template-block-tag">⭐ Rating</span>
+                <span class="template-block-tag">💬 Kutipan</span>
+                <span class="template-block-tag">📋 Pro & Kontra</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Essay Template -->
+          <div class="template-card" data-template="essay">
+            <div class="template-card-preview">
+              <div class="template-card-preview-bg" style="background: linear-gradient(180deg, hsl(220 30% 95%) 0%, hsl(220 25% 90%) 100%);">
+                <div class="tpl-line title"></div>
+                <div class="tpl-line subtitle"></div>
+                <div class="tpl-box quote"></div>
+                <div class="tpl-line text" style="margin-top: 8px;"></div>
+                <div class="tpl-line text-short"></div>
+                <div class="tpl-line title" style="margin-top: 10px; width: 50%;"></div>
+                <div class="tpl-line text"></div>
+                <div class="tpl-line text-med"></div>
+              </div>
+            </div>
+            <div class="template-card-content">
+              <div class="template-card-icon essay">✍️</div>
+              <h3 class="template-card-title">Essay / Opini</h3>
+              <p class="template-card-desc">Struktur esai klasik dengan pendahuluan, argumen, dan kesimpulan yang kuat.</p>
+              <div class="template-card-blocks">
+                <span class="template-block-tag">📝 Pendahuluan</span>
+                <span class="template-block-tag">💡 Argumen</span>
+                <span class="template-block-tag">💬 Kutipan</span>
+                <span class="template-block-tag">🎯 Kesimpulan</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Listicle Template -->
+          <div class="template-card" data-template="listicle">
+            <div class="template-card-preview">
+              <div class="template-card-preview-bg" style="background: linear-gradient(180deg, hsl(340 30% 95%) 0%, hsl(340 25% 90%) 100%);">
+                <div class="tpl-line title"></div>
+                <div class="tpl-line subtitle"></div>
+                <div class="tpl-list" style="margin-top: 8px;">
+                  <div class="tpl-list-item">
+                    <div class="tpl-num">1</div>
+                    <div class="tpl-line text" style="flex: 1;"></div>
+                  </div>
+                  <div class="tpl-list-item">
+                    <div class="tpl-num">2</div>
+                    <div class="tpl-line text-short" style="flex: 1;"></div>
+                  </div>
+                  <div class="tpl-list-item">
+                    <div class="tpl-num">3</div>
+                    <div class="tpl-line text-med" style="flex: 1;"></div>
+                  </div>
+                </div>
+                <div class="tpl-box highlight" style="margin-top: 8px;"></div>
+              </div>
+            </div>
+            <div class="template-card-content">
+              <div class="template-card-icon listicle">📋</div>
+              <h3 class="template-card-title">Listicle</h3>
+              <p class="template-card-desc">Format daftar terstruktur yang mudah dibaca dan engaging untuk pembaca.</p>
+              <div class="template-card-blocks">
+                <span class="template-block-tag">🔢 Numbered List</span>
+                <span class="template-block-tag">✨ Highlight</span>
+                <span class="template-block-tag">📌 Sub-headings</span>
+                <span class="template-block-tag">🎯 CTA</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Blank Template -->
+          <div class="template-card" data-template="blank">
+            <div class="template-card-preview">
+              <div class="template-card-preview-bg" style="background: linear-gradient(180deg, hsl(0 0% 96%) 0%, hsl(0 0% 92%) 100%); align-items: center; justify-content: center;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px; opacity: 0.3;">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+              </div>
+            </div>
+            <div class="template-card-content">
+              <div class="template-card-icon blank">📄</div>
+              <h3 class="template-card-title">Mulai Kosong</h3>
+              <p class="template-card-desc">Kanvas kosong untuk kreativitas penuh. Tambahkan blok sesuai kebutuhan.</p>
+              <div class="template-card-blocks">
+                <span class="template-block-tag">Bebas berkreasi</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="template-skip-btn" id="template-skip">
+          Lewati & buat artikel kosong →
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="admin-loading" id="admin-loading">
     <div class="loading-logo">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2146,7 +2659,294 @@
       }
     })();
 
-    // ===== CUSTOM CONFIRM DIALOG (Override native confirm) =====
+    // ===== ARTICLE TEMPLATE SELECTOR =====
+    (function() {
+      // Template definitions with pre-filled content blocks
+      const templates = {
+        'book-review': {
+          title: 'Review: [Judul Buku]',
+          excerpt: 'Ulasan mendalam tentang buku ini, apa yang membuatnya istimewa, dan untuk siapa buku ini cocok.',
+          category: 'Book Review',
+          tags: ['buku', 'review', 'rekomendasi'],
+          content: [
+            { type: 'heading', text: '📖 Tentang Buku', level: 'h2' },
+            { type: 'stats', items: [
+              { value: '⭐⭐⭐⭐', label: 'Rating', description: 'dari 5 bintang' },
+              { value: '300', label: 'Halaman', description: 'perkiraan' },
+              { value: '2024', label: 'Tahun Terbit', description: '' }
+            ]},
+            { type: 'paragraph', text: '**Penulis:** [Nama Penulis]\n\n**Penerbit:** [Nama Penerbit]\n\n**Genre:** [Genre Buku]' },
+            { type: 'heading', text: '✨ Ringkasan', level: 'h2' },
+            { type: 'paragraph', text: 'Tuliskan ringkasan singkat tentang isi buku tanpa memberikan spoiler besar. Ceritakan premis dasar dan apa yang membuat buku ini menarik.' },
+            { type: 'heading', text: '💡 Hal yang Saya Suka', level: 'h2' },
+            { type: 'list', listType: 'unordered', items: [
+              'Poin positif pertama dari buku ini',
+              'Poin positif kedua',
+              'Poin positif ketiga'
+            ]},
+            { type: 'quote', text: 'Masukkan kutipan favorit dari buku di sini yang menggambarkan esensinya.', author: 'Nama Penulis' },
+            { type: 'heading', text: '⚠️ Hal yang Bisa Diperbaiki', level: 'h2' },
+            { type: 'list', listType: 'unordered', items: [
+              'Kritik konstruktif pertama',
+              'Kritik konstruktif kedua'
+            ]},
+            { type: 'heading', text: '🎯 Untuk Siapa Buku Ini?', level: 'h2' },
+            { type: 'highlight', highlightType: 'tip', title: 'Rekomendasi', content: 'Buku ini cocok untuk pembaca yang... Tidak disarankan untuk yang...' },
+            { type: 'heading', text: '📝 Kesimpulan', level: 'h2' },
+            { type: 'paragraph', text: 'Berikan kesimpulan akhir dan apakah Anda merekomendasikan buku ini.' },
+            { type: 'cta', text: 'Beli Buku Ini', url: '#', ctaStyle: 'primary', description: 'Affiliate link ke toko buku' }
+          ]
+        },
+        'essay': {
+          title: '[Judul Essay Anda]',
+          excerpt: 'Sebuah refleksi mendalam tentang topik yang menarik untuk direnungkan.',
+          category: 'Filsafat',
+          tags: ['essay', 'pemikiran', 'refleksi'],
+          content: [
+            { type: 'quote', text: 'Masukkan kutipan pembuka yang relevan dengan tema essay Anda di sini.', author: 'Filsuf/Penulis' },
+            { type: 'heading', text: 'Pendahuluan', level: 'h2' },
+            { type: 'paragraph', text: 'Mulai dengan hook yang menarik perhatian pembaca. Kemudian perkenalkan topik yang akan dibahas dan mengapa topik ini penting atau relevan.' },
+            { type: 'paragraph', text: 'Jelaskan konteks atau latar belakang yang diperlukan pembaca untuk memahami argumen Anda.' },
+            { type: 'heading', text: 'Argumen Pertama', level: 'h2' },
+            { type: 'paragraph', text: 'Sampaikan argumen pertama Anda dengan jelas. Dukung dengan bukti, contoh, atau referensi yang relevan.' },
+            { type: 'highlight', highlightType: 'info', title: 'Poin Penting', content: 'Soroti insight atau pengamatan kunci dari argumen ini.' },
+            { type: 'heading', text: 'Argumen Kedua', level: 'h2' },
+            { type: 'paragraph', text: 'Kembangkan argumen kedua yang memperkuat atau melengkapi argumen pertama.' },
+            { type: 'quote', text: 'Gunakan kutipan pendukung dari sumber terpercaya untuk memperkuat argumen.', author: 'Sumber' },
+            { type: 'heading', text: 'Perspektif Alternatif', level: 'h2' },
+            { type: 'paragraph', text: 'Akui dan diskusikan perspektif yang berbeda atau kontra-argumen. Ini menunjukkan pemikiran yang matang dan seimbang.' },
+            { type: 'heading', text: 'Sintesis & Kesimpulan', level: 'h2' },
+            { type: 'paragraph', text: 'Rangkum poin-poin utama dan berikan kesimpulan yang kuat. Akhiri dengan pemikiran yang membekas di benak pembaca.' },
+            { type: 'divider', style: 'ornament' },
+            { type: 'note', text: '*Catatan penulis: Tambahkan refleksi personal atau ajakan untuk diskusi lebih lanjut.*', position: 'inline' }
+          ]
+        },
+        'listicle': {
+          title: '[Angka] [Topik] yang [Benefit]',
+          excerpt: 'Daftar lengkap dan praktis yang akan membantu Anda memahami atau melakukan sesuatu dengan lebih baik.',
+          category: 'Pertumbuhan',
+          tags: ['tips', 'panduan', 'praktis'],
+          content: [
+            { type: 'heading', text: 'Mengapa Ini Penting?', level: 'h2' },
+            { type: 'paragraph', text: 'Jelaskan secara singkat mengapa pembaca harus peduli dengan topik ini dan apa yang akan mereka dapatkan dari membaca artikel ini.' },
+            { type: 'highlight', highlightType: 'tip', title: '💡 Quick Tip', content: 'Berikan preview singkat atau tip cepat yang langsung bisa diterapkan.' },
+            { type: 'heading', text: '1. Poin Pertama', level: 'h2' },
+            { type: 'paragraph', text: 'Jelaskan poin pertama dengan detail yang cukup. Berikan contoh konkret atau langkah-langkah praktis.' },
+            { type: 'heading', text: '2. Poin Kedua', level: 'h2' },
+            { type: 'paragraph', text: 'Jelaskan poin kedua. Pastikan setiap poin memberikan nilai yang berbeda dan tidak tumpang tindih.' },
+            { type: 'heading', text: '3. Poin Ketiga', level: 'h2' },
+            { type: 'paragraph', text: 'Jelaskan poin ketiga dengan tips actionable yang bisa langsung dipraktekkan pembaca.' },
+            { type: 'heading', text: '4. Poin Keempat', level: 'h2' },
+            { type: 'paragraph', text: 'Lanjutkan dengan poin berikutnya. Tambahkan lebih banyak poin sesuai kebutuhan.' },
+            { type: 'heading', text: '5. Poin Kelima', level: 'h2' },
+            { type: 'paragraph', text: 'Tutup daftar dengan poin yang kuat atau actionable.' },
+            { type: 'divider', style: 'dots' },
+            { type: 'heading', text: 'Bonus Tips', level: 'h2' },
+            { type: 'list', listType: 'unordered', items: [
+              'Tip bonus pertama',
+              'Tip bonus kedua',
+              'Tip bonus ketiga'
+            ]},
+            { type: 'heading', text: 'Langkah Selanjutnya', level: 'h2' },
+            { type: 'paragraph', text: 'Rangkum artikel dan berikan call-to-action yang jelas untuk pembaca.' },
+            { type: 'cta', text: 'Mulai Sekarang', url: '#', ctaStyle: 'primary', description: 'Ambil langkah pertama hari ini' }
+          ]
+        },
+        'blank': {
+          title: '',
+          excerpt: '',
+          category: '',
+          tags: [],
+          content: []
+        }
+      };
+
+      let templateShown = false;
+      let lastUrl = '';
+
+      function showTemplateModal() {
+        const overlay = document.getElementById('template-overlay');
+        const modal = overlay?.querySelector('.template-modal');
+        if (!overlay || !modal) return;
+
+        overlay.classList.add('visible');
+        setTimeout(() => modal.classList.add('visible'), 50);
+        templateShown = true;
+      }
+
+      function hideTemplateModal() {
+        const overlay = document.getElementById('template-overlay');
+        const modal = overlay?.querySelector('.template-modal');
+        if (!overlay || !modal) return;
+
+        modal.classList.remove('visible');
+        setTimeout(() => overlay.classList.remove('visible'), 300);
+      }
+
+      function applyTemplate(templateName) {
+        const template = templates[templateName];
+        if (!template) {
+          hideTemplateModal();
+          return;
+        }
+
+        // Wait a bit for form to be ready then fill in values
+        setTimeout(() => {
+          // Fill title
+          const titleInput = document.querySelector('input[id*="title"], [data-field-name="title"] input');
+          if (titleInput && template.title) {
+            titleInput.value = template.title;
+            titleInput.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+
+          // Fill excerpt
+          const excerptInput = document.querySelector('textarea[id*="excerpt"], [data-field-name="excerpt"] textarea, [data-field-name="excerpt"] input');
+          if (excerptInput && template.excerpt) {
+            excerptInput.value = template.excerpt;
+            excerptInput.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+
+          // Fill category
+          const categorySelect = document.querySelector('[data-field-name="category"] select');
+          if (categorySelect && template.category) {
+            categorySelect.value = template.category;
+            categorySelect.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+
+          // Show notification about template applied
+          showTemplateNotification(templateName);
+        }, 500);
+
+        hideTemplateModal();
+      }
+
+      function showTemplateNotification(templateName) {
+        const names = {
+          'book-review': 'Review Buku',
+          'essay': 'Essay / Opini',
+          'listicle': 'Listicle',
+          'blank': 'Artikel Kosong'
+        };
+
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+          position: fixed;
+          bottom: 24px;
+          left: 50%;
+          transform: translateX(-50%) translateY(20px);
+          background: var(--admin-accent);
+          color: white;
+          padding: 14px 24px;
+          border-radius: 12px;
+          font-family: 'Lora', serif;
+          font-size: 14px;
+          box-shadow: 0 8px 30px rgba(139, 90, 43, 0.35);
+          z-index: 999999;
+          opacity: 0;
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        `;
+        notification.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          Template "${names[templateName] || templateName}" diterapkan!
+        `;
+        document.body.appendChild(notification);
+
+        // Animate in
+        requestAnimationFrame(() => {
+          notification.style.opacity = '1';
+          notification.style.transform = 'translateX(-50%) translateY(0)';
+        });
+
+        // Remove after delay
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          notification.style.transform = 'translateX(-50%) translateY(20px)';
+          setTimeout(() => notification.remove(), 400);
+        }, 3000);
+      }
+
+      function initTemplateSelector() {
+        const overlay = document.getElementById('template-overlay');
+        const closeBtn = document.getElementById('template-close');
+        const skipBtn = document.getElementById('template-skip');
+        const templateCards = document.querySelectorAll('.template-card');
+
+        if (!overlay) return;
+
+        // Close handlers
+        closeBtn?.addEventListener('click', hideTemplateModal);
+        skipBtn?.addEventListener('click', () => {
+          applyTemplate('blank');
+        });
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) hideTemplateModal();
+        });
+
+        // Template card handlers
+        templateCards.forEach(card => {
+          card.addEventListener('click', () => {
+            const templateName = card.dataset.template;
+            applyTemplate(templateName);
+          });
+        });
+
+        // Escape key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && overlay.classList.contains('visible')) {
+            hideTemplateModal();
+          }
+        });
+
+        // Watch for new article creation
+        const observer = new MutationObserver(() => {
+          const currentUrl = window.location.href;
+          
+          // Check if we're on a new article page
+          const isNewArticle = currentUrl.includes('/collections/articles/new') || 
+                               currentUrl.includes('/collections/articles/entries/new');
+          
+          // Check if we're now in the editor (form is visible)
+          const hasForm = document.querySelector('[class*="EditorControl"], [class*="ControlPane"], [data-field-name]');
+          
+          if (isNewArticle && hasForm && !templateShown && currentUrl !== lastUrl) {
+            lastUrl = currentUrl;
+            // Small delay to ensure form is ready
+            setTimeout(showTemplateModal, 800);
+          }
+          
+          // Reset when leaving editor
+          if (!isNewArticle) {
+            templateShown = false;
+          }
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // Also check URL changes
+        let lastHref = window.location.href;
+        setInterval(() => {
+          if (window.location.href !== lastHref) {
+            lastHref = window.location.href;
+            templateShown = false; // Reset on URL change
+          }
+        }, 500);
+      }
+
+      // Initialize
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTemplateSelector);
+      } else {
+        initTemplateSelector();
+      }
+    })();
+
     (function() {
       // Create custom dialog element
       function createConfirmDialog() {
