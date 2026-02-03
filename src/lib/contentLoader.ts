@@ -8,7 +8,7 @@ import profileSilhouette from "@/assets/profile-silhouette.png";
 
 // CMS Content Types (matching Decap CMS schema)
 export interface CMSContentBlock {
-  type: "heading" | "paragraph" | "quote" | "list" | "image" | "highlight" | "code" | "divider";
+  type: "heading" | "paragraph" | "quote" | "list" | "image" | "highlight" | "code" | "divider" | "table" | "embed" | "cta" | "gallery" | "note" | "stats" | "faq" | "timeline";
   // Heading
   text?: string;
   level?: "h2" | "h3" | "h4";
@@ -16,7 +16,7 @@ export interface CMSContentBlock {
   author?: string;
   // List
   listType?: "ordered" | "unordered";
-  items?: string[];
+  items?: string[] | { question: string; answer: string }[] | { date: string; title: string; description: string }[] | { value: string; label: string; description?: string }[] | { cells: string[] }[];
   // Image
   src?: string;
   alt?: string;
@@ -28,11 +28,26 @@ export interface CMSContentBlock {
   highlightType?: "info" | "tip" | "warning" | "quote";
   // Code
   language?: string;
-  // Historically this could be stored by Decap's `code` widget as an object.
-  // We keep it flexible and normalize at render-time.
   code?: unknown;
   // Divider
-  style?: "line" | "dots" | "ornament";
+  style?: "line" | "dots" | "ornament" | "wave";
+  // Table
+  headers?: string[];
+  rows?: { cells: string[] }[];
+  // Embed
+  embedType?: "youtube" | "twitter" | "pinterest" | "spotify" | "link";
+  url?: string;
+  // CTA
+  ctaStyle?: "primary" | "secondary" | "link";
+  description?: string;
+  // Gallery
+  layout?: "grid" | "masonry" | "carousel";
+  images?: { src: string; alt: string; caption?: string }[];
+  // Note/Sidenote
+  position?: "inline" | "left" | "right";
+  // Stats - items will be { value, label, description }
+  // FAQ - items will be { question, answer }
+  // Timeline - items will be { date, title, description }
 }
 
 // Publishing settings for scheduled posts

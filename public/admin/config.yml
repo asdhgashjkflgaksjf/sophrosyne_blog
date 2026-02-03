@@ -297,11 +297,14 @@ collections:
           - label: "✨ Highlight Box"
             name: "highlight"
             widget: "object"
+            summary: "{{fields.highlightType}}: {{fields.title}}"
             fields:
               - { label: "Judul", name: "title", widget: "string", required: false }
               - { label: "Konten", name: "content", widget: "markdown" }
-              - label: "Tipe"
-                name: "type"
+              # PENTING: Field 'type' adalah reserved word di Decap CMS untuk Variable Type Lists
+              # Gunakan 'highlightType' sebagai pengganti untuk menghindari error
+              - label: "Tipe Highlight"
+                name: "highlightType"
                 widget: "select"
                 default: "info"
                 options:
@@ -312,19 +315,18 @@ collections:
           - label: "📦 Code Block"
             name: "code"
             widget: "object"
+            summary: "{{fields.language}}: {{fields.caption}}"
             fields:
               - label: "Bahasa"
                 name: "language"
                 widget: "select"
-                options: ["javascript", "typescript", "python", "css", "html", "bash", "json"]
-              # NOTE: Decap CMS versi terbaru kadang error pada widget built-in `code`
-              # saat digunakan di dalam `object`/`list` (error: this.props.value?.get is not a function).
-              # Solusi: gunakan textarea biasa untuk menyimpan kode sebagai string.
+                options: ["javascript", "typescript", "python", "css", "html", "bash", "json", "markdown", "yaml", "sql"]
               - { label: "Kode", name: "code", widget: "text" }
               - { label: "Caption", name: "caption", widget: "string", required: false }
           - label: "➖ Divider"
             name: "divider"
             widget: "object"
+            summary: "{{fields.style}} divider"
             fields:
               - label: "Style"
                 name: "style"
@@ -334,6 +336,128 @@ collections:
                   - { label: "─── Line ───", value: "line" }
                   - { label: "• • • Dots • • •", value: "dots" }
                   - { label: "✦ Ornament ✦", value: "ornament" }
+                  - { label: "〰️ Wave", value: "wave" }
+          - label: "📊 Tabel"
+            name: "table"
+            widget: "object"
+            summary: "Tabel: {{fields.caption}}"
+            fields:
+              - { label: "Caption", name: "caption", widget: "string", required: false }
+              - label: "Header"
+                name: "headers"
+                widget: "list"
+                hint: "Nama kolom tabel"
+              - label: "Baris Data"
+                name: "rows"
+                widget: "list"
+                fields:
+                  - label: "Kolom"
+                    name: "cells"
+                    widget: "list"
+          - label: "🎬 Embed (Video/Tweet)"
+            name: "embed"
+            widget: "object"
+            summary: "Embed: {{fields.embedType}}"
+            fields:
+              - label: "Tipe"
+                name: "embedType"
+                widget: "select"
+                options:
+                  - { label: "🎬 YouTube", value: "youtube" }
+                  - { label: "🐦 Twitter/X", value: "twitter" }
+                  - { label: "📌 Pinterest", value: "pinterest" }
+                  - { label: "🎵 Spotify", value: "spotify" }
+                  - { label: "📎 Link Preview", value: "link" }
+              - { label: "URL atau Embed Code", name: "url", widget: "string" }
+              - { label: "Caption", name: "caption", widget: "string", required: false }
+          - label: "🎯 Call to Action"
+            name: "cta"
+            widget: "object"
+            summary: "CTA: {{fields.text}}"
+            fields:
+              - { label: "Teks Tombol", name: "text", widget: "string" }
+              - { label: "URL", name: "url", widget: "string" }
+              - label: "Style"
+                name: "ctaStyle"
+                widget: "select"
+                default: "primary"
+                options:
+                  - { label: "🔵 Primary", value: "primary" }
+                  - { label: "⚪ Secondary", value: "secondary" }
+                  - { label: "🔗 Link", value: "link" }
+              - { label: "Deskripsi (opsional)", name: "description", widget: "string", required: false }
+          - label: "📷 Gallery"
+            name: "gallery"
+            widget: "object"
+            summary: "Gallery ({{fields.images.length}} gambar)"
+            fields:
+              - { label: "Caption Gallery", name: "caption", widget: "string", required: false }
+              - label: "Layout"
+                name: "layout"
+                widget: "select"
+                default: "grid"
+                options:
+                  - { label: "Grid", value: "grid" }
+                  - { label: "Masonry", value: "masonry" }
+                  - { label: "Carousel", value: "carousel" }
+              - label: "Gambar"
+                name: "images"
+                widget: "list"
+                fields:
+                  - { label: "File", name: "src", widget: "image" }
+                  - { label: "Alt", name: "alt", widget: "string" }
+                  - { label: "Caption", name: "caption", widget: "string", required: false }
+          - label: "📝 Note/Sidenote"
+            name: "note"
+            widget: "object"
+            summary: "Note: {{fields.text}}"
+            fields:
+              - { label: "Teks", name: "text", widget: "markdown" }
+              - label: "Posisi"
+                name: "position"
+                widget: "select"
+                default: "inline"
+                options:
+                  - { label: "Inline", value: "inline" }
+                  - { label: "Margin Kiri", value: "left" }
+                  - { label: "Margin Kanan", value: "right" }
+          - label: "🔢 Statistik/Angka"
+            name: "stats"
+            widget: "object"
+            summary: "Stats: {{fields.items.length}} items"
+            fields:
+              - label: "Items"
+                name: "items"
+                widget: "list"
+                fields:
+                  - { label: "Angka/Value", name: "value", widget: "string" }
+                  - { label: "Label", name: "label", widget: "string" }
+                  - { label: "Deskripsi", name: "description", widget: "string", required: false }
+          - label: "❓ FAQ/Accordion"
+            name: "faq"
+            widget: "object"
+            summary: "FAQ ({{fields.items.length}} items)"
+            fields:
+              - { label: "Judul Section", name: "title", widget: "string", required: false }
+              - label: "Pertanyaan & Jawaban"
+                name: "items"
+                widget: "list"
+                fields:
+                  - { label: "Pertanyaan", name: "question", widget: "string" }
+                  - { label: "Jawaban", name: "answer", widget: "markdown" }
+          - label: "⏰ Timeline"
+            name: "timeline"
+            widget: "object"
+            summary: "Timeline ({{fields.items.length}} events)"
+            fields:
+              - { label: "Judul Timeline", name: "title", widget: "string", required: false }
+              - label: "Events"
+                name: "items"
+                widget: "list"
+                fields:
+                  - { label: "Tanggal/Waktu", name: "date", widget: "string" }
+                  - { label: "Judul", name: "title", widget: "string" }
+                  - { label: "Deskripsi", name: "description", widget: "markdown" }
       
       # --- Artikel Terkait ---
       - label: "Artikel Terkait"
