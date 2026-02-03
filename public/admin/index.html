@@ -86,24 +86,160 @@
       min-height: 100vh;
     }
 
-    /* ===== DARK MODE TOGGLE ===== */
+    /* ===== FIXED HEADER LAYOUT ===== */
+    /* Force proper header structure - prevent overlapping */
+    [class*="AppHeader"],
+    header[class*="Header"],
+    [class*="EditorHeader"] {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 0 16px !important;
+      height: auto !important;
+      min-height: 60px !important;
+      gap: 16px !important;
+      position: relative !important;
+      z-index: 100 !important;
+    }
+
+    /* Header Left Section - Back button + Collection info */
+    [class*="AppHeader"] > a:first-child,
+    [class*="BackButton"],
+    [class*="BackArrow"],
+    header a[href*="collections"],
+    [class*="Header"] [class*="LeftSection"],
+    [class*="EditorHeader"] > div:first-child {
+      flex-shrink: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      min-width: 0 !important;
+    }
+
+    /* Writing in + Collection name - Compact */
+    [class*="BackStatus"],
+    [class*="EditorHeader"] span,
+    [class*="CollectionLabel"] {
+      font-size: 13px !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      max-width: 200px !important;
+    }
+
+    /* Header Center Section - Navigation Tabs */
+    [class*="AppHeader"] nav,
+    [class*="HeaderTabs"],
+    [class*="EditorTabs"],
+    [class*="Tabs"][class*="Header"],
+    [class*="TabBar"] {
+      position: absolute !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      background: var(--admin-surface-hover) !important;
+      border: 1px solid var(--admin-border) !important;
+      border-radius: 12px !important;
+      padding: 4px !important;
+      z-index: 10 !important;
+    }
+
+    /* Tab buttons styling */
+    [class*="HeaderTabs"] button,
+    [class*="EditorTabs"] button,
+    [class*="TabBar"] button,
+    [class*="Tab"]:not([class*="Table"]) {
+      background: transparent !important;
+      border: none !important;
+      border-radius: 8px !important;
+      padding: 8px 16px !important;
+      font-family: 'Lora', serif !important;
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      color: var(--admin-text-muted) !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      white-space: nowrap !important;
+    }
+
+    [class*="HeaderTabs"] button:hover,
+    [class*="EditorTabs"] button:hover,
+    [class*="Tab"]:hover:not([class*="Table"]) {
+      background: var(--admin-surface) !important;
+      color: var(--admin-text) !important;
+    }
+
+    [class*="HeaderTabs"] button[class*="active"],
+    [class*="EditorTabs"] button[class*="active"],
+    [class*="Tab"][class*="active"]:not([class*="Table"]),
+    [class*="TabBar"] button[aria-selected="true"] {
+      background: var(--admin-accent) !important;
+      color: var(--admin-surface) !important;
+    }
+
+    /* Header Right Section - Save button + Quick Add + Theme toggle */
+    [class*="AppHeader"] > div:last-child,
+    [class*="Header"] [class*="RightSection"],
+    [class*="EditorHeader"] > div:last-child,
+    [class*="HeaderActions"] {
+      flex-shrink: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      margin-left: auto !important;
+    }
+
+    /* Save Button - Clear styling */
+    [class*="SaveButton"],
+    button[class*="save"],
+    [class*="Header"] button[class*="primary"] {
+      background: var(--admin-accent) !important;
+      color: var(--admin-surface) !important;
+      border: none !important;
+      border-radius: 8px !important;
+      padding: 8px 16px !important;
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      white-space: nowrap !important;
+    }
+
+    /* Quick Add Button */
+    [class*="QuickAdd"],
+    button[class*="quick"] {
+      background: var(--admin-surface) !important;
+      border: 1px solid var(--admin-border) !important;
+      border-radius: 8px !important;
+      padding: 8px 12px !important;
+      font-size: 13px !important;
+      white-space: nowrap !important;
+    }
+
+    /* ===== DARK MODE TOGGLE - REPOSITIONED ===== */
     .theme-toggle-container {
-      position: fixed;
-      top: 16px;
-      right: 16px;
+      position: relative !important;
+      top: auto !important;
+      right: auto !important;
       z-index: 99999;
       display: flex;
       align-items: center;
       gap: 8px;
       background: var(--admin-surface);
       border: 1px solid var(--admin-border);
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-radius: 50px;
-      box-shadow: var(--shadow-paper);
+      box-shadow: none;
+      flex-shrink: 0;
     }
 
     .theme-toggle-label {
-      font-size: 12px;
+      font-size: 11px;
       font-family: 'Cormorant Garamond', serif;
       font-weight: 600;
       color: var(--admin-text-muted);
@@ -113,8 +249,8 @@
 
     .theme-toggle {
       position: relative;
-      width: 52px;
-      height: 28px;
+      width: 44px;
+      height: 24px;
       background: var(--admin-border);
       border-radius: 50px;
       cursor: pointer;
@@ -130,10 +266,10 @@
     .theme-toggle::before {
       content: '';
       position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 22px;
-      height: 22px;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
       background: var(--admin-surface);
       border-radius: 50%;
       transition: transform 0.3s ease;
@@ -141,25 +277,25 @@
     }
 
     .dark .theme-toggle::before {
-      transform: translateX(24px);
+      transform: translateX(20px);
     }
 
     .theme-toggle-icon {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       transition: opacity 0.3s ease;
     }
 
     .theme-toggle-icon.sun {
-      left: 6px;
+      left: 5px;
       opacity: 1;
     }
 
     .theme-toggle-icon.moon {
-      right: 6px;
+      right: 5px;
       opacity: 0.5;
     }
 
@@ -169,6 +305,279 @@
 
     .dark .theme-toggle-icon.moon {
       opacity: 1;
+    }
+
+    /* ===== PREVIEW PANEL STYLES ===== */
+    .preview-toggle-btn {
+      background: linear-gradient(135deg, hsl(200 60% 45%) 0%, hsl(200 50% 40%) 100%) !important;
+      color: white !important;
+      border: none !important;
+      border-radius: 8px !important;
+      padding: 8px 14px !important;
+      font-family: 'Lora', serif !important;
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      transition: all 0.2s ease !important;
+      white-space: nowrap !important;
+    }
+
+    .preview-toggle-btn:hover {
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 12px rgba(66, 133, 164, 0.35) !important;
+    }
+
+    .preview-toggle-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Preview Sidebar Panel */
+    #article-preview-panel {
+      position: fixed;
+      top: 0;
+      right: -450px;
+      width: 450px;
+      height: 100vh;
+      background: var(--admin-surface);
+      border-left: 1px solid var(--admin-border);
+      box-shadow: -10px 0 40px rgba(0,0,0,0.15);
+      z-index: 99998;
+      transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #article-preview-panel.visible {
+      right: 0;
+    }
+
+    .preview-header {
+      background: var(--admin-surface-hover);
+      border-bottom: 1px solid var(--admin-border);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .preview-header h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--admin-text);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preview-header h3 svg {
+      width: 20px;
+      height: 20px;
+      color: var(--admin-accent);
+    }
+
+    .preview-close-btn {
+      background: transparent;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--admin-text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .preview-close-btn:hover {
+      background: var(--admin-surface);
+      color: var(--admin-text);
+    }
+
+    .preview-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      background: var(--admin-bg);
+    }
+
+    /* Preview Article Styles */
+    .preview-article {
+      background: var(--admin-surface);
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid var(--admin-border);
+    }
+
+    .preview-article h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--admin-text);
+      margin: 0 0 12px 0;
+      line-height: 1.3;
+    }
+
+    .preview-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: var(--admin-text-muted);
+    }
+
+    .preview-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .preview-excerpt {
+      font-family: 'Lora', serif;
+      font-size: 15px;
+      font-style: italic;
+      color: var(--admin-text-muted);
+      line-height: 1.7;
+      padding: 16px;
+      background: var(--admin-surface-hover);
+      border-left: 3px solid var(--admin-accent);
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+    }
+
+    .preview-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      background: var(--admin-surface-hover);
+    }
+
+    .preview-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .preview-tag {
+      background: var(--admin-accent);
+      color: var(--admin-surface);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .preview-content-blocks {
+      font-family: 'Spectral', serif;
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--admin-text);
+    }
+
+    .preview-content-blocks h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 600;
+      margin: 24px 0 12px;
+      color: var(--admin-text);
+    }
+
+    .preview-content-blocks h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 600;
+      margin: 20px 0 10px;
+      color: var(--admin-text);
+    }
+
+    .preview-content-blocks p {
+      margin: 0 0 16px;
+    }
+
+    .preview-content-blocks blockquote {
+      border-left: 3px solid var(--admin-accent);
+      padding-left: 16px;
+      margin: 20px 0;
+      font-style: italic;
+      color: var(--admin-text-muted);
+    }
+
+    .preview-placeholder {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--admin-text-muted);
+    }
+
+    .preview-placeholder svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .preview-placeholder p {
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    /* Refresh Preview Button */
+    .preview-refresh-btn {
+      background: var(--admin-surface);
+      border: 1px solid var(--admin-border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--admin-text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .preview-refresh-btn:hover {
+      background: var(--admin-surface-hover);
+      color: var(--admin-accent);
+    }
+
+    .preview-refresh-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Overlay when preview is open */
+    #preview-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0);
+      z-index: 99997;
+      pointer-events: none;
+      transition: background 0.3s ease;
+    }
+
+    #preview-overlay.visible {
+      background: rgba(0,0,0,0.3);
+      pointer-events: auto;
+    }
+
+    @media (max-width: 768px) {
+      #article-preview-panel {
+        width: 100%;
+        right: -100%;
+      }
     }
 
     /* Loading screen */
@@ -1480,18 +1889,43 @@
 
 </head>
 <body>
-  <!-- Dark Mode Toggle -->
-  <div class="theme-toggle-container" id="theme-toggle-container">
-    <span class="theme-toggle-label">Mode</span>
-    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
-      <svg class="theme-toggle-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="5"/>
-        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-      </svg>
-      <svg class="theme-toggle-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-      </svg>
-    </button>
+  <!-- Preview Overlay -->
+  <div id="preview-overlay"></div>
+
+  <!-- Article Preview Panel -->
+  <div id="article-preview-panel">
+    <div class="preview-header">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        Preview Artikel
+      </h3>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button class="preview-refresh-btn" id="preview-refresh">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6M1 20v-6h6"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+          Refresh
+        </button>
+        <button class="preview-close-btn" id="preview-close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="preview-content" id="preview-content">
+      <div class="preview-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+        </svg>
+        <p>Mulai edit artikel untuk melihat preview di sini</p>
+      </div>
+    </div>
   </div>
 
   <!-- Custom Loading Screen -->
@@ -1518,6 +1952,200 @@
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
   <script>
+    // ===== ARTICLE PREVIEW FUNCTIONALITY =====
+    (function() {
+      function initPreview() {
+        const panel = document.getElementById('article-preview-panel');
+        const overlay = document.getElementById('preview-overlay');
+        const closeBtn = document.getElementById('preview-close');
+        const refreshBtn = document.getElementById('preview-refresh');
+        const previewContent = document.getElementById('preview-content');
+        
+        if (!panel) return;
+
+        // Toggle functions
+        function openPreview() {
+          panel.classList.add('visible');
+          overlay.classList.add('visible');
+          updatePreview();
+        }
+
+        function closePreview() {
+          panel.classList.remove('visible');
+          overlay.classList.remove('visible');
+        }
+
+        function updatePreview() {
+          // Get values from CMS form
+          const titleInput = document.querySelector('input[id*="title"], [data-field-name="title"] input');
+          const excerptInput = document.querySelector('textarea[id*="excerpt"], [data-field-name="excerpt"] textarea, [data-field-name="excerpt"] input');
+          const categorySelect = document.querySelector('select[id*="category"], [data-field-name="category"] select, [data-field-name="category"] input');
+          const dateInput = document.querySelector('input[type="date"], [data-field-name="date"] input');
+          const imageInput = document.querySelector('[data-field-name="image"] img, [class*="ImageWidget"] img');
+          const tagsContainer = document.querySelectorAll('[data-field-name="tags"] [class*="Tag"], [data-field-name="tags"] span');
+          const contentBlocks = document.querySelectorAll('[data-field-name="content"] [class*="ListItem"]');
+          
+          const title = titleInput?.value || 'Judul Artikel';
+          const excerpt = excerptInput?.value || 'Ringkasan artikel akan muncul di sini...';
+          const category = categorySelect?.value || categorySelect?.textContent || 'Kategori';
+          const date = dateInput?.value || new Date().toISOString().split('T')[0];
+          const imageSrc = imageInput?.src || '';
+          
+          // Collect tags
+          let tagsHtml = '';
+          tagsContainer.forEach(tag => {
+            const text = tag.textContent?.trim();
+            if (text && text.length < 30) {
+              tagsHtml += `<span class="preview-tag">${text}</span>`;
+            }
+          });
+
+          // Collect content blocks preview
+          let blocksHtml = '';
+          contentBlocks.forEach(block => {
+            const typeLabel = block.querySelector('[class*="TopBar"] span, [class*="Label"]')?.textContent || '';
+            const textContent = block.querySelector('.ProseMirror p, textarea, input[type="text"]')?.textContent || 
+                               block.querySelector('.ProseMirror p, textarea, input[type="text"]')?.value || '';
+            
+            if (typeLabel.toLowerCase().includes('heading') || typeLabel.toLowerCase().includes('judul')) {
+              const headingText = block.querySelector('input')?.value || textContent;
+              if (headingText) {
+                blocksHtml += `<h2>${headingText}</h2>`;
+              }
+            } else if (typeLabel.toLowerCase().includes('paragraph') || typeLabel.toLowerCase().includes('paragraf')) {
+              if (textContent) {
+                blocksHtml += `<p>${textContent}</p>`;
+              }
+            } else if (typeLabel.toLowerCase().includes('quote') || typeLabel.toLowerCase().includes('kutipan')) {
+              if (textContent) {
+                blocksHtml += `<blockquote>${textContent}</blockquote>`;
+              }
+            } else if (textContent) {
+              blocksHtml += `<p>${textContent}</p>`;
+            }
+          });
+
+          previewContent.innerHTML = `
+            <div class="preview-article">
+              ${imageSrc ? `<img src="${imageSrc}" alt="Cover" class="preview-image" onerror="this.style.display='none'">` : ''}
+              <h1>${title}</h1>
+              <div class="preview-meta">
+                <span>📂 ${category}</span>
+                <span>📅 ${formatDate(date)}</span>
+              </div>
+              ${tagsHtml ? `<div class="preview-tags">${tagsHtml}</div>` : ''}
+              <div class="preview-excerpt">${excerpt}</div>
+              ${blocksHtml ? `<div class="preview-content-blocks">${blocksHtml}</div>` : ''}
+            </div>
+          `;
+        }
+
+        function formatDate(dateStr) {
+          try {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+          } catch {
+            return dateStr;
+          }
+        }
+
+        // Event listeners
+        closeBtn?.addEventListener('click', closePreview);
+        overlay?.addEventListener('click', closePreview);
+        refreshBtn?.addEventListener('click', updatePreview);
+
+        // Keyboard shortcut (Escape to close)
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && panel.classList.contains('visible')) {
+            closePreview();
+          }
+        });
+
+        // Add preview button to header when CMS loads
+        function addPreviewButton() {
+          const header = document.querySelector('[class*="AppHeader"], [class*="EditorHeader"], header');
+          if (!header) return;
+
+          // Check if button already exists
+          if (document.getElementById('preview-toggle')) return;
+
+          // Find the right section of header (or create container)
+          let actionsContainer = header.querySelector('[class*="Actions"], [class*="RightSection"]');
+          if (!actionsContainer) {
+            actionsContainer = document.createElement('div');
+            actionsContainer.style.cssText = 'display: flex; align-items: center; gap: 12px; margin-left: auto;';
+            header.appendChild(actionsContainer);
+          }
+
+          // Create preview button
+          const previewBtn = document.createElement('button');
+          previewBtn.id = 'preview-toggle';
+          previewBtn.className = 'preview-toggle-btn';
+          previewBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            Preview
+          `;
+          previewBtn.addEventListener('click', openPreview);
+
+          // Insert before theme toggle or at end
+          const themeToggle = document.getElementById('theme-toggle-container');
+          if (themeToggle && actionsContainer.contains(themeToggle)) {
+            actionsContainer.insertBefore(previewBtn, themeToggle);
+          } else {
+            actionsContainer.insertBefore(previewBtn, actionsContainer.firstChild);
+          }
+        }
+
+        // Also inject theme toggle into header
+        function moveThemeToggle() {
+          const header = document.querySelector('[class*="AppHeader"], [class*="EditorHeader"], header');
+          const existingToggle = document.getElementById('theme-toggle-container');
+          if (!header || !existingToggle) return;
+
+          let actionsContainer = header.querySelector('[class*="Actions"], [class*="RightSection"]');
+          if (!actionsContainer) {
+            actionsContainer = document.createElement('div');
+            actionsContainer.style.cssText = 'display: flex; align-items: center; gap: 12px; margin-left: auto;';
+            header.appendChild(actionsContainer);
+          }
+
+          // Move theme toggle to header
+          if (!actionsContainer.contains(existingToggle)) {
+            actionsContainer.appendChild(existingToggle);
+          }
+        }
+
+        // Watch for CMS to load and add buttons
+        const observer = new MutationObserver(() => {
+          const isEditor = document.querySelector('[class*="EditorControl"], [class*="ControlPane"]');
+          if (isEditor) {
+            setTimeout(() => {
+              addPreviewButton();
+              moveThemeToggle();
+            }, 500);
+          }
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // Initial check
+        setTimeout(() => {
+          addPreviewButton();
+          moveThemeToggle();
+        }, 2000);
+      }
+
+      // Initialize when DOM ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initPreview);
+      } else {
+        initPreview();
+      }
+    })();
+
     // ===== CUSTOM CONFIRM DIALOG (Override native confirm) =====
     (function() {
       // Create custom dialog element
@@ -1592,9 +2220,6 @@
           setTimeout(() => okBtn.focus(), 100);
         });
       };
-
-      // Override beforeunload for nicer UX (can't fully replace native browser dialog)
-      // But we can style any CMS-generated dialogs
     })();
 
     // ===== DARK MODE LOGIC =====
@@ -1641,8 +2266,6 @@
     })();
 
     // ===== NETLIFY IDENTITY HANDLING =====
-    // If user lands on /admin/#invite_token=... or /admin/#recovery_token=...
-    // auto-open the Identity modal so they can set password / recover access.
     (function () {
       if (!window.netlifyIdentity) return;
 
@@ -1650,13 +2273,10 @@
       const hasToken = hash.includes("invite_token=") || hash.includes("recovery_token=");
 
       window.netlifyIdentity.on("init", function (user) {
-        // If token is present and user isn't logged in yet, open the modal.
         if (hasToken && !user) {
-          // Use widget's default flow; it will detect invite/recovery token in URL.
           window.netlifyIdentity.open();
         }
 
-        // After successful login, ensure we stay in /admin/ (not redirected elsewhere).
         window.netlifyIdentity.on("login", function () {
           if (!window.location.pathname.startsWith("/admin")) {
             window.location.assign("/admin/");
@@ -1667,7 +2287,6 @@
 
     // Hide loading screen when CMS is ready
     document.addEventListener('DOMContentLoaded', function() {
-      // Tunggu CMS init
       setTimeout(function() {
         const loading = document.getElementById('admin-loading');
         if (loading) {
@@ -1680,5 +2299,19 @@
       }, 2000);
     });
   </script>
+  
+  <!-- Theme Toggle (akan dipindahkan ke header via JS) -->
+  <div class="theme-toggle-container" id="theme-toggle-container" style="position: fixed; top: 16px; right: 16px;">
+    <span class="theme-toggle-label">Mode</span>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <svg class="theme-toggle-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="5"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+      <svg class="theme-toggle-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </div>
 </body>
 </html>
