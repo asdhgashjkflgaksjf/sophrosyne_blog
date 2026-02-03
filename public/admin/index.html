@@ -547,27 +547,67 @@
       color: var(--admin-text) !important;
     }
 
-    /* ===== FIX: TOOLBAR NOT COVERING CONTENT ===== */
-    /* Ensure markdown toolbar doesn't overlap content */
+    /* ===== CRITICAL FIX: TOOLBAR NOT COVERING CONTENT ===== */
+    /* Ensure markdown/editor container uses proper flex layout */
+    [class*="MarkdownControl"],
+    [class*="EditorControl"],
+    [class*="VisualEditor"] {
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    /* Editor wrapper - ensure it flows correctly */
+    [class*="MarkdownControl"] > div,
+    [class*="EditorControl"] > div {
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    /* Toolbar - FIXED position at top, not overlapping */
     [class*="MarkdownControl"] [class*="Toolbar"],
     [class*="EditorToolbar"],
+    [class*="VisualEditor"] > div:first-child,
     .ProseMirror-menubar {
-      position: relative !important;
-      z-index: 10 !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 100 !important;
       background: var(--admin-surface-hover) !important;
       border-bottom: 1px solid var(--admin-border) !important;
       margin-bottom: 0 !important;
+      flex-shrink: 0 !important;
+      padding: 8px 12px !important;
+      border-radius: 8px 8px 0 0 !important;
     }
 
-    /* Content area below toolbar */
+    /* Content area below toolbar - proper spacing */
     [class*="MarkdownControl"] .ProseMirror,
     [class*="EditorContent"],
-    .ProseMirror-content {
+    [class*="VisualEditor"] [contenteditable="true"],
+    .ProseMirror-content,
+    .ProseMirror {
       position: relative !important;
       z-index: 1 !important;
       margin-top: 0 !important;
-      padding: 16px !important;
-      min-height: 150px !important;
+      padding: 20px !important;
+      padding-top: 24px !important;
+      min-height: 180px !important;
+      background: var(--admin-surface) !important;
+      border-radius: 0 0 8px 8px !important;
+    }
+
+    /* Force the text to appear below toolbar - NOT overlapped */
+    [class*="MarkdownControl"] [class*="editor-wrapper"],
+    [class*="EditorControl"] [class*="editor"] {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+
+    /* Extra fix: Ensure ProseMirror text is not hidden by toolbar */
+    .ProseMirror p:first-child,
+    [contenteditable="true"] p:first-child,
+    [contenteditable="true"] > *:first-child {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
     }
 
     /* Ensure textarea for markdown raw mode is visible */
@@ -575,11 +615,12 @@
     [class*="MarkdownControl"] textarea {
       color: var(--admin-text) !important;
       background: var(--admin-surface) !important;
-      padding: 16px !important;
-      min-height: 150px !important;
+      padding: 20px !important;
+      min-height: 180px !important;
       font-family: 'Spectral', serif !important;
       font-size: 16px !important;
       line-height: 1.8 !important;
+      margin-top: 0 !important;
     }
 
     /* ===== BETTER NESTED WIDGET STYLING ===== */
@@ -733,40 +774,204 @@
       color: var(--admin-accent) !important;
     }
 
-    /* Modal / Dialog */
+    /* ===== ENHANCED MODAL / DIALOG STYLING ===== */
     [class*="Modal"],
-    [class*="Dialog"] {
+    [class*="Dialog"],
+    [class*="ConfirmDialog"],
+    [class*="AlertDialog"] {
       background: var(--admin-surface) !important;
       border: 1px solid var(--admin-border) !important;
-      border-radius: 16px !important;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+      border-radius: 20px !important;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35) !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      animation: modalSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      max-width: 420px !important;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
     }
 
     [class*="ModalOverlay"],
-    [class*="DialogOverlay"] {
-      background: hsla(220 15% 10% / 0.7) !important;
-      backdrop-filter: blur(4px) !important;
+    [class*="DialogOverlay"],
+    [class*="Backdrop"] {
+      background: hsla(220 15% 5% / 0.75) !important;
+      backdrop-filter: blur(8px) !important;
+      animation: fadeIn 0.2s ease !important;
     }
 
-    /* Toast / Notifications */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Modal Header */
+    [class*="Modal"] header,
+    [class*="Dialog"] header,
+    [class*="ModalHeader"],
+    [class*="DialogHeader"] {
+      background: var(--admin-accent) !important;
+      color: var(--admin-surface) !important;
+      padding: 20px 24px !important;
+      font-family: 'Cormorant Garamond', serif !important;
+      font-size: 18px !important;
+      font-weight: 600 !important;
+      border-bottom: none !important;
+    }
+
+    /* Modal Body */
+    [class*="Modal"] [class*="Body"],
+    [class*="Dialog"] [class*="Body"],
+    [class*="ModalBody"],
+    [class*="DialogBody"],
+    [class*="ConfirmDialog"] > div:not(:first-child):not(:last-child) {
+      padding: 24px !important;
+      color: var(--admin-text) !important;
+      font-family: 'Lora', serif !important;
+      font-size: 15px !important;
+      line-height: 1.7 !important;
+    }
+
+    /* Modal Footer / Buttons */
+    [class*="Modal"] footer,
+    [class*="Dialog"] footer,
+    [class*="ModalFooter"],
+    [class*="DialogFooter"],
+    [class*="Modal"] [class*="Actions"],
+    [class*="Dialog"] [class*="Actions"] {
+      padding: 16px 24px 24px !important;
+      display: flex !important;
+      gap: 12px !important;
+      justify-content: flex-end !important;
+      background: var(--admin-surface) !important;
+      border-top: 1px solid var(--admin-border) !important;
+    }
+
+    /* Modal Buttons - Primary (Confirm/OK) */
+    [class*="Modal"] button[class*="primary"],
+    [class*="Dialog"] button[class*="primary"],
+    [class*="ConfirmButton"],
+    [class*="Modal"] button:first-child:not([class*="cancel"]):not([class*="secondary"]) {
+      background: var(--admin-accent) !important;
+      color: var(--admin-surface) !important;
+      border: none !important;
+      border-radius: 10px !important;
+      padding: 12px 24px !important;
+      font-weight: 500 !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+    }
+
+    [class*="Modal"] button[class*="primary"]:hover,
+    [class*="Dialog"] button[class*="primary"]:hover {
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 12px rgba(139, 90, 43, 0.3) !important;
+    }
+
+    /* Modal Buttons - Secondary (Cancel) */
+    [class*="Modal"] button[class*="cancel"],
+    [class*="Modal"] button[class*="secondary"],
+    [class*="Dialog"] button[class*="cancel"],
+    [class*="CancelButton"] {
+      background: var(--admin-surface) !important;
+      color: var(--admin-text) !important;
+      border: 2px solid var(--admin-border) !important;
+      border-radius: 10px !important;
+      padding: 12px 24px !important;
+      font-weight: 500 !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+    }
+
+    [class*="Modal"] button[class*="cancel"]:hover,
+    [class*="CancelButton"]:hover {
+      background: var(--admin-surface-hover) !important;
+      border-color: var(--admin-accent) !important;
+    }
+
+    /* Delete/Danger Modal */
+    [class*="DeleteModal"] header,
+    [class*="Modal"][class*="danger"] header,
+    [class*="ConfirmDelete"] header {
+      background: hsl(0 60% 50%) !important;
+    }
+
+    [class*="DeleteModal"] button[class*="primary"],
+    [class*="Modal"][class*="danger"] button[class*="primary"] {
+      background: hsl(0 60% 50%) !important;
+    }
+
+    [class*="DeleteModal"] button[class*="primary"]:hover {
+      background: hsl(0 55% 45%) !important;
+    }
+
+    /* Toast / Notifications - Enhanced Style */
     [class*="Toast"],
-    [class*="Notification"] {
+    [class*="Notification"],
+    [class*="Snackbar"] {
       background: var(--admin-surface) !important;
       border: 1px solid var(--admin-border) !important;
-      border-radius: 12px !important;
-      box-shadow: var(--shadow-paper) !important;
+      border-radius: 16px !important;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2), var(--shadow-paper) !important;
       font-family: 'Lora', 'Georgia', serif !important;
       color: var(--admin-text) !important;
+      padding: 16px 20px !important;
+      animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     /* Success state */
-    [class*="success"] {
+    [class*="success"],
+    [class*="Success"] {
       border-left: 4px solid hsl(142 60% 40%) !important;
+      background: linear-gradient(135deg, var(--admin-surface) 0%, hsl(142 40% 97%) 100%) !important;
+    }
+
+    .dark [class*="success"],
+    .dark [class*="Success"] {
+      background: linear-gradient(135deg, var(--admin-surface) 0%, hsl(142 30% 15%) 100%) !important;
     }
 
     /* Error state */
-    [class*="error"] {
+    [class*="error"],
+    [class*="Error"] {
       border-left: 4px solid hsl(0 60% 50%) !important;
+      background: linear-gradient(135deg, var(--admin-surface) 0%, hsl(0 40% 97%) 100%) !important;
+    }
+
+    .dark [class*="error"],
+    .dark [class*="Error"] {
+      background: linear-gradient(135deg, var(--admin-surface) 0%, hsl(0 30% 15%) 100%) !important;
+    }
+
+    /* Warning state */
+    [class*="warning"],
+    [class*="Warning"] {
+      border-left: 4px solid hsl(45 80% 50%) !important;
+      background: linear-gradient(135deg, var(--admin-surface) 0%, hsl(45 60% 96%) 100%) !important;
+    }
+
+    .dark [class*="warning"],
+    .dark [class*="Warning"] {
+      background: linear-gradient(135deg, var(--admin-surface) 0%, hsl(45 40% 15%) 100%) !important;
     }
 
     /* Image widget */
@@ -1112,6 +1317,127 @@
       filter: sepia(20%) invert(1) !important;
     }
 
+    /* ===== CUSTOM CONFIRM DIALOG STYLES ===== */
+    #custom-confirm-overlay {
+      position: fixed;
+      inset: 0;
+      background: hsla(220 15% 5% / 0);
+      backdrop-filter: blur(0px);
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    #custom-confirm-overlay.visible {
+      background: hsla(220 15% 5% / 0.75);
+      backdrop-filter: blur(8px);
+      pointer-events: auto;
+    }
+
+    .custom-confirm-dialog {
+      background: var(--admin-surface);
+      border: 1px solid var(--admin-border);
+      border-radius: 20px;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+      width: 90%;
+      max-width: 400px;
+      overflow: hidden;
+      opacity: 0;
+      transform: scale(0.9) translateY(-20px);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .custom-confirm-dialog.visible {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+
+    .custom-confirm-header {
+      background: var(--admin-accent);
+      color: var(--admin-surface);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .custom-confirm-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .custom-confirm-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .custom-confirm-body {
+      padding: 24px;
+    }
+
+    .custom-confirm-message {
+      font-family: 'Lora', serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--admin-text);
+      margin: 0;
+    }
+
+    .custom-confirm-footer {
+      padding: 16px 24px 24px;
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      border-top: 1px solid var(--admin-border);
+    }
+
+    .custom-confirm-cancel {
+      background: var(--admin-surface);
+      color: var(--admin-text);
+      border: 2px solid var(--admin-border);
+      border-radius: 10px;
+      padding: 12px 24px;
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .custom-confirm-cancel:hover {
+      background: var(--admin-surface-hover);
+      border-color: var(--admin-accent);
+    }
+
+    .custom-confirm-ok {
+      background: var(--admin-accent);
+      color: var(--admin-surface);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 24px;
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(139, 90, 43, 0.25);
+    }
+
+    .custom-confirm-ok:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(139, 90, 43, 0.35);
+    }
+
+    .custom-confirm-ok:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px hsla(28 60% 45% / 0.3), 0 4px 12px rgba(139, 90, 43, 0.25);
+    }
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
       [class*="Sidebar"] {
@@ -1135,6 +1461,19 @@
 
       .theme-toggle-label {
         display: none;
+      }
+
+      .custom-confirm-dialog {
+        margin: 16px;
+      }
+
+      .custom-confirm-footer {
+        flex-direction: column-reverse;
+      }
+
+      .custom-confirm-cancel,
+      .custom-confirm-ok {
+        width: 100%;
       }
     }
   </style>
@@ -1179,6 +1518,85 @@
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
   <script>
+    // ===== CUSTOM CONFIRM DIALOG (Override native confirm) =====
+    (function() {
+      // Create custom dialog element
+      function createConfirmDialog() {
+        const overlay = document.createElement('div');
+        overlay.id = 'custom-confirm-overlay';
+        overlay.innerHTML = `
+          <div class="custom-confirm-dialog">
+            <div class="custom-confirm-header">
+              <svg class="custom-confirm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4M12 8h.01"/>
+              </svg>
+              <span class="custom-confirm-title">Konfirmasi</span>
+            </div>
+            <div class="custom-confirm-body">
+              <p class="custom-confirm-message"></p>
+            </div>
+            <div class="custom-confirm-footer">
+              <button class="custom-confirm-cancel">Batal</button>
+              <button class="custom-confirm-ok">Ya, Lanjutkan</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+        return overlay;
+      }
+
+      // Custom confirm function
+      window.customConfirm = function(message) {
+        return new Promise((resolve) => {
+          let overlay = document.getElementById('custom-confirm-overlay');
+          if (!overlay) {
+            overlay = createConfirmDialog();
+          }
+          
+          const dialog = overlay.querySelector('.custom-confirm-dialog');
+          const messageEl = overlay.querySelector('.custom-confirm-message');
+          const cancelBtn = overlay.querySelector('.custom-confirm-cancel');
+          const okBtn = overlay.querySelector('.custom-confirm-ok');
+          
+          messageEl.textContent = message;
+          overlay.classList.add('visible');
+          dialog.classList.add('visible');
+          
+          function cleanup(result) {
+            overlay.classList.remove('visible');
+            dialog.classList.remove('visible');
+            cancelBtn.removeEventListener('click', handleCancel);
+            okBtn.removeEventListener('click', handleOk);
+            overlay.removeEventListener('click', handleOverlayClick);
+            document.removeEventListener('keydown', handleKeydown);
+            resolve(result);
+          }
+          
+          function handleCancel() { cleanup(false); }
+          function handleOk() { cleanup(true); }
+          function handleOverlayClick(e) {
+            if (e.target === overlay) cleanup(false);
+          }
+          function handleKeydown(e) {
+            if (e.key === 'Escape') cleanup(false);
+            if (e.key === 'Enter') cleanup(true);
+          }
+          
+          cancelBtn.addEventListener('click', handleCancel);
+          okBtn.addEventListener('click', handleOk);
+          overlay.addEventListener('click', handleOverlayClick);
+          document.addEventListener('keydown', handleKeydown);
+          
+          // Focus the OK button
+          setTimeout(() => okBtn.focus(), 100);
+        });
+      };
+
+      // Override beforeunload for nicer UX (can't fully replace native browser dialog)
+      // But we can style any CMS-generated dialogs
+    })();
+
     // ===== DARK MODE LOGIC =====
     (function() {
       const STORAGE_KEY = 'sophrosyne-admin-theme';
